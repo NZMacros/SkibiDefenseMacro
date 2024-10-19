@@ -29,7 +29,7 @@ a) Testers - They are given permission to access and completely modify all sourc
 b) Other Developers - Other Developers may modify and redistribute the Software under the conditions explicitly made by the Developer(s).
 c) Extra - Other Users may be given the permission to use specific sections from the original source code under specific conditions or make changes to it for their, and the Developer(s) benefit
 
-END OF ToS
+END OF Terms and Conditions
 
 By using this Software, you agree to the terms stated above. You will also be subject to penalty for breaking their conditions.
 If you have any questions, please ask them directly to NegativeZero01.
