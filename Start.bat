@@ -21,30 +21,20 @@ if exist "submacros\update-checker.ahk" (
 	echo %cyan%Checking for updates . . .%reset%
 	start "" "%~dp0submacros\update-checker.ahk" %*
 ) else (set "Updater_missing=1")
-nul set /p "=%green%Press any key to continue . . .%reset%"
-					pause >nul
-if exist "LICENSE.txt" (
-	if exist "submacros\skibi-defense-macro.ahk" (
-		if exist "submacros\AutoHotkey32.exe" (
-			echo %cyan%Starting Skibi Defense Macro . . .%reset%
-			nul set /p "=%green%Press any key to start . . .%reset%"
-				pause >nul
-			start "" "%~dp0submacros\AutoHotkey32.exe" "%~dp0submacros\skibi-defense-macro.ahk" %*
-			exit
-		) else (set "EXE.32_missing=1")
-	) else (set "Macro_missing=1")
-) else (set "LICENSE_missing=1")
+<nul set /p "=%green%Press any key to continue . . .%reset%"
+	pause >nul
+if exist "submacros\skibi-defense-macro.ahk" (
+	if exist "submacros\AutoHotkey32.exe" (
+		echo:
+		echo %cyan%Starting Skibi Defense Macro . . .%reset%
+		<nul set /p "=%green%Press any key to start . . .%reset%"
+			pause >nul
+		start "" "%~dp0submacros\AutoHotkey32.exe" "%~dp0submacros\skibi-defense-macro.ahk" %*
+		exit
+	) else (set "EXE_missing=1")
+) else (set "Macro_missing=1")
 
 :: Missing scripts:
-if "%LICENSE_missing%" == "1" (
-	echo ^<%red%The LICENSE.txt file is missing! To run the Macro, you must have a copy of it. It is an important document^^!%reset%^>
-	echo ^<%red%Please download a copy from [%repo_link%]^^!%reset%^>
-	echo:
-	<nul set /p "=%grey%Press any key to exit . . . %reset%"
-		pause >nul
-	exit
-)
-
 if "%Macro_missing%" == "1" (
 	echo ^<%red%Failed to find the 'skibi-defense-macro.ahk' file in the submacfros folder^^!%reset%^>
 	echo ^<%red%This is most likely due to a third-party antivirus deleting the file, or a corrupted installation. Try following these steps to fix the issue:%reset%^>
@@ -60,7 +50,7 @@ if "%Macro_missing%" == "1" (
 	exit
 )
 
-if "%EXE.32_missing%" == "1" (
+if "%EXE_missing%" == "1" (
 	echo ^<%red%Failed to find the 'AutoHotkey32.exe' file in the submacros folder^^!%reset%^>
 	echo ^<%red%This is most likely due to a third-party antivirus deleting the file, or a corrupted installation. Try following these steps to fix the issue:%reset%^>
 	echo ^<%red%1. Re-install the macro from the official GitHub; https://github.com/NegativeZero01/skibi-defense-macro and check that 'AutoHotkey32.exe' exists in the submacros folder.%reset%^>
@@ -68,27 +58,12 @@ if "%EXE.32_missing%" == "1" (
 	echo ^<%red%3. Run Start.bat.%reset%^>
 	echo:
 	echo ^<%red%Note: Both Skibi Defense Macro and AutoHotkey are safe and work fine with Microsoft Defender.%reset%^>
-	echo ^<%red%Join the Discord server for support: discord.gg/57YmdVy8gA%reset%^>
+	:: echo ^<%red%Join the Discord server for support: discord.gg/57YmdVy8gA%reset%^>
 	echo:
 	<nul set /p "=%grey%Press any key to exit . . . %reset%"
 		pause >nul
 	exit
 )
-
-:: if "%EXE.64_missing%" == "1" (
-	:: echo ^<%red%Failed to find the 'AutoHotkey64.exe' file in the submacros folder^^!%reset%^>
-	:: echo ^<%red%This is most likely due to a third-party antivirus deleting the file, or a corrupted installation. Try following these steps to fix the issue:%reset%^>
-	:: echo ^<%red%1. Re-install the macro from the official GitHub; https://github.com/NegativeZero01/skibi-defense-macro and check that 'AutoHotkey32.exe' exists in the submacros folder.%reset%^>
-	:: echo ^<%red%2. Disable any third-party antivirus software ^(or add the Skibi Defense Macro folder as an exception^)%reset%^>
-	:: echo ^<%red%3. Run Start.bat.%reset%^>
-	:: echo:
-	:: echo ^<%red%Note: Both Skibi Defense Macro and AutoHotkey are safe and work fine with Microsoft Defender.%reset%^>
-	:: echo ^<%red%Join the Discord server for support: discord.gg/57YmdVy8gA%reset%^>
-	:: echo:
-	:: <nul set /p "=%grey%Press any key to exit . . . %reset%"
-		:: pause >nul
-	:: exit
-:: )
 
 if "%Updater_missing%" == "1" (
 	echo ^<%red%You are missing the 'update-checker.ahk' file^^!%reset%^>

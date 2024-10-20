@@ -1,15 +1,15 @@
-﻿f2:: sd_Pause()
+﻿; Hotkey(PauseHotkey, sd_Pause)
 sd_Pause(*) {
-    MsgBox "Hi"
+    Pause
 }
 
-f3:: sd_Reload()
+Hotkey(StopHotkey, sd_Reload)
 sd_Reload(*) {
-    wait(2.5)
+	wait(1.5)
     Reload
 }
 
-f4:: sd_Close()
+Hotkey(CloseHotkey, sd_Close)
 sd_Close(*) {
     confirmation := MsgBox("Close Macro?", "Closing Macro", "0x4")
     if confirmation = "Yes" {
@@ -47,7 +47,7 @@ HyperSleep(ms)
 }
 
 wait(sec) {
-    Sleep(sec * 1000)
+    HyperSleep(sec * 1000)
 }
 
 RunWith32() {
@@ -68,6 +68,27 @@ AHKReloadScript(ahkpath) {
 	Run '"' ahkpath '" /restart ' params
 }
 
+CheckDisplaySpecs() {
+    hwnd := GetRobloxHWND()
+	ActivateRoblox()
+	GetRobloxClientPos(hwnd)
+	offsetY := GetYOffset(hwnd, &offsetfail)
+	if (offsetfail = 1) {
+		MsgBox "Unable to detect in-game GUI offset!``nStopping Feeder!``n``nThere are a few reasons why this can happen:``n - Incorrect graphics settings (check Troubleshooting Guide!)``n - Your `'Experience Language`' is not set to English``n - Something is covering the top of your Roblox window``n``nJoin our Discord server for support!", "WARNING!!", "0x40030"
+		ExitApp
+	}
+	if A_ScreenDPI != 96 {
+	    MsgBox("Your display scale is not 100%!`nThis means the Macro will not be able to detect images in-game correctly, resulting in failure!`nTo fix this, follow these steps:`n - Open Settings (Win+I)`n - Navigate to System >> Display`n - Then set the scale to 100% (even if it isn't recommended for your device)`n - Restart the Macro and ROBLOX`n - Sign out if prompted to", "Warning", 0x1030)
+    }
+}
+
+ObjMinIndex(obj)
+{
+	for k,v in obj
+		return k
+	return 0
+}
+
 
 
 CreateFolder(folder) {
@@ -84,4 +105,19 @@ ImportConfig(Data, Dir) {
     if !FileExist(Dir) {
         FileAppend(Data, Dir)
     }
+}
+
+
+
+ImgSearch(imageName, Variation := 6) {
+    GetRobloxClientPos(hwnd := GetRobloxHWND())
+	offsetY := GetYOffset(hwnd)
+    pBMScreen := Gdip_BitmapFromScreen(windowX "|" windowY + offsetY "|" windowWidth "|" windowHeight - offsetY)
+    Gdip_SaveBitmapToFile(pBMScreen, A_MacroWorkingDir "img\bitmap-debugging\" imageName ".jpg") ; See what the image is for debugging purposes
+    if (Gdip_ImageSearch(pBMScreen, bitmaps[imageName], , , , , , Variation) = 1) {
+         Gdip_DisposeImage(pBMScreen)
+         return 1 ; The return value to end with if it was found
+    }
+    Gdip_DisposeImage(pBMScreen)
+    return 0 ; The return value to end with if it was not found
 }

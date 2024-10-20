@@ -1,23 +1,27 @@
 #Requires AutoHotkey v2.0
 #SingleInstance Force
 #MaxThreads 255
+#Warn VarUnset, Off
 Persistent(true)
 SetWorkingDir A_InitialWorkingDir
 CoordMode("Pixel", "Client")
 SendMode("Event")
 
 global A_MacroWorkingDir := A_InitialWorkingDir "\"
-global SettingsPath := A_MacroWorkingDir "settings\"
+global A_SettingsWorkingDir := A_MacroWorkingDir "settings\"
+global Rudeness := IniRead(A_SettingsWorkingDir "main-config.ini", "Settings", "Rudeness")
+global A_ThemesWorkingDir := A_MacroWorkingDir "lib\Themes\"
 global exe_path32 := A_AhkPath
 global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
-global VerNum := "v0.1.0.0-alpha.1"
+global VersionID := "v0.1.1.0"
 
 RunWith32()
 CreateFolder(A_MacroWorkingDir "settings")
-ImportConfig("[Settings]`nGUI_X=100`nGUI_Y=100`nAlwaysOnTop=0`nGUITransparency=0`nMainGUILoadPercent=0`nHotkeyGUILoadPercent=0`nStartHotkey=F1`nPauseHotkey=F2`nStopHotkey=F3`nCloseHotkey=F4", SettingsPath "main-config.ini")
+ImportConfig("[Settings]`nGUI_X=100`nGUI_Y=100`nAlwaysOnTop=0`nGUITransparency=0`nGUITheme=None`nKeyDelay=25`nMainGUILoadPercent=0`nHotkeyGUILoadPercent=0`nStartHotkey=F1`nPauseHotkey=F2`nStopHotkey=F3`nCloseHotkey=F4`nPrivServer=`nFallback=1`nCode=`nRudeness=0", A_SettingsWorkingDir "main-config.ini")
 if !FileExist(A_Desktop "\Start SD-Macro.lnk") {
     FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start SD-Macro.lnk")
 }
+CheckDisplaySpecs()
 
 W := "sc011"
 A := "sc01e"
@@ -64,11 +68,12 @@ if !(pToken := Gdip_Startup())
 
 
 #Include "mainFiles\GUI.ahk"
+#Include "mainfiles\ROBLOX.ahk"
 #Include "mainFiles\functions.ahk"
 
 
 
-f1:: sd_Start()
+Hotkey(StartHotkey, sd_Start)
 sd_Start(*) {
-    MsgBox "Hi", "Hi"
+    MsgBox("Hi", "Nothing to see here", 0x20)
 }

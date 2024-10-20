@@ -1,10 +1,10 @@
 ﻿#Requires AutoHotkey v2.0 
 #Include "%A_InitialWorkingDir%\lib\cJSON.ahk"
+#Warn All, Off
 
 /*Declarations*/
-global CurrentVer := "v0.1.0.0"
+global CurrentVer := "v0.1.1.0"
 global releases := QueryGitHubRepo("NegativeZero01/skibi-defense-macro", "releases")
-OnError (e, mode) => (mode = "Return") ? -1 : 0
 global ReleaseName := "skibi-defense-macro-" releases[1]["tag_name"]
 global RefReleaseName := releases[1]["tag_name"]
 global A_MacroWorkingDir := A_InitialWorkingDir "\"
@@ -14,7 +14,7 @@ ConvertRefReleaseName := ReplaceChar(RefReleaseName)
 
 if Ver2Num(ConvertRefReleaseName) > Ver2Num(ConvertCurrentVer) {
     QueryUpdate()
-} else if (ConvertRefReleaseName = ConvertCurrentVer) or (ConvertRefReleaseName < ConvertCurrentVer) {
+} else if (Ver2Num(ConvertRefReleaseName) = Ver2Num(ConvertCurrentVer)) or (Ver2Num(ConvertRefReleaseName) < Ver2Num(ConvertCurrentVer)) {
     MsgBox "No updates found! You are on the latest version.", "No Updates Found (Success)", "T60"
     ExitApp
 }
@@ -74,7 +74,6 @@ ReplaceChar(Str) {
         if InStr(Str, "beta") {
             Str := StrReplace(Str, "beta", ".2")
         }
-        MsgBox(Str)
         return Str
     } catch {
         throw MsgBox("Failed to erase characters from the " Str " string!!!`nThis means the automatic-update system will not be able to interpret the string!!!", "Failed to use ReplaceChar", 0x400010)
@@ -91,13 +90,12 @@ Ver2Num(Ver) {
     VerType := VerParts.Has(5) ? VerParts[5] : 0
     VerPatch := VerParts.Has(6) ? VerParts[6] : 0
     Ver := (MainVer * 100000) + (MajorVer * 10000) + (MidVer * 1000) + (MinorVer * 100) + (VerType * 10) + VerPatch
-    MsgBox(Ver)
     return Ver
 }
 
 ; Ask the user if they would like to update to a new version
 QueryUpdate() {
-    confirmation := MsgBox("An updated version of the macro was found. This release is " RefReleaseName ", and your current version is " CurrentVer ". Would you like to download it?", "New Update Available", "0x1") ; Set the user's answer to a query asking them to update
+    confirmation := MsgBox("An updated version of the macro was found. This release is " RefReleaseName ", and your current version is " CurrentVer ". Would you like to download it?", "New Update Available", 0x1) ; Set the user's answer to a query asking them to update
     if confirmation = "OK" {
         Upd2Ver(RefReleaseName)
         ExitApp
@@ -111,6 +109,7 @@ Upd2Ver(Ver) {
     DownloadURL := "https://github.com/NegativeZero01/skibi-defense-macro/releases/download/" Ver "/" Ver ".zip"
     NewVersionDir := A_MacroWorkingDir "skibi-defense-macro-" Ver
 
-    Run(A_MacroWorkingDir "submacros\update.bat " . DownloadURL . " " . NewVersionDir)
+    MsgBox("update.bat currently does not work", "install manually", 0x1030)
+    ; Run(A_MacroWorkingDir "submacros\update.bat " . DownloadURL . " " . NewVersionDir)
     ExitApp
 }
