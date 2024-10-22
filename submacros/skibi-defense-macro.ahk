@@ -9,11 +9,10 @@ SendMode("Event")
 
 global A_MacroWorkingDir := A_InitialWorkingDir "\"
 global A_SettingsWorkingDir := A_MacroWorkingDir "settings\"
-global Rudeness := IniRead(A_SettingsWorkingDir "main-config.ini", "Settings", "Rudeness")
 global A_ThemesWorkingDir := A_MacroWorkingDir "lib\Themes\"
 global exe_path32 := A_AhkPath
 global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
-global VersionID := "v0.1.1.0"
+global VersionID := "v0.2.0.0-alpha.1"
 
 RunWith32()
 CreateFolder(A_MacroWorkingDir "settings")
@@ -22,6 +21,7 @@ if !FileExist(A_Desktop "\Start SD-Macro.lnk") {
     FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start SD-Macro.lnk")
 }
 CheckDisplaySpecs()
+global Rudeness := IniRead(A_SettingsWorkingDir "main-config.ini", "Settings", "Rudeness")
 
 W := "sc011"
 A := "sc01e"
@@ -52,6 +52,7 @@ LMB := "LButton"
 RMB := "RButton"
 ScrollUp := "WheelUp"
 ScrollDown := "WheelDown"
+F11 := "F11"
 
 #Include "%A_InitialWorkingDir%\lib\"
 #Include "FormData.ahk"

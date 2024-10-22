@@ -41,7 +41,7 @@ GetRobloxHWND()
 ; Image is specific to BSS but can be altered for use in other games
 ; Optionally takes a known window handle to skip GetRobloxHWND call
 ; Returns: offset (integer), defaults to 0 on fail (ByRef param fail is then set to 1, else 0)
-GetYOffset(hwnd?, &fail?)
+/*GetYOffset(hwnd?, &fail?)
 {
 	static hRoblox := 0, offset := 0
     if !IsSet(hwnd)
@@ -58,7 +58,7 @@ GetYOffset(hwnd?, &fail?)
 		GetRobloxClientPos(hwnd)
 		pBMScreen := Gdip_BitmapFromScreen(windowX+windowWidth//2 "|" windowY "|60|100")
 
-		/*Loop 20 ; for red vignette effect
+		Loop 20 ; for red vignette effect
 		{ 
 			if ((Gdip_ImageSearch(pBMScreen, bitmaps["toppollen"], &pos, , , , , 20) = 1)
 				&& (Gdip_ImageSearch(pBMScreen, bitmaps["toppollenfill"], , x := SubStr(pos, 1, (comma := InStr(pos, ",")) - 1), y := SubStr(pos, comma + 1), x + 41, y + 10, 20) = 0))
@@ -81,11 +81,11 @@ GetYOffset(hwnd?, &fail?)
 					pBMScreen := Gdip_BitmapFromScreen(windowX+windowWidth//2 "|" windowY "|60|100")
 				}				
 			}
-		}*/
+		}
 	}
 	else
 		return 0
-}
+}*/
 
 ActivateRoblox()
 {
@@ -160,7 +160,7 @@ DisconnectCheck(testCheck := 0)
 
 				default:
 			;STAGE 1 - wait for Roblox window
-			Loop 240 {
+			if WinExist "Roblox"
 				if GetRobloxHWND() {
 					ActivateRoblox()
 					break
@@ -170,56 +170,67 @@ DisconnectCheck(testCheck := 0)
 				}
 				wait(1) ; timeout 4 mins, wait for any Roblox update to finish
 			}
+
+			while ImgSearch("ChapterCheck") != 1 {
+				ActivateRoblox()
+					if !GetRobloxClientPos() {
+						continue 2
+					}
+				ImgSearch("ChapterCheck")
+			}
+			if ImgSearch("ChapterCheck") = 1 {
+				success := 1
+			}
+
 			;STAGE 2 - wait for loading screen (or loaded game)
-			Loop 180 {
+			/*Loop 240 {
 				ActivateRoblox()
 				if !GetRobloxClientPos() {
 					continue 2
 				}
 				pBMScreen := Gdip_BitmapFromScreen(windowX "|" windowY+30 "|" windowWidth "|" windowHeight-30)
-				if (Gdip_ImageSearch(pBMScreen, bitmaps["SkibiData"], , , , , 150, 4) = 1) {
+				if (Gdip_ImageSearch(pBMScreen, bitmaps["SkibiData"], , , , , , 4) = 1) {
 					Gdip_DisposeImage(pBMScreen)
 
 					break
 				}
-				if (Gdip_ImageSearch(pBMScreen, bitmaps["LobbyCheck"], , , , , 150, 2) = 1) {
+				if (Gdip_ImageSearch(pBMScreen, bitmaps["LobbyCheck"], , , , , , 10) = 1) {
 					Gdip_DisposeImage(pBMScreen)
 					success := 1
 					break 2
 				}
-				if (Gdip_ImageSearch(pBMScreen, bitmaps["Disconnected"], , , , , , 2) = 1) {
-					Gdip_DisposeImage(pBMScreen)
+				if ImgSearch("ChapterCheck", 10) = 1 {
+					success := 1
+					break 2
+				}
+				if ImgSearch("Disconnected", 2) = 1 {
 					continue 2
 				}
-				Gdip_DisposeImage(pBMScreen)
-				if (A_Index = 180) {
+				if (A_Index = 240) {
 					break 2
 				}
 				wait(1) ; timeout 3 mins, slow loading
 			}
 			;STAGE 3 - wait for loaded game
-			Loop 180 {
+			Loop 240 {
 				ActivateRoblox()
 				if !GetRobloxClientPos() {
 					continue 2
 				}
 				pBMScreen := Gdip_BitmapFromScreen(windowX "|" windowY+30 "|" windowWidth "|" windowHeight-30)
-				if ((Gdip_ImageSearch(pBMScreen, bitmaps["SkibiData"], , , , , 150, 4) = 0) || (Gdip_ImageSearch(pBMScreen, bitmaps["LobbyCheck"], , , , , 150, 2) = 1)) {
-					Gdip_DisposeImage(pBMScreen)
+				if ImgSearch("ChapterCheck", 10) = 1 {
 					success := 1
 					break 2
 				}
-				if (Gdip_ImageSearch(pBMScreen, bitmaps["Disconnected"], , , , , , 2) = 1) {
-					Gdip_DisposeImage(pBMScreen)
+				if ImgSearch("Disconnected", 2) = 1 {
 					continue 2
 				}
-				Gdip_DisposeImage(pBMScreen)
-				if (A_Index = 180) {
+				if (A_Index = 240) {
 					break 2
 				}
 				wait(1) ; timeout 3 mins, slow loading
 			}
-		}
+		}*/
 
 		;Successful Reconnect
 		if (success = 1) && testCheck = 0
@@ -227,6 +238,7 @@ DisconnectCheck(testCheck := 0)
 			ActivateRoblox()
 			GetRobloxClientPos()
 			wait(0.5)
+			TapKey(F11)
 			return 1
 		}
 		else if (success = 1) && testCheck = 1
@@ -234,7 +246,9 @@ DisconnectCheck(testCheck := 0)
 			ActivateRoblox()
 			GetRobloxClientPos()
 			wait(0.5)
+			TapKey(F11)
 			return 2
 		}
+	}
 	}
 }

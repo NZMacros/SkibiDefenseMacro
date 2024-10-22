@@ -3,7 +3,7 @@
 #Warn All, Off
 
 /*Declarations*/
-global CurrentVer := "v0.1.1.0"
+global CurrentVer := "v0.2.0.0-alpha.1"
 global releases := QueryGitHubRepo("NegativeZero01/skibi-defense-macro", "releases")
 global ReleaseName := "skibi-defense-macro-" releases[1]["tag_name"]
 global RefReleaseName := releases[1]["tag_name"]

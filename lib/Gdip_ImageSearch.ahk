@@ -71,7 +71,7 @@
 ;**********************************************************************************
 
 Gdip_ImageSearch(pBitmapHaystack,pBitmapNeedle,&OutputList:=""
-,OuterX1:=0,OuterY1:=0,OuterX2:=0,OuterY2:=0,Variation:=0,Trans:=""
+,OuterX1:=0,OuterY1:=0,OuterX2:=0,OuterY2:=0,Variation:=6,Trans:=""
 ,SearchDirection:=1,Instances:=1,LineDelim:="`n",CoordDelim:=",") {
 
     ; Some validations that can be done before proceeding any further

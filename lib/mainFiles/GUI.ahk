@@ -189,8 +189,8 @@ sd_HotkeyGUI(*){
 	GUIClose(*){
 		MainGUI.Opt("-Disabled"), sd_MainTabsChange(1)
 		if (IsSet(HotkeyGUI) && IsObject(HotkeyGUI)) {
+			Suspend(0)
 			HotkeyGUI.Destroy(), HotkeyGUI := ""
-            Suspend(0)
             sd_Reload
         }
 	}
@@ -308,15 +308,15 @@ sd_GUITheme(*) {
 }
 
 sd_ReconnectTest(*){
+	MainGUI.Minimize
 	MainGUI.Opt("+Disabled"), sd_MainTabsChange(0)
-	MainGUI.Hide
 	if (ActivateRoblox() = 1) {
 		CloseRoblox()
 	}
 	if (DisconnectCheck(1) = 2)
 		MsgBox("Successfully rejoined via Deeplink!", "Reconnect Test Complete", 0x1000)
-	MainGUI.Opt("-Disabled"), sd_MainTabsChange(1)
 	MainGUI.Restore
+	MainGUI.Opt("-Disabled"), sd_MainTabsChange(1)
 }
 
 sd_ServerLink(GuiCtrl, *){
