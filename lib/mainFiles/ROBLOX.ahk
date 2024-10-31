@@ -250,5 +250,4 @@ DisconnectCheck(testCheck := 0)
 			return 2
 		}
 	}
-	}
 }
