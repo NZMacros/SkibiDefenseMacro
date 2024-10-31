@@ -1,5 +1,5 @@
 OnExit(SaveValues)
-TraySetIcon(A_MacroWorkingDir "img\sdm-logo.ico", Freeze := true)
+TraySetIcon(A_MacroWorkingDir "img\sdm_logo.ico", Freeze := true)
 A_TrayMenu.Delete()
 A_TrayMenu.Add()
 A_TrayMenu.Add("Open Logs", (*) => ListLines())
