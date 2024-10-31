@@ -23,13 +23,13 @@ if exist "submacros\update-checker.ahk" (
 ) else (set "Updater_missing=1")
 <nul set /p "=%green%Press any key to continue . . .%reset%"
 	pause >nul
-if exist "submacros\skibi-defense-macro.ahk" (
+if exist "submacros\skibi_defense_macro.ahk" (
 	if exist "submacros\AutoHotkey32.exe" (
 		echo:
 		echo %cyan%Starting Skibi Defense Macro . . .%reset%
 		<nul set /p "=%green%Press any key to start . . .%reset%"
 			pause >nul
-		start "" "%~dp0submacros\AutoHotkey32.exe" "%~dp0submacros\skibi-defense-macro.ahk" %*
+		start "" "%~dp0submacros\AutoHotkey32.exe" "%~dp0submacros\skibi_defense_macro.ahk" %*
 		exit
 	) else (set "EXE_missing=1")
 ) else (set "Macro_missing=1")
