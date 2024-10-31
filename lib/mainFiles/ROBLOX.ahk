@@ -439,7 +439,7 @@ DisconnectCheck(testCheck := 0) {
 				IniWrite FallbackServer%n%, "settings\nm_config.ini", "Settings", "FallbackServer" n
 				PostSubmacroMessage("Status", 0x5553, 10, 6)
 			}
-			PostSubmacroMessage("Status", 0x5552, 221, (server = 0))*/
+			PostSubmacroMessage("Status", 0x5552, 221, (server = 0))*\
 
 			if (testCheck = 1) && (success = 1) {
 				return 2
