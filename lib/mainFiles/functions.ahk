@@ -127,7 +127,7 @@ sd_ImportConfig()
 		, "PrivServer", ""
 		, "Fallback", 1
 		, "Code", ""
-		, "AGCUnlocked", 0
+		, "AGCUnlocked", 0)
 
 	local k, v, i, j
 	for k,v in config ; load the default values as globals, will be overwritten if a new value exists when reading
