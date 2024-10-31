@@ -441,9 +441,9 @@ DisconnectCheck(testCheck := 0) {
 			}
 			PostSubmacroMessage("Status", 0x5552, 221, (server = 0))*/
 
-			if testCheck = 1 && success = 1) {
+			if (testCheck = 1) && (success = 1) {
 				return 2
-			} else if testCheck = 0 && success = 1 {
+			} else if (testCheck = 0) && (success = 1) {
 				return 1
 			}
 		}
