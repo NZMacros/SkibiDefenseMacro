@@ -16,7 +16,7 @@ global A_SettingsWorkingDir := A_MacroWorkingDir "settings\"
 global A_ThemesWorkingDir := A_MacroWorkingDir "lib\Themes\"
 global exe_path32 := A_AhkPath
 global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
-global VersionID := "v0.2.0.0-alpha.1"
+global VersionID := "v0.1.2.0-alpha.1"
 
 RunWith32()
 CreateFolder(A_MacroWorkingDir "settings")
