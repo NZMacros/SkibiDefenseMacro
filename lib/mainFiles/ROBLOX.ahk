@@ -1,7 +1,7 @@
 /***********************************************************
 * @description: Functions for automating the Roblox window
 * @author SP
-***********************************************************/
+***********************************************************\
 
 ; Updates global variables windowX, windowY, windowWidth, windowHeight
 ; Optionally takes a known window handle to skip GetRobloxHWND call
@@ -256,9 +256,8 @@ CloseRoblox() {
 
 global ReconnectMethod := "Deeplink"
 
-DisconnectCheck(testCheck := 0)
-{
-	/*static ServerLabels := Map(0,"Public Server", 1,"Private Server", 2,"Fallback Server 1", 3,"Fallback Server 2", 4,"Fallback Server 3")*/
+DisconnectCheck(testCheck := 0) {
+	static ServerLabels := Map(0,"Public Server", 1,"Private Server", 2/*,"Fallback Server 1", 3,"Fallback Server 2", 4,"Fallback Server 3")*\
 
 	; return if not disconnected or crashed
 	ActivateRoblox()
@@ -270,10 +269,10 @@ DisconnectCheck(testCheck := 0)
 	}
 
 	; end any residual movement and set reconnect /*start time
-	Click "Up"
+	/*Click "Up"
 	nm_endWalk()
 	ReconnectStart := nowUnix()
-	nm_updateAction("Reconnect")*/
+	nm_updateAction("Reconnect")
 
 	; wait for any requested delay time (e.g. from remote control or daily reconnect)
 	if (ReconnectDelay) {
@@ -288,7 +287,7 @@ DisconnectCheck(testCheck := 0)
 		IniWrite TotalDisconnects, "settings\nm_config.ini", "Status", "TotalDisconnects"
 		IniWrite SessionDisconnects, "settings\nm_config.ini", "Status", "SessionDisconnects"
 		nm_setStatus("Disconnected", "Reconnecting")
-	}*/
+	}*\
 
 	; obtain link codes from Private Server and Fallback Server links
 	linkCodes := Map()
