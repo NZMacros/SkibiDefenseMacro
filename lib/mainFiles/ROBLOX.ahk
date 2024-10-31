@@ -251,7 +251,7 @@ CloseRoblox() {
 		}
 	}
 	}
-}*/
+}*\
 
 
 global ReconnectMethod := "Deeplink"
