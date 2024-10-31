@@ -548,8 +548,8 @@ LegacyReconnect(linkCode, i)
 			/*if (nm_imgSearch("disconnected.png",25, "center")[1] = 0){
 				nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
 				Sleep 1000
-				break 2*/
-			}
+				break 2
+			}*\
 			if (A_Index = 240) {
 				; nm_setStatus("Error", "BSS Load Timeout`nRetry: " i)
 				Sleep 1000
