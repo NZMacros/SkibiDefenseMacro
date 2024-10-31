@@ -239,7 +239,7 @@ CloseRoblox() {
 			GetRobloxClientPos()
 			wait(0.5)
 			TapKey(F11)
-			return 1
+			; return 1
 		}
 		else if (success = 1) && testCheck = 1
 		{
