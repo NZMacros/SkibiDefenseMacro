@@ -260,11 +260,11 @@ DisconnectCheck(testCheck := 0) {
 	static ServerLabels := Map(0,"Public Server", 1,"Private Server", 2/*,"Fallback Server 1", 3,"Fallback Server 2", 4,"Fallback Server 3"*\)
 
 	; return if not disconnected or crashed
-	if testCheck != 1 {
-		ActivateRoblox()
-		GetRobloxClientPos()
-		if ((windowWidth > 0) && !WinExist("Roblox Crash")) {
-			if (ImgSearchReconnect("Disconnected", 2) != 1) {
+	ActivateRoblox()
+	GetRobloxClientPos()
+	if ((windowWidth > 0) && !WinExist("Roblox Crash")) {
+		if (ImgSearchReconnect("Disconnected", 2) != 1) {
+			if testCheck != 1 {
 				return 0
 			}
 		}
