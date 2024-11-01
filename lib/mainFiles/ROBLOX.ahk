@@ -317,12 +317,12 @@ DisconnectCheck(testCheck := 0) {
 				CloseRoblox()
 				;Run Server Deeplink
 				; nm_setStatus("Attempting", ServerLabels[server])
-				try Run '"roblox://placeID=1537690962' (server ? ("&linkCode=" linkCodes[server]) : "") '"'
+				try Run '"roblox://placeID=14279693118 (server ? ("&linkCode=" linkCodes[server]) : "") '"'
 
 				case 3,4:
 				;Run Server Deeplink (without closing)
 				; nm_setStatus("Attempting", ServerLabels[server])
-				try Run '"roblox://placeID=1537690962' (server ? ("&linkCode=" linkCodes[server]) : "") '"'
+				try Run '"roblox://placeID=14279693118 (server ? ("&linkCode=" linkCodes[server]) : "") '"'
 
 				default:
 				if server {
@@ -343,7 +343,7 @@ DisconnectCheck(testCheck := 0) {
 					;Close Roblox
 					(i = 1) && CloseRoblox()
 					;Run Server Link (spam deeplink method)
-					try Run '"roblox://placeID=1537690962"'
+					try Run '"roblox://placeID=14279693118"'
 				}
 			}
 			;STAGE 1 - wait for Roblox window
@@ -460,7 +460,7 @@ LegacyReconnect(linkCode, i)
 	, exe := (pEXE > 0) ? StrGet(pEXE) : ""
 	, params := (pPARAMS > 0) ? StrGet(pPARAMS) : ""
 
-	url := "https://www.roblox.com/games/1537690962?privateServerLinkCode=" linkCode
+	url := "https://www.roblox.com/games/14279693118?privateServerLinkCode=" linkCode
 	if ((StrLen(exe) > 0) && (StrLen(params) > 0))
 		ShellRun(exe, StrReplace(params, "%1", url)), success := 0
 	else
@@ -473,25 +473,25 @@ LegacyReconnect(linkCode, i)
 				break
 			}
 			if (A_Index = 120) {
-				nm_setStatus("Error", "No Roblox Found`nRetry: " i)
-				Sleep 1000
+				; nm_setStatus("Error", "No Roblox Found`nRetry: " i)
+				wait(1)
 				break 2
 			}
-			Sleep 1000 ; timeout 2 mins, slow internet / not logged in
+			wait(1) ; timeout 2 mins, slow internet / not logged in
 		}
 		;STAGE 2 - wait for RobloxPlayerBeta.exe
 		Loop 180 {
 			if WinExist("Roblox ahk_exe RobloxPlayerBeta.exe") {
 				WinActivate
-				nm_setStatus("Detected", "Roblox Open")
+				; nm_setStatus("Detected", "Roblox Open")
 				break
 			}
 			if (A_Index = 180) {
-				nm_setStatus("Error", "No Roblox Found`nRetry: " i)
-				Sleep 1000
+				; nm_setStatus("Error", "No Roblox Found`nRetry: " i)
+				wait(1)
 				break 2
 			}
-			Sleep 1000 ; timeout 3 mins, wait for any Roblox update to finish
+			wait(1) ; timeout 3 mins, wait for any Roblox update to finish
 		}
 		;STAGE 3 - wait for loading screen (or loaded game)
 		Loop 180 {
@@ -499,36 +499,36 @@ LegacyReconnect(linkCode, i)
 				WinActivate
 				GetRobloxClientPos(hwnd)
 			} else {
-				nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
-				Sleep 1000
+				; nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
+				wait(1)
 				break 2
 			}
 			pBMScreen := Gdip_BitmapFromScreen(windowX "|" windowY+30 "|" windowWidth "|150")
-			if (Gdip_ImageSearch(pBMScreen, bitmaps["loading"], , , , , , 4) = 1)
+			if (Gdip_ImageSearch(pBMScreen, bitmaps["SkibiData"], , , , , , 4) = 1)
 			{
 				Gdip_DisposeImage(pBMScreen)
-				nm_setStatus("Detected", "Game Open")
+				; nm_setStatus("Detected", "Game Open")
 				break
 			}
-			if (Gdip_ImageSearch(pBMScreen, bitmaps["science"], , , , , , 2) = 1)
+			if (Gdip_ImageSearch(pBMScreen, bitmaps["ChapterCheck"], , , , , , 2) = 1)
 			{
 				Gdip_DisposeImage(pBMScreen)
-				nm_setStatus("Detected", "Game Loaded")
+				; nm_setStatus("Detected", "Game Loaded")
 				success := 1
 				break 2
 			}
 			Gdip_DisposeImage(pBMScreen)
-			if (nm_imgSearch("disconnected.png",25, "center")[1] = 0){
-				nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
-				Sleep 1000
+			if (ImgSearchReconnect("Disconnected", 2) = 0){
+				; nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
+				wait(1)
 				break 2
 			}
 			if (A_Index = 180) {
-				nm_setStatus("Error", "No BSS Found`nRetry: " i)
-				Sleep 1000
+				; nm_setStatus("Error", "No BSS Found`nRetry: " i)
+				wait(1)
 				break 2
 			}
-			Sleep 1000 ; timeout 3 mins, slow loading
+			wait(1) ; timeout 3 mins, slow loading
 		}
 		;STAGE 4 - wait for loaded game
 		Loop 240 {
@@ -536,8 +536,8 @@ LegacyReconnect(linkCode, i)
 				WinActivate
 				GetRobloxClientPos(hwnd)
 			} else {
-				nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
-				Sleep 1000
+				; nm_setStatus("Error", "Disconnected during Reconnect`nRetry: " i)
+				wait(1)
 				break 2
 			}
 			pBMScreen := Gdip_BitmapFromScreen(windowX "|" windowY+30 "|" windowWidth "|150")
@@ -557,7 +557,7 @@ LegacyReconnect(linkCode, i)
 				Sleep 1000
 				break 2
 			}
-			Wait(1) ; timeout 4 mins, slow loading
+			wait(1) ; timeout 4 mins, slow loading
 		}
 	}
 	;Close Browser Tab
