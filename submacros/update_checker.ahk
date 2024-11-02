@@ -3,7 +3,7 @@
 #Warn All, Off
 
 /*Declarations*\
-global CurrentVer := "v0.0.0.0"
+global CurrentVer := "v0.1.0.0"
 global releases := QueryGitHubRepo("NegativeZero01/skibi-defense-macro", "releases")
 global ReleaseName := "skibi-defense-macro-" releases[1]["tag_name"]
 global RefReleaseName := releases[1]["tag_name"]
@@ -20,7 +20,7 @@ if Ver2Num(ConvertRefReleaseName) > Ver2Num(ConvertCurrentVer) {
 }
 
 
-/*Functions*/
+/*Functions*\
 
 ; QGHR
 QueryGitHubRepo(repo, subrequest := "", data := "", token := "") {
@@ -109,6 +109,6 @@ Upd2Ver(Ver) {
     DownloadURL := "https://github.com/NegativeZero01/skibi-defense-macro/releases/download/" Ver "/" Ver ".zip"
     NewVersionDir := A_MacroWorkingDir "skibi-defense-macro-" Ver
 
-    Run (A_MacroWorkingDir "\submacros\update.bat" "' DownloadURL '" "' A_InitialWorkingDir '" "' 1 '" "' NewVersionDir '")
+    Run (A_MacroWorkingDir "submacros\update.bat" "' DownloadURL '" "' A_InitialWorkingDir '" "' 1 '" "' NewVersionDir '")
 	ExitApp
 }
