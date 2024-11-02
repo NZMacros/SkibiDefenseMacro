@@ -22,7 +22,7 @@ if exist "submacros\update_checker.ahk" (
 	start "" "%~dp0submacros\update_checker.ahk"
 ) else (echo %red%'update_checker.ahk' is missing! This file contains the macro's auto-update functions and you will have to manually download releases without it!%reset%)
 <nul set /p "=%grey%Press any key to continue%reset%"
-		pause >nul
+        pause >nul
 if exist "submacros\skibi_defense_macro.ahk" (
 	if exist "submacros\AutoHotkey32.exe (
 		echo %cyan%Starting Skibi Defense Macro . . .%reset%
