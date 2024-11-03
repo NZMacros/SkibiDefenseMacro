@@ -18,7 +18,7 @@ global exe_path32 := A_AhkPath
 global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
 
 global VersionID := "v0.2.0.0-beta.2"
-global UTVID = "v0.0.9.6"
+global UTVID := "v0.0.9.6"
 global Month := FormatTime(MMMM)
 global releases := QueryGitHubRepo("NegativeZero01/skibi-defense-macro", "releases")
 global RRN := releases[1]["tag_name"]
