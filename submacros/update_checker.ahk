@@ -106,6 +106,7 @@ QueryUpdate() {
 
 ; Run update.bat under specific parameters to update the Macro
 Upd2Ver(Ver) {
+    try WinClose "Start.bat"
     DownloadURL := "https://github.com/NegativeZero01/skibi-defense-macro/releases/download/" Ver "/" Ver ".zip"
     NewVersionDir := A_MacroWorkingDir "skibi-defense-macro-" Ver
 
