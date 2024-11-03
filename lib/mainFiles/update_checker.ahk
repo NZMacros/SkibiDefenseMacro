@@ -72,7 +72,7 @@ Ver2Num(Ver) {
     VerType := VerParts.Has(5) ? VerParts[5] : 0
     VerPatch := VerParts.Has(6) ? VerParts[6] : 0
 
-    return ((MainVer * 100000) + (MajorVer * 10000) + (MidVer * 1000) + (MinorVer * 100) + (VerType * 10) + VerPatch
+    return ((MainVer * 100000) + (MajorVer * 10000) + (MidVer * 1000) + (MinorVer * 100) + (VerType * 10) + VerPatch)
 }
 
 QueryUpdate() {
