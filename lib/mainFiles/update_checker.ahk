@@ -94,3 +94,5 @@ Upd2Ver(Ver) {
     Run (A_MacroWorkingDir "submacros\update.bat" "' DownloadURL '" "' A_InitialWorkingDir '" "' 1 '" "' NewVersionDir '")
 	ExitApp
 }
+
+Script:
