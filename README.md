@@ -1,7 +1,6 @@
 <center>
 <h1>Skibi Defense Macro</h1><br>
-<h3>An open-source macro for Skibi Defense on ROBLOX - coded in AutoHotkey</h3><br>
-<img src="img\sdm_halloweenlogo.ico" alt="The Halloween logo for Skibi Defense Macro, displayed during Autumn" width=256 height=256><br>
+<img src="img\sdm_halloweenlogo.png" alt="The Halloween logo for Skibi Defense Macro, displayed during Autumn" width=256 height=256><br>
 <h3>An open-source macro for Skibi Defense on ROBLOX - coded in AutoHotkey</h3>
 </center>
 <hr><p>
