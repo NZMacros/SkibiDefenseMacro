@@ -1,7 +1,8 @@
 <center>
 <h1>Skibi Defense Macro</h1><br>
 <h3>An open-source macro for Skibi Defense on ROBLOX - coded in AutoHotkey</h3><br>
-<img src="img\sdm_jollylogo.ico" alt="The Halloween logo for Skibi Defense Macro, displayed during Autumn" width=256 height=256>
+<img src="img\sdm_halloweenlogo.ico" alt="The Halloween logo for Skibi Defense Macro, displayed during Autumn" width=256 height=256><br>
+<h3>An open-source macro for Skibi Defense on ROBLOX - coded in AutoHotkey</h3>
 </center>
 <hr><p>
 	
@@ -15,12 +16,13 @@ Note: Commits may not have descriptions and no tags or releases will be created 
 --!>
 
 <h2>How to Download:</h2><ol>
-	<li>Open the repository at [https://github.com/NegativeZero01/skibi-defense-macro]</li>
-	<li>Click the green 'Code' button</li>
-	<li>Click 'Download ZIP'</li>
+	<li>Open the repository with <a href="https://github.com/NegativeZero01/skibi-defense-macro">this</a> link</li>
+	<li>Click the green "Code" button</li>
+	<li>Click "Download ZIP"</li>
 	<li>After the download completes, locate the ZIP file and right click it</li>
 	<li>A list of options should appear. Click "Extract All"</li>
-	<li>Make sure to enable "Show files when ncomplete" to make it easier to locateextract is complete, locate and run 'Start.bat'</li></ol>
+	<li>Make sure to enable "Show files when ncomplete" to make it easier to locate the files after the extract finishes</li>
+	<li>Once the extract is complete, locate and run "Start.bat"</li></ol>
 <hr><p>
 
 <h2>Contributors<sup><a href="#Notice1">[1]</a></sup></h2><ul>
