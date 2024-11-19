@@ -1,9 +1,6 @@
 QueryUpdateValidity() {
-	if Ver2Num(CRRN) > Ver2Num(CurrentVersion) {
+	if (Ver2Num(CRRN) > Ver2Num(CurrentVersion)) {
 	    QueryUpdate()
-	} else if (Ver2Num(CRRN) = Ver2Num(CurrentVersion)) or (Ver2Num(CRRN) < Ver2Num(CurrentVersion)) {
-	    MsgBox("No updates found! You are on the latest version (" VersionID ").", "No Updates Found", T60 0x1000)
-	Goto "Script"
 	}
 }
 
@@ -19,7 +16,7 @@ QueryGitHubRepo(repo, subrequest := "", data := "", token := "") {
         whr.SetRequestHeader("Authorization", "Bearer " token)
     whr.Send()
     whr.WaitForResponse()
-    return JSON.Load(whr.ResponseText)
+    return cJSON.Load(whr.ResponseText)
 }
 
 ObjToQuery(oData) { ; https://gist.github.com/anonymous1184/e6062286ac7f4c35b612d3a53535cc2a?permalink_comment_id=4475887#file-winhttprequest-ahk
@@ -59,7 +56,7 @@ ReplaceChar(Str) {
         return Str
     } catch {
         throw MsgBox("Failed to erase characters from the " Str " string!!!`nThis means the automatic-update system will not be able to interpret the string!!!", "Failed to use ReplaceChar", 0x400010)
-	Goto "Script"
+	; Goto('Script')
     }
 }
 
@@ -74,25 +71,88 @@ Ver2Num(Ver) {
     VerType := VerParts.Has(5) ? VerParts[5] : 0
     VerPatch := VerParts.Has(6) ? VerParts[6] : 0
 
-    return ((MainVer * 100000) + (MajorVer * 10000) + (MidVer * 1000) + (MinorVer * 100) + (VerType * 10) + VerPatch)
+    return (((MainVer * 100000) + (MajorVer * 10000) + (MidVer * 1000) + (MinorVer * 100)) - (VerType * 10) - VerPatch)
 }
 
 QueryUpdate() {
-    confirmation := MsgBox("An updated version of the macro was found. This release is " RRN ", and your current version is " VersionID ". Would you like to download it?", "New Update Available", 0x1 0x1000) ; Set the user's answer to a query asking them to update
-    if confirmation = "OK" {
-        Upd2Ver(RRN)
-    } else if confirmation = "Cancel" {
-		Goto "Script"
-	}
+    if NeverAsk != 1 {
+        MainGUI.Opt("+Disabled")
+        local confirmation := MsgBox("An updated version of the macro was found. This release is " RRN ", and your current version is " VID ".", "New Update Available", 0x1000) ; Set the user's answer to a query asking them to update
+        if confirmation = "OK" {
+            ; Upd2Ver(RRN)
+            local NeverAskConfirmation := MsgBox("Keep recieving notifications?", "New Update Available Options: Notifications", 0x4)
+            if NeverAskConfirmation = "No" {
+                global NeverAsk := 1
+                IniWrite(NeverAsk, A_SettingsWorkingDir "main_config.ini", "Settings", "NeverAsk")
+            }
+        }
+        /*else if (confirmation = "No") {
+        MainGUI.Opt("-Disabled")
+        } else if (confirmation = "Cancel") {
+            NeverAsk := 1
+            IniWrite(NeverAsk, A_SettingsWorkingDir "main_config.ini", "Settings", "NeverAsk")
+            sd_Reload()
+        }*/
+        MainGUI.Opt("-Disabled")
+    }
 }
 
 Upd2Ver(Ver) {
 	try WinClose "Start.bat"
     DownloadURL := "https://github.com/NegativeZero01/skibi-defense-macro/releases/download/" Ver "/" Ver ".zip"
-    NewVersionDir := A_MacroWorkingDir ReleaseName
+    ; NewVersionDir := A_MacroWorkingDir ReleaseName
 
-    Run (A_MacroWorkingDir "submacros\update.bat" "' DownloadURL '" "' A_InitialWorkingDir '" "' 1 '" "' NewVersionDir '")
+    try {
+        AsyncHttpRequest("GET", "https://api.github.com/repos/NegativeZero01/skibi-defense-macro/releases/latest", sd_AutoUpdateHandler, Map("accept", "application/vnd.github+json"))
+    }
+    url := latest_release["assets"][1]["browser_download_url"]
+    CopySettings := 1
+    DeleteOld := 1
+
+    ; Run (A_MacroWorkingDir "submacros\update.bat" "" DownloadURL "" "" A_InitialWorkingDir "" "" 1 "" "" NewVersionDir "")
+    Run '"' A_WorkingDir '\submacros\update.bat" "' url '" "' A_MacroWorkingDir '" "' CopySettings '" "' DeleteOld '"'
 	ExitApp
 }
 
-Script:
+
+/*EXTERNAL*/
+
+;(used to update GUI with info fetched from GitHub)
+AsyncHttpRequest(method, url, func?, headers?)
+{
+	req := ComObject("Msxml2.XMLHTTP")
+	req.open(method, url, true)
+	if IsSet(headers)
+		for h, v in headers
+			req.setRequestHeader(h, v)
+	IsSet(func) && (req.onreadystatechange := func.Bind(req))
+	req.send()
+}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; AUTO-UPDATE
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+sd_AutoUpdateHandler(req)
+{
+	global
+
+	if (req.readyState != 4)
+		return
+
+	if (req.status = 200)
+	{
+		LatestVer := Trim((latest_release := JSON.parse(req.responseText))["tag_name"], "v")
+		/*if (VerCompare(VersionID, LatestVer) < 0)
+		{
+			MainGui["ImageUpdateLink"].Visible := 1
+			VersionWidth += 16
+			MainGui["VersionText"].Move(494 - VersionWidth), MainGui["VersionText"].Redraw()
+			MainGui["ImageGitHubLink"].Move(494 - VersionWidth - 23), MainGui["ImageGitHubLink"].Redraw()
+			MainGui["ImageDiscordLink"].Move(494 - VersionWidth - 48), MainGui["ImageDiscordLink"].Redraw()
+			try MainGui["SecretButton"].Move(494-VersionWidth-104), MainGui["SecretButton"].Redraw()
+
+			if (LatestVer != IgnoreUpdateVersion)
+				nm_AutoUpdateGUI()
+		}*/
+	}
+}

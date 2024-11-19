@@ -8,6 +8,7 @@ CoordMode("Pixel", "Client")
 SendMode("Event")
 OnError (e, mode) => (mode = "Return") ? -1 : 0
 
+;@Ahk2Exe-SetOrigFilename skibi_defense_macro.exe
 ;@Ahk2Exe-SetCopyright Copyright © NegativeZero01 on Github (https://github.com/NegativeZero01)
 ;@Ahk2Exe-SetDescription Skibi Defense Macro [ALPHA]
 
@@ -16,26 +17,36 @@ global A_SettingsWorkingDir := A_MacroWorkingDir "settings\"
 global A_ThemesWorkingDir := A_MacroWorkingDir "lib\Themes\"
 global exe_path32 := A_AhkPath
 global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
+global ACToggle := false
 
-global VersionID := "v0.2.0.0-beta.2"
-global UTVID := "v0.0.9.6"
-global Month := FormatTime(MMMM)
+sd_WriteGlobalsfromIni()
+global Month := FormatTime("MM", "MMMM")
 global releases := QueryGitHubRepo("NegativeZero01/skibi-defense-macro", "releases")
 global RRN := releases[1]["tag_name"]
 global ReleaseName := "skibi-defense-macro-" RRN
-global CurrentVersion := ReplaceChar(UTVID)
-global CRRN := ReplaceChar(RefReleaseName)
+global CurrentVersion := ReplaceChar(VID)
+global CRRN := ReplaceChar(RRN)
 
 RunWith32()
-CreateFolder(A_MacroWorkingDir "settings")
 CreateFolder(A_MacroWorkingDir "img\bitmap-debugging")
-WriteConfig("[Settings]`nGUI_X=100`nGUI_Y=100`nAlwaysOnTop=0`nGUITransparency=0`nGUITheme=Concaved`nKeyDelay=25`nMainGUILoadPercent=0`nHotkeyGUILoadPercent=0`nStartHotkey=F1`nPauseHotkey=F2`nStopHotkey=F3`nCloseHotkey=F4`nPrivServer=`nFallback=1`nAGCIUC=`nAGCUnlocked=0`n`n", A_SettingsWorkingDir "main-config.ini")
-if !FileExist(A_Desktop "\Start SD-Macro.lnk") {
-    FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start SD-Macro.lnk")
+
+if (Month = "September") || (Month = "October") || (Month = "November") {
+	if !FileExist(A_Desktop "\Start Skibi Cursed Macro.lnk") {
+		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Cursed Macro.lnk")
+	}
+} else if (Month = "December") || (Month = "January") || (Month = "February") {
+	if !FileExist(A_Desktop "\Start Skibi Jolly Macro.lnk") {
+		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Jolly Macro.lnk")
+	}
+} else {
+	if !FileExist(A_Desktop "\Start Skibi Defense Macro.lnk") {
+		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Defense Macro.lnk")
+	}
 }
+
 CheckDisplaySpecs()
-QueryUpdateValidity()
-Script:
+LoadLanguages()
+sd_DefaultHandlers()
 
 W := "sc011"
 A := "sc01e"
@@ -69,27 +80,29 @@ ScrollDown := "WheelDown"
 F11 := "F11"
 
 #Include "%A_InitialWorkingDir%\lib\"
-#Include "FormData.ahk"
-#Include "cJSON.ahk"
+#Include "DJSON.ahk"
 #Include "Gdip_All.ahk"
 #Include "Gdip_ImageSearch.ahk"
 
-
-if !(pToken := Gdip_Startup())
-    Throw OSError("Gdip_Startup failed")
-(bitmaps:=Map()).CaseSense := 0
+if !(pToken := Gdip_Startup()) {
+    throw OSError("Gdip_Startup failed")
+}
+(bitmaps := Map()).CaseSense := 0
 
 #Include "%A_InitialWorkingDir%\img\bitmaps.ahk"
 
+#Include "%A_InitialWorkingDir%\lib\mainFiles\"
+#Include "update_checker.ahk"
+#Include "functions.ahk"
+#Include "ROBLOX.ahk"
+#Include "GUI.ahk"
 
-#Include "mainFiles\update_checker.ahk"
-#Include "mainFiles\GUI.ahk"
-#Include "mainfiles\ROBLOX.ahk"
-#Include "mainFiles\functions.ahk"
+
+QueryUpdateValidity()
 
 
 
-Hotkey(StartHotkey, sd_Start)
+; Hotkey(StartHotkey, sd_Start)
 sd_Start(*) {
-    MsgBox("Hi", "Nothing here", 0x20)
+    ; func
 }

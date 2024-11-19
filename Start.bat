@@ -17,14 +17,7 @@ set "white=[97m"
 set "repo_link=https://github.com/NegativeZero01/skibi-defense-macro"
 
 
-:: If the script exists and the AutoHotkey 32-bit executable file exists, run the macro after checking for updates:
-if exist "lib\mainFiles\update_checker.ahk" (
-	echo %grey%Checking for updates . . .%reset%
-	start "" "%~dp0lib\mainFiles\update_checker.ahk" %*
-) else (echo %red%'update_checker.ahk' is missing^^! Without it, Skibi Defense Macro cannot automatically check for updates%reset%)
-<nul set /p "=%grey%Press any key to continue startup%reset%"
-	pause >nul
-echo:
+:: If the script exists and the AutoHotkey 32-bit executable file exists, run the macro:
 if exist "submacros\skibi_defense_macro.ahk" (
 	if exist "submacros\AutoHotkey32.exe" (
 		echo %cyan%Starting Skibi Defense Macro . . .%reset%

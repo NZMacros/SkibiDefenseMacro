@@ -1,0 +1,94 @@
+Macroyu Kapat?
+Macro Kapatiliyor
+Autohotkey'in 32 bit surumu surada bulunamadi:
+Hata
+Goruntuleme boyutunuz %100 degil!
+Bu, Makro'nun oyun icindeki goruntuleri dogru bir sekilde algilayamayacagi ve bunun da basarisizlikla sonuclanacagi anlamina gelir!
+Bunu duzeltmek icin su adimlari takip edin
+    - Ayarları Acin (Win+I)
+    - Sisteme git >> Goruntu
+    - Sonra goruntuyu 100%'e ayarlayin (Cihaziniz icin onerilmese bile)
+    - Istenirse oturumu kapatin
+    - Macro ve Robloxu tekrar baslatin
+Uyari
+" folder " dizini olusturulamadi
+Bu, Makronun genellikle bu klasorde bulunan dosyalarin islevlerini kullanamayacagi anlamina gelir!
+Macroyu farkli bir klasore tasimayi deneyin (e.g. Downloads or Documents).
+Klasor olusturulamadi
+Skibi Savunma Makrosu
+Skibi Lanetli Makro
+Skibi Jolly Makro
+Baslat:
+Durdur:
+Dur:
+Tiklayici:
+Kapat:
+GUI Settings
+Kisayol Ayarlari
+Genel Ayarlar
+Yeniden Baglanma Ayarlari
+GUI Temasi:
+Daima Zirvede
+GUI Seffafligi:
+Gelismis ozellestirme
+Kisayol Degistir
+Autoclicker Ayarlari
+Varsayilanlara don
+Giris Gecikmesi (ms):
+Ayarlari Sifirla
+Test
+Ozel Sunucu Linki:
+Birlestirme Yontemi:
+Dil:
+Kisayollar
+Bu kisayol kullanilamiyor!
+Bu tus zaten makroda baska yerde kullanilmis.
+Kabul edilemez kisayol!
+Unitlerinizi kullanmaniz gerekecek.
+Tus zaten farkli bir kisayol olarak kullaniliyor.
+Ayarlari sifirlayip varsayilana donmek istediginize emin misiniz?
+Yaptığınız tum yapilandirmalar silinecek ve varsayilan degerleri ile degiştirilecektir.
+Sifirlamayi Onayla
+via Deeplink ile basarili bir sekilde tekrar katilinildi!
+Tekrar bağlanma testi tamamlandi
+via Browsera basarili bir sekilde yeniden katilinildi!
+Mumkunse Deeplink'e gecmeniz onerilir.
+Cozumlenmemis Ozel Sunucu Linki!
+bir "share?code" linki girdiniz! Duzeltmek icin su Adimlari izleyin
+    1. Linki tarayiciniza yapistirin
+    2. Skibi Defense'nin yüklekenmesini bekleyin.
+    3. Tarayicinin ustundeki linki kopyalayin.
+Gecersiz Ozel Sunucu Linki
+Linkinizin boyle oldugundan emin olun:
+    - Dogru ve tam bir sekilde kopyalanmis
+    - Archkos Studios'tan Skibi Defense icin
+Gelismis ozellestirme
+Yeniden baglanma yonteminin "Tarayici" olarak ayarlanmasi onerilmez!
+"Deeplink" yontemini kullanirken sorun yasiyorsaniz bunu duzeltmek, "Tarayici" yontemini kullanmaktan cok daha iyi bir secenektir. Daha fazla bilgi icin [?] kismini okuyun.
+Bunu degistirmek istediginizden emin misiniz?
+Yeniden baglanma yontemi uyarisi
+Bu secenek 'Deeplink' ve 'Tarayici' yeniden baglanma yontemleri arasinda secim yapmanizi saglar.
+'Deeplink' onerilen bir method; daha hizli (tarayicinizi acmayi ve tamamen yuklenmesini beklemeyi atladigi icin) ve Roblox UWP (Microsoft Store) uygulamasiyla calisir.
+Ayrıca SD Rejoin gibi bir yonlendirme oyununa ihtiyac duymadan dogrudan SD'ye katılabilir. Daha fazla bilgi için çevrimiçi olarak 'Roblox Gelistirici Deeplink'ini arayabilirsiniz.
+'Tarayici' yalnizca 'Deeplink' kesinlikle basarisiz oldugunda ve duzeltilemez oldugunda kullanilmalidir.
+Bu, yeniden baglanmanin eski yontemidir; tarayicilar arasinda tutarsizliklar olabilir (ornegin, sekmelerin kapatilamamasi, Roblox'ta oturum acilmamasi) ve genel bir sunucuya dogrudan katilamazsiniz (cunku genel sunuculara katilirken 'Deeplink' zorunlu kilinir).
+Yeniden Baglanma Yontemleri
+Kisayol Tuslarini Degistir
+Doldurma:
+Kaydetmek icin kapatin!
+Bu Kisayol Tusu'nu kullanmak istiyorsaniz lutfen onu digerinden kaldirin.
+Ayarlar
+Tekrar
+kez
+Tiklama Araligi (ms):
+Tiklamalarin Suresi (ms):
+Tiklanacak Dugme:
+Kisayol tusu yapilandirmalarinizi sifirlamak istediginizden emin misiniz?
+Ayrica AutoClicker ayarlarinida sifirlayacak.
+[ALFA]
+Sanat:
+    -   Discord'da @ender4byss - Simge Sanati
+Ceviriler:
+    -   Discord'da @ekmekdover12 - Guncel Turkce Ceviri
+    -   Discord'da @taneoron - Onceki Ispanyolca Ceviri
+    -   Discord'da @the.hex.guy - Onceki Portekizce Ceviri

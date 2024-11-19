@@ -1,0 +1,30 @@
+Cerrar el macro?
+Cerrando el macro
+No se pudo encontrar la version de 32-bit del Autohotkey en
+Error
+Tu escala de visualización no es 100%!`nEsto significa que el Macro no podra detectar imagenes dentro del juego correctamente, resultando en problemas!`nPara arreglar esto, sigue estos pasos:`n - Abre los ajustes (Win+I)`n - Navega a sistema >> Visualización`n - Y aplica la escala a 100% (incluso si no es recomendado para tu dispositivo)`n - Reinicia el Macro y ROBLOX`n - Cierra sesión si recurren advertencias
+Advertencia
+No se pudo crear el " folder " directorio!`nEsto significa que el Macro no podra uasr las funciones de los archivos usualmente en esta carpeta!`nIntenta mover el Macro a una carpeta distinta (e.g. Downloads or Documents)
+Problema al crear carpeta
+Skibi Defense Macro
+Skibi Cursed Macro
+Skibi Jolly Macro
+Empezar
+Pausar
+Parar
+Cerrar
+Ajustes de GUI
+Ajustes de Hotkey 
+Ajustes General
+Ajustes de Reconnectar 
+Tema del GUI
+Siempre encima
+Transparencia del GUI
+Customizacion Avanzada 
+Cambiar Hotkeys
+Ajustes de Autoclicker 
+Restaurar Cambios
+Retraso del Input (ms)
+Reiniciar Ajustes
+Link del Servidor Privado
+Lenguaje
