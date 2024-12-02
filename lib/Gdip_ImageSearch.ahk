@@ -70,9 +70,9 @@
 ;
 ;**********************************************************************************
 
-Gdip_ImageSearch(pBitmapHaystack,pBitmapNeedle,&OutputList:=""
-,OuterX1:=0,OuterY1:=0,OuterX2:=A_ScreenWidth,OuterY2:=A_ScreenHeight,Variation:=10,Trans:=""
-,SearchDirection:=1,Instances:=1,LineDelim:="`n",CoordDelim:=",") {
+Gdip_ImageSearch(pBitmapHaystack, pBitmapNeedle, &OutputList := ""
+, OuterX1 := 0, OuterY1 := 0, OuterX2 := 0, OuterY2 := 0, Variation := 6, Trans:=""
+, SearchDirection:=1, Instances:=1, LineDelim:="`n", CoordDelim:=",") {
 
     ; Some validations that can be done before proceeding any further
     If !( pBitmapHaystack && pBitmapNeedle )
@@ -137,7 +137,7 @@ Gdip_ImageSearch(pBitmapHaystack,pBitmapNeedle,&OutputList:=""
     OuterY2 := ( !OuterY2 ? hHeight-nHeight+1 : OuterY2-nHeight+1 )
 
     OutputCount := Gdip_MultiLockedBitsSearch(hStride,hScan,hWidth,hHeight
-    ,nStride,nScan,nWidth,nHeight,&OutputList,OuterX1,OuterY1,OuterX2,OuterY2
+    ,nStride,nScan,nWidth,nHeight, &OutputList, OuterX1,OuterY1,OuterX2,OuterY2
     ,Variation,SearchDirection,Instances,LineDelim,CoordDelim)
 
     Gdip_UnlockBits(pBitmapHaystack,&hBitmapData)

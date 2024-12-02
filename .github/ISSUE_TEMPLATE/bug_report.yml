@@ -1,0 +1,52 @@
+name: Bug Report
+description: Report an issue or error in the macro.
+labels: ["bug"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+      
+        Thank you for reporting a bug! Use the inputs below to give as much information as you can.
+
+        - All bug reports are welcome!
+        - Remember to include sufficient details and context.
+        - If you have multiple bugs to report, please submit them in separate issues.
+        - Pull requests are accepted. If you know how to fix it - go ahead!
+
+  - type: textarea
+    id: bug
+    attributes:
+      label: What happened?
+      description: Please provide as much information as possible!
+      placeholder: Feel free to attach pictures/videos if it helps.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How do you reproduce this? Please provide as much step-by-step detail as possible.
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What would you expect to happen?
+      description: What should have happened after reproducing the steps above?
+      placeholder: Tell us what you expected to see! Feel free to attach pictures/videos if it helps.
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: Macro Version
+      description: What version of Skibi Defense Macro were you using?
+    validations:
+      required: true

@@ -69,7 +69,7 @@ Bunu degistirmek istediginizden emin misiniz?
 Yeniden baglanma yontemi uyarisi
 Bu secenek 'Deeplink' ve 'Tarayici' yeniden baglanma yontemleri arasinda secim yapmanizi saglar.
 'Deeplink' onerilen bir method; daha hizli (tarayicinizi acmayi ve tamamen yuklenmesini beklemeyi atladigi icin) ve Roblox UWP (Microsoft Store) uygulamasiyla calisir.
-Ayrıca SD Rejoin gibi bir yonlendirme oyununa ihtiyac duymadan dogrudan SD'ye katılabilir. Daha fazla bilgi için çevrimiçi olarak 'Roblox Gelistirici Deeplink'ini arayabilirsiniz.
+Ayrıca SD Rejoin gibi bir yonlendirme oyununa ihtiyac duymadan dogrudan SD'ye katılabilir. Daha fazla bilgi icin cevrimici olarak 'Roblox Gelistirici Deeplink'ini arayabilirsiniz.
 'Tarayici' yalnizca 'Deeplink' kesinlikle basarisiz oldugunda ve duzeltilemez oldugunda kullanilmalidir.
 Bu, yeniden baglanmanin eski yontemidir; tarayicilar arasinda tutarsizliklar olabilir (ornegin, sekmelerin kapatilamamasi, Roblox'ta oturum acilmamasi) ve genel bir sunucuya dogrudan katilamazsiniz (cunku genel sunuculara katilirken 'Deeplink' zorunlu kilinir).
 Yeniden Baglanma Yontemleri

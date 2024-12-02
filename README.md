@@ -1,6 +1,16 @@
+<!--
+   _____  _     _  _      _   _____          __                          __  __                          
+  / ____|| |   (_)| |    (_) |  __ \        / _|                        |  \/  |                         
+ | (___  | | __ _ | |__   _  | |  | |  ___ | |_  ___  _ __   ___   ___  | \  / |  __ _   ___  _ __  ___  
+  \___ \ | |/ /| || '_ \ | | | |  | | / _ \|  _|/ _ \| '_ \ / __| / _ \ | |\/| | / _` | / __|| '__|/ _ \ 
+  ____) ||   < | || |_) || | | |__| ||  __/| | |  __/| | | |\__ \|  __/ | |  | || (_| || (__ | |  | (_) |
+ |_____/ |_|\_\|_||_.__/ |_| |_____/  \___||_|  \___||_| |_||___/ \___| |_|  |_| \__,_| \___||_|   \___/ 
+ -->
+
+
 <center>
 <h1>Skibi Defense Macro</h1><br>
-<img src="img\sdm_halloweenlogo.png" alt="The Halloween logo for Skibi Defense Macro, displayed during Autumn" width=256 height=256><br>
+<img src="img\sdm_halloweenlogo.png" alt="The Halloween logo for Skibi Defense Macro" width=256 height=256><br>
 An open-source macro for Skibi Defense on ROBLOX - coded in AutoHotkey
 </center>
 <hr><p>
@@ -12,7 +22,7 @@ SDM is an automated tool for SD<sup><a href="#Note2">[2]</a></sup> (on ROBLOX) f
 With SDM, you can leave your device running to auto-grind SD while you're busy doing something more... productive (because lets be real, nobody wants to sit at a screen for hours on end, wasting their life away on a video game).<br>
 This is a solo-built project, meaning there were no directive code contributions or permanent contributors to this macro and is all made by <a href="https://discordapp.com/users/1198320993958117458">me</a>.
 <hr><p>
---!>
+-->
 
 <h2>How to Download:</h2><ol>
 	<li>Open the repository with <a href="https://github.com/NegativeZero01/skibi-defense-macro">this</a> link</li>
@@ -32,9 +42,10 @@ This is a solo-built project, meaning there were no directive code contributions
 <hr><p>
 
 <h2>Notes</h2><ol>
+	<!--
 	<li><h4 id="Note1">Skibi Defense Macro</h4></li>
 	<li><h4 id="Note2">Skibi Defense</h4></li>
 	<li><h4 id="Note3">Away From Keyboard (a.k.a. being busy doing something else or not interacting with the game manually)</h4></li>
+	-->
 	<li><h4 id="Note4">Testers not included</h4></li></ol>
 <hr>
-	

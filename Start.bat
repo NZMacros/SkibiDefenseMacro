@@ -17,34 +17,22 @@ set "white=[97m"
 set "repo_link=https://github.com/NegativeZero01/skibi-defense-macro"
 
 
-:: If the script exists and the AutoHotkey 32-bit executable file exists, run the macro:
+:: IF script and executable exist, run the macro:
 if exist "submacros\skibi_defense_macro.ahk" (
 	if exist "submacros\AutoHotkey32.exe" (
-		echo %cyan%Starting Skibi Defense Macro . . .%reset%
-		<nul set /p "=%green%Press any key to start . . .%reset%"
-			pause >nul
+		if not [%~3]==[] (
+			set /a "delay=%~3" 2>nul
+			echo Starting Skibi Defense Macro in !delay! seconds.
+			<nul set /p =Press any key to skip . . . 
+			timeout /t !delay! >nul
+		)
 		start "" "%~dp0submacros\AutoHotkey32.exe" "%~dp0submacros\skibi_defense_macro.ahk" %*
 		exit
-	) else (set "EXE_missing=1")
-) else (set "Macro_missing=1")
-
-:: Missing files:
-if "%Macro_missing%" == "1" (
-	echo %red%Failed to find the 'skibi_defense_macro.ahk' file in the suhmacros folder^^!
-	echo This is most likely due to a third-party antivirus deleting the file, or a corrupted installation. Try following these steps to fix the issue:
-	echo 1. Re-install the macro from the official GitHub; [%repo_link%, and check that 'skibi_defense_macro.ahk' exists in the submacros folder
-	echo 2. Disable any third-party antivirus software ^(or add the Skibi Defense Macro folder as an exception^)
-	echo 3. Run Start.bat
-	echo:
-	echo Note: Both Skibi Defense Macro and AutoHotkey are safe and work fine with Microsoft Defender%reset%
-	echo Join the Discord server for support: discord.gg/Nfn6czrzbv/%reset%^>
-	echo:
-	<nul set /p "=%grey%Press any key to exit . . . %reset%"
-		pause >nul
-	exit
+	) else (set "exe_missing=1")
 )
 
-if "%EXE_missing%" == "1" (
+:: Missing files:
+if "%exe_missing%" == "1" (
 	echo %red%Failed to find the 'AutoHotkey32.exe' file in the submacros folder^^!
 	echo This is most likely due to a third-party antivirus deleting the file, or a corrupted installation. Try following these steps to fix the issue:
 	echo 1. Re-install the macro from the official GitHub; [%repo_link%], and check that 'AutoHotkey32.exe' exists in the submacros folder

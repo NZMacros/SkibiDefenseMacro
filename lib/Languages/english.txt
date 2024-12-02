@@ -30,7 +30,7 @@ Reconnect Settings
 GUI Theme:
 Always On Top
 GUI Transparency:
-Advanced Customisation
+Advanced Options
 Change Hotkeys
 AutoClicker Settings
 Restore Defaults
@@ -49,7 +49,7 @@ The key is already used as a different hotkey.
 Are you sure you would like to reset your settings to the defaults?
 Any configurations you've made will be wiped and replaced with their default values.
 Confirm Reset
-Successfully rejoined via Deeplink!
+Successfully reconnected!
 Reconnect Test Complete
 Successfully rejoined via Browser!
 It is recommended you switch to Deeplink if possible.

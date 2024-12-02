@@ -2,15 +2,6 @@
 @echo off
 setlocal EnableDelayedExpansion
 chcp 65001 > nul
-
-::pushd ..
-::echo %CD%
-::popd
-::echo %CD%
-
-set "fdr=%CD%"
-echo %fdr% !fdr!
-
 cd %temp%
 
 :: ANSI color codes
@@ -56,7 +47,7 @@ echo:
     :: copy settings
     if %~3 == 1 (
         echo %blue%Copying settings...%reset%
-        robocopy "%~2\settings" "!fdr!\settings" /E > nul
+        robocopy "%~2\settings" "!folder!\settings" /E > nul
         echo %blue%Copy complete^^!%reset%
         echo:
     )
@@ -66,6 +57,22 @@ echo:
         rd /s /q "%~2" >nul
         echo %blue%Deleted successfully^^!%reset%
         echo:
+    )
+    :: update autostart
+    for /f "usebackq tokens=2,* skip=2" %%l in (`reg query "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SkibiDefenseMacro" 2^>nul`) do set "cmdline=%%m"
+    if not [!cmdline!] == [] (
+        call set strtest=%%cmdline:%~2=%%
+        if not "!strtest!"=="!cmdline!" (
+            call set cmdline=%%cmdline:%~2=!folder!%%
+            call set regcmd=%%cmdline:"=\"%%
+            reg add "HKCU\Software\Microsoft\Windows\CurrentVersion\Run" /v "SkibiDefenseMacro" /d "!regcmd!" /f > nul
+            echo %blue%Updated auto-start entry^^!%reset%
+            echo %blue%New command: !cmdline!%reset%
+            echo:
+        ) else (
+            echo %red%Auto-start entry is not for previous version, left unchanged^^!%reset%
+            echo:
+        )
     )
 ) else (
     echo %red%Error: Previous Skibi Defense Macro folder not found^^!%reset%
@@ -81,7 +88,9 @@ echo %green%Update complete^^! Starting Skibi Defense Macro in 10 seconds.%reset
 <nul set /p =%green%Press any key to skip . . . %reset%
 timeout /t 10 >nul
 
-start "" "!fdr!\submacros\AutoHotkey32.exe" "!fdr!\submacros\skibi_defense_macro.ahk" %*
+echo !folder!\submacros\AutoHotkey32.exe
+echo !folder!\submacros\skibi_defense_macro.ahk
+start "" "!folder!\AutoHotkey32.exe" "!folder!\skibi_defense_macro.ahk"
 exit)
 
 ----- Begin wsf script --->

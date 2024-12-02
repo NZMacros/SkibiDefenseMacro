@@ -1,30 +1,94 @@
-Fechar o Macro?
-Fechando Macro
-Nao foi possivel encontrar a versao 32-bit de Autohotkey em
+Fechar Macro?
+Fechando A Macro
+Nao foi possível encontrar a versao de 32 bits do Autohotkey em:
 Erro
-Sua escala de exibicao nao e 100%!`nIsso significa que o Macro nao vai conseguir detectar imagens no jogo corretamente, resultando em uma falha!`nPara arrumar, siga essas etapas:`n - Abra Configuracoes (Win+I)`n - Navegue a Sistema >> Tela`n - Depois coloque a escala para 100% (mesmo se nao for recomendado para seu dispositivo)`n - Reinicie o Macro e ROBLOX`n - Saia se solicitado
+Sua escala de exibicao nao e 100%!
+Isso significa que a Macro nao sera capaz de detectar imagens no jogo corretamente, resultando em falha!
+Para corrigir isso, siga estes passos:
+	- Abrir Configuracoes (Win+I)
+	- Navegue at o Sistema >> Exibir
+	- Em seguida, defina a escala para 100% (mesmo que nao seja recomendada para o seu dispositivo)
+	- Saia se solicitado a
+	- Reinicie a macro e o Roblox
 Aviso
-Nao foi possivel criar a diretoria " folder "!`nIsso significa que o Macro nao vai conseguir usar as funcoes dos arquivos usualmente nessa pasta!`nTente mover o Macro para uma pasta diferente (e.g. Downloads ou Documentos)
-Nao foi possivel criar folder
-Skibi Defense Macro
-Skibi Cursed Macro
+Nao foi possível criar o directorio " folder "!
+Isso significa que a Macro nao podera usar as funcoes dos arquivos geralmente nesta pasta!
+Tente mover a Macro para uma pasta diferente (por exemplo, Downloads ou Documentos).
+Falha ao criar a pasta
+Macro de defesa de Skibi
+Skibi Amaldicoado Macro
 Skibi Jolly Macro
-Iniciar
-Pausar
-Parar
-Fechar
-Configuracoes do GUI
-Configuracoes de Tecla de Atalho
+Início:
+Pausa:
+Parar:
+Clicker:
+Fechar:
+Configuracoes da GUI
+Configuracoes De Tecla De Atalho
 Configuracoes Gerais
-Configuracoes de Reconectar
-Tema do GUI
-Sempre no Topo
-Transparencia do GUI
-Customizacao Avancada
-Trocar Teclas de Atalho
-Configuracoes do Autoclicker
-Restaurar ao Padrao
-Atraso de Entrada (ms)
-Restaurar Configuracoes
-Link do Servidor Privado
-Linguagem
+Reconectar Configuracoes
+Tema da GUI:
+Sempre No Topo
+Transparencia da GUI:
+Personalizacao Avancada
+Troque As Teclas De Atalho
+Configuracoes do AutoClicker
+Restaurar Padroes
+Atraso de entrada (ms):
+Redefinir Configuracoes
+Teste
+Link do Servidor Privado:
+Metodo de Reconexao:
+Idioma:
+Teclas De Atalho
+Essa tecla de atalho nao pode ser usada!
+A chave ja e usada em outro lugar da macro.
+Tecla de Atalho Inaceitavel!
+Sera necessario para colocar suas unidades.
+A chave ja e usada como uma tecla de atalho diferente.
+Tem certeza de que gostaria de redefinir suas configuracoes para os padrões?
+Quaisquer configuracoes que voce tenha feito serao apagadas e substituídas por seus valores padrao.
+Confirmar Redefinicao
+Reinsserido com sucesso via Deeplink!
+Teste De Reconexao Concluído
+Re-re-in-sucesso via Browser!
+Recomenda-se que voce mude para o Deeplink, se possível.
+Link de servidor privado nao resolvido
+Voce inseriu um "share?code” Link! Para corrigir isso, siga estes passos:
+	1. Cole o link no seu navegador
+	2. Aguarde o Skibi Defense carregar
+	3. Copie o link na parte superior do seu navegador.
+Link de Servidor Privado Invalido
+Certifique-se de que seu link seja:
+	- Copiado correto e completamente
+	- Para Skibi Defense por Archkos Studios
+Personalizacao Avancada
+Definir o metodo de reconexao para "Navegador" nao e recomendado!
+Mesmo que voce tenha problemas ao usar o metodo "Deeplink", corrigi-lo e uma opcao muito melhor do que usar o metodo "Browser". Leia o [?] Para mais informacoes.
+Tem certeza de que quer mudar isso?
+Aviso do Metodo de Reconexao
+Esta opcao permite que voce escolha entre os metodos de reconexao 'Deeplink' e 'Browser'.
+'Deeplink' e o metodo recomendado; e mais rapido (já que pula a abertura do seu navegador e espera que ele carregue completamente) e funciona com o aplicativo Roblox UWP (Microsoft Store).
+Ele tambem pode se juntar ao SD diretamente sem a necessidade de um jogo de redirecionamento como o SD Rejoin. Voce pode pesquisar 'Roblox Developer Deeplinking' online para obter mais informacoes.
+O 'Navegador' so deve ser usado quando o 'Deeplink' falhar absolutamente e nao puder ser corrigido.
+Este e o metodo antigo/legado de reconexao; pode ter inconsistencias entre navegadores (por exemplo, falha no fechamento de guias, Roblox nao conectado) e voce nao podera ingressar diretamente em um servidor publico (porque 'Deeplink' é forcado ao ingressar em servidores públicos).
+Reconectar Metodos
+Troque As Teclas De Atalho
+Carregando:
+Para salvar, feche!
+Se voce quiser usar esta tecla de atalho, remova-a da outra.
+Configuracoes
+Repetir
+Vezes
+Clique em Intervalo (ms):
+Clique na duracao (ms):
+Clique no botao:
+Tem certeza de que gostaria de redefinir suas configuracoes de tecla de atalho?
+Ele tambem redefinira suas configuracoes do AutoClicker.
+[ALFA]
+Arte:
+	- @ender4byss no Discord - Icon Art
+Traducoes:
+	- @ekmekdover12 no Discord - Traducao atual em turco
+	- @taneoron no Discord - Traducao Anterior em Espanhol
+	- @the.hex.guy no Discord - Traducao Anterior em Portugues
