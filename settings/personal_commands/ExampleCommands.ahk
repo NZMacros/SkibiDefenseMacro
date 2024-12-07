@@ -37,4 +37,4 @@ switch params[2], 0 ; <-- Case sensitivity
 }
 
 ; From here, what you do is based completely on your own knowledge. You can look through the Discord.ahk pre-installed command's code and if you want your command to do things to the main script, read AutoHotkey v2's documentation for Post/SendMessage and OnMessage
-; Have fun!
+; Have fun! Please remember you are required to include the provided Plugins license in the lib\Plugins folder and abide by the terms to create your plugin

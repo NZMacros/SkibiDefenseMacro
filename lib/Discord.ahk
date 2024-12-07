@@ -16,8 +16,9 @@ OnError (e, mode) => (mode = "Return") ? -1 : 0
 SetWorkingDir(A_ScriptDir "\..")
 CoordMode("Mouse", "Client")
 
-if (A_Args.Length < 21) {
-	MsgBox("This script needs to be run by Skibi Defense Macro! You are not supposed to run it manually.")
+MacroName := A_Args[21]
+if A_Args.Length < 21 || A_Args.Length > 21 {
+	MsgBox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
 	ExitApp()
 }
 
@@ -53,14 +54,13 @@ DisconnectPings := A_Args[16]
 
 ; screenshots
 CriticalScreenshots := A_Args[17]
-DeathScreenshots := A_Args[18]
 
 ; bitmaps
-offsetY := A_Args[19]
-windowDimensions := A_Args[20]
+offsetY := A_Args[18]
+windowDimensions := A_Args[19]
 
 ; other
-ColourfulEmbeds := A_Args[21]
+ColourfulEmbeds := A_Args[20]
 
 A_SettingsWorkingDir := A_WorkingDir "\settings\"
 
@@ -92,21 +92,20 @@ settings["DebuggingScreenshots"] := {enum: 9, type: "int", section: "Discord", r
 settings["CriticalErrorPings"] := {enum: 10, type: "int", section: "Discord", regex: "i)^(0|1)$"}
 settings["DisconnectPings"] := {enum: 11, type: "int", section: "Discord", regex: "i)^(0|1)$"}
 settings["CriticalScreenshots"] := {enum: 12, type: "int", section: "Discord", regex: "i)^(0|1)$"}
-settings["DeathScreenshots"] := {enum: 13, type: "int", section: "Discord", regex: "i)^(0|1)$"}
-settings["ColourfulEmbeds"] := {enum: 14, type: "int", section: "Discord", regex: "i)^(0|1)$"}
+settings["ColourfulEmbeds"] := {enum: 13, type: "int", section: "Discord", regex: "i)^(0|1)$"}
 
 ; settings
-; settings["GUI_X"] := {enum: 15, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
-; settings["GUI_Y"] := {enum: 16, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
-settings["AlwaysOnTop"] := {enum: 17, type: "int", section: "Settings", regex: "i)^(0|1)$"}
-; settings["GUITransparency"] := {enum: 18, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
-settings["KeyDelay"] := {enum: 19, type: "int", section: "Settings", regex: "i)^(0|1)$"}
-settings["PublicFallback"] := {enum: 20, type: "int", section: "Settings", regex: "i)^(0|1)$"}
-settings["ShowOnPause"] := {enum: 21, type: "int", section: "Settings", regex: "i)^(0|1)$"}
-; settings["ClickCount"] := {enum: 22, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
-; settings["ClickDelay"] := {enum: 23, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
-settings["ClickMode"] := {enum: 24, type: "int", section: "Settings", regex: "i)^(0|1)$"}
-; settings["MacroState"] := {enum: 25, type: "int", regex: "i)^(0|1|2)$"}, dangerous
+; settings["GUI_X"] := {enum: 14, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
+; settings["GUI_Y"] := {enum: 156, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
+settings["AlwaysOnTop"] := {enum: 16, type: "int", section: "Settings", regex: "i)^(0|1)$"}
+; settings["GUITransparency"] := {enum: 17, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
+settings["KeyDelay"] := {enum: 18, type: "int", section: "Settings", regex: "i)^(0|1)$"}
+settings["PublicFallback"] := {enum: 19, type: "int", section: "Settings", regex: "i)^(0|1)$"}
+settings["ShowOnPause"] := {enum: 20, type: "int", section: "Settings", regex: "i)^(0|1)$"}
+; settings["ClickCount"] := {enum: 21, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
+; settings["ClickDelay"] := {enum: 22, type: "int", section: "Settings", regex: "i)^(0|1)$"}, unknown
+settings["ClickMode"] := {enum: 23, type: "int", section: "Settings", regex: "i)^(0|1)$"}
+; settings["MacroState"] := {enum: 24, type: "int", regex: "i)^(0|1|2)$"}, dangerous
 
 
 ; Strings
@@ -191,7 +190,7 @@ sd_Status(status) {
 			: ((state = "Interupted") || (state = "Warning")) ? 14408468 ; yellow - alert
 			: ((state = "Completed") || (InStr(state, "Success"))) ? 48128 ; green - success
 			: ((state = "Starting") || (state = "Grinding")) ? 16366336 ; orange - game
-			: ((state = "GUI") || (state = "Testing") || (state = "GitHub") || (state = "Detected") || (state = "Closing") || (state = "Begin") || (state = "End")) ? 15658739 ; white - GUI / utility
+			: ((state = "GUI") || (state = "Paused") || (state = "GitHub") || (state = "Detected") || (state = "Closing") || (state = "Begin") || (state = "End")) ? 15658739 ; white - GUI / utility
 			: 3223350
 		}
 
@@ -209,7 +208,6 @@ sd_Status(status) {
 		; screenshot
 		if ((Screenshots = 1) 
 			&& ((((CriticalScreenshots = 1) && (content != ""))
-			|| ((DeathScreenshots = 1) && (state = "You Died"))
 			|| ((state = "Grinding") && (!InStr(objective, "Ended")) && (pBM := CreateGameBitmap()))
 			|| ((state = "Returned") && (objective = "Lobby") && (pBM := CreateGameBitmap()))
 			|| ((DebuggingScreenshots = 1) && (state = "Collecting") || (state = "Failed")))))
@@ -428,7 +426,7 @@ sd_Command(command) {
 					},
 					{
 						"name": "' CommandPrefix 'stop",
-						"value": "Stop and reload Skibi Defense Macro (``F3``)",
+						"value": "Stop and reload ' MacroName ' (``F3``)",
 						"inline": true
 					},
 					{

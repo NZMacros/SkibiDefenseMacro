@@ -1,0 +1,79 @@
+Skibi Defense Macro Plugins License (SDMPL)
+
+Version 3.0.1
+Copyright © 2025 [Your Name/Username Here]
+Published by NZ Macros (NegativeZero Macros)
+
+Notice
+While Skibi Defense Macro can go by many different names in its source code simply based on the month it is used in, it is ultimately referred to as "Skibi Defense Macro".
+
+Preamble
+This license (the "License") governs the creation, distribution, and use of Plugins developed for the Skibi Defense Macro (the "Software"). Plugins are defined as any modifications, extensions, or additions to the Software, such as new GUI tabs, Discord Bot commands, or bug fixes.
+
+The Software is published on GitHub by NZ Macros (NegativeZero Macros) and is owned by NegativeZero. Plugins created for the Software are also owned by NegativeZero, though credit for their creation belongs to the Plugin creator.
+
+The terms of this License are designed to ensure both the protection of Plugin creators’ work and the integrity of the Software, in alignment with the Skibi Defense Macro License (SDML).
+
+1. Required Information and Attribution
+
+Creators of Plugins must provide the following details at the beginning of their Plugin script:
+
+/*
+Plugin Information
+Plugin Name: [Insert the name of your Plugin]  
+Creator Name: [Insert your name or username]  
+Plugin Version: [Insert the version of your Plugin here]
+Description: [Provide a brief description of your Plugin]
+*\
+
+Commenting and Retaining License Notes
+This information must remain commented out at the start of the Plugin script. A complete copy of this License (the SDMPL) must also be included, either within the script (commented) or as a separate text file accompanying the Plugin.
+
+2. License Grant
+
+2.1. You are granted a limited, non-exclusive, non-transferable license to:
+    a. Develop Plugins for personal use.
+    b. Modify your Plugins for personal use.
+    c. Distribute Plugins under the terms of this License, provided explicit permission is obtained from NegativeZero.
+
+2.2. Ownership of Plugins, regardless of who created them, remains with NegativeZero. Creators retain credit as the authors of their Plugins but do not hold ownership rights over the Plugins.
+
+2.3. Plugins are protected under this License. Unpermitted use, redistribution, or claim of ownership over your Plugin is prohibited.
+
+3. Restrictions
+
+3.1. Distribution and Licensing
+    a. You may not distribute Plugins without explicit permission from NegativeZero.
+    b. If permission to distribute is granted, Plugins must include:
+        i. This License in full.
+        ii. A proper attribution section identifying you as the creator while acknowledging ownership by NegativeZero.
+
+3.2. Revenue from Plugins
+    a. Plugins may not be sold or distributed for profit without explicit written permission from NegativeZero.
+    b. If permission for a paid distribution is granted, a percentage of all revenue generated must be paid to NegativeZero, with the percentage determined at the time of approval.
+
+3.3. Protection of Plugin Creator’s Work
+    a. No user may redistribute or claim ownership of a Plugin without explicit permission from its original creator and NegativeZero.
+    b. If a Plugin includes unique features or code contributions, users may not copy, modify, or extract these features for independent use without permission.
+    c. Any unauthorized use of a Plugin’s code, including but not limited to malicious modifications, will result in penalties outlined in Section 5.
+
+4. Compliance with the SDML
+
+All Plugins must comply with the terms of the Skibi Defense Macro License (SDML). The SDML governs the overarching Software, and any breach of its terms in connection with a Plugin will be treated as a violation of both licenses.
+
+5. Consequences of Violations
+
+5.1. Violations of this License may result in the following actions, as determined by NegativeZero:
+    a. Takedown requests for unauthorized Plugins from all platforms.
+    b. Revocation of distribution rights for the violating Plugin.
+    c. Forfeiture of all revenue generated from unpermitted paid distributions of Plugins to NegativeZero.
+    d. Cease-and-desist orders for further development, distribution, or use of the Plugin.
+    e. Additional legal or administrative actions as necessary.
+
+6. Warranty Disclaimer
+
+6.1. Plugins are provided "as is," without warranty of any kind, express or implied.
+
+6.2. Neither NegativeZero nor NZ Macros is liable for damages, losses, or issues arising from the use or misuse of Plugins.
+
+For inquiries, contact NegativeZero via Discord: https://discord.com/users/1198320993958117458.

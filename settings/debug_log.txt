@@ -1,1 +1,4 @@
-Hello world![12/01] [23:55:55] GUI: Resetting Settings
+[07/12][22:59:21] Hello world!
+[07/12][22:59:21] GUI: Resetting Hotkeys
+[07/12][22:59:21] GUI: Resetting Advanced Options
+[07/12][22:59:21] GUI: Resetting Discord Integration

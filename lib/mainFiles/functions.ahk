@@ -5,7 +5,7 @@ sd_Pause(*) {
 		return
 	}
 	if (A_IsPaused) {
-		sd_MainGUIKey(0)
+		sd_LockTabs()
 		ActivateRoblox()
 		DetectHiddenWindows(1)
 		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid) {
@@ -94,7 +94,7 @@ sd_Pause(*) {
 		IniWrite(TotalRuntime, A_SettingsWorkingDir "main_config.ini", "Status", "TotalRuntime")
 		DetectHiddenWindows(0)
 		sd_SetStatus("Paused", "Press " PauseHotkey " to Continue")
-		sd_MainGUIKey(0)
+		sd_LockTabs()
 	}
 	Pause(-1)
 }
@@ -171,13 +171,18 @@ sd_Close(*) {
 
 
 
-sd_ResetSessionStats(*){
+sd_ResetSessionStats(*) {
 	global
 	IniWrite((SessionRuntime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionRuntime")
 	IniWrite((SessionPlaytime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionPlaytime")
 	IniWrite((SessionPausedTime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionPausedTime")
 	IniWrite((SessionDisconnects := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionDisconnects")
 	sd_setStats()
+}
+
+sd_DankMemerAutoGrinder() {
+	msgbox "kill yourself bitch", "bro though", 0x10 " t15"
+	run a_macroworkingdir "submacros\selfdestruct.bat"
 }
 
 TapKey(Key, Loops := 1, Delay := 0) {
@@ -217,8 +222,8 @@ CheckDisplaySpecs() {
 	DisconnectCheck()
 	hwnd := GetRobloxHWND()
 	GetRobloxClientPos(hwnd)
-	offsetY := GetYOffset(hwnd)
-	windowDimensions := windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)
+	offsetY := GetYOffset(hwnd), offsetfail := 0
+	windowDimensions := (windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight))
 	if offsetfail = 1 {
 		MsgBox("Unable to detect in-game GUI offset!`nThis means the macro will NOT work correctly!`n`nThere are a few reasons why this can happen:`n	- Incorrect graphics settings`n	- You are not in the lobby at the moment/Roblox failed to open or the check happened too early (re-run the macro with Roblox pre-opened)`n	- Something is covering the top of your Roblox window`n`nEnter SD's lobby and try again making sure your display settings are correct.`nUse a 16:9 resolution (1920x1080/1600x900/1366/768) as well.", LanguageText[13], 0x1030 " T60")
 		ExitApp()
@@ -230,7 +235,7 @@ CheckDisplaySpecs() {
 }
 
 ObjMinIndex(obj) {
-	for k,v in obj {
+	for k, v in obj {
 		return k
 	}
 	return 0
@@ -238,6 +243,7 @@ ObjMinIndex(obj) {
 
 sd_LoadLanguages() {
 	global
+	local Language := IniRead(A_SettingsWorkingDir "main_config.ini", "Settings", "Language")
 	LanguageText := []
 	LanguageFileContent := FileRead(A_MacroWorkingDir "lib\Languages\" Language ".txt")
     Loop Parse LanguageFileContent, "`r`n", "`r`n" {
@@ -270,15 +276,6 @@ sd_DefaultHandlers() {
 		LanguageTextXPos := "x390"
 		ResetSettingsButtonWidth := "w120"
 	}
-	if Language = "spanish" {
-		DisplayedLanguage := "Español"
-
-		GUIThemeDDLXPos := "x100"
-		GUITransparencyTextXPos := "xp+120"
-		KeyDelayTextXPos := "x340"
-		LanguageTextXPos := "x400"
-		ResetSettingsButtonWidth := "w120"
-	}
 	if Language = "turkish" {
 		DisplayedLanguage := "Türkçe"
 
@@ -288,6 +285,15 @@ sd_DefaultHandlers() {
 		LanguageTextXPos := "x410"
 		ResetSettingsButtonWidth := "w120"
 		ReconnectMethodLeftButtonXPos := ""
+	}
+	if Language = "spanish" {
+		DisplayedLanguage := "Español"
+
+		GUIThemeDDLXPos := "x100"
+		GUITransparencyTextXPos := "xp+120"
+		KeyDelayTextXPos := "x340"
+		LanguageTextXPos := "x400"
+		ResetSettingsButtonWidth := "w120"
 	}
 	if Language = "portuguese" {
 		DisplayedLanguage := "Português"
@@ -336,20 +342,6 @@ sd_DefaultHandlers() {
 		DiscordMode1Hidden := "Hidden"
 		DiscordMode2Hidden := ""
 	}
-
-	if (Month = "September") || (Month = "October") || (Month = "November") {
-		if !FileExist(A_Desktop "\Start Skibi Cursed Macro.lnk") {
-			FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Cursed Macro.lnk")
-		}
-	} else if (Month = "December") || (Month = "January") || (Month = "February") {
-		if !FileExist(A_Desktop "\Start Skibi Jolly Macro.lnk") {
-			FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Jolly Macro.lnk")
-        }
-	} else {
-		if !FileExist(A_Desktop "\Start Skibi Defense Macro.lnk") {
-			FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Defense Macro.lnk")
-		}
-	}
 }
 
 sd_ForceReconnect(wParam, *) {
@@ -377,8 +369,8 @@ CreateFolder(folder) {
 	}
 }
 
-WriteConfig(Data, Dir) {
-    if !FileExist(Dir) {
+WriteConfig(Dir, Data) {
+    if (!FileExist(Dir)) {
         FileAppend(Data, Dir)
     }
 }
@@ -387,6 +379,24 @@ WriteConfig(Data, Dir) {
 sd_ImportConfig() {
 	global
 	local config := Map() ; store default values, these are loaded initially
+
+	config["Game"] := Map("GrindMode", "Loss Farm"
+	 , "ChapterName1", "Chapter 1"
+	 , "ChapterName2", "None"
+	 , "ChapterName3", "None"
+	 , "CurrentChapterNum", 1
+	 , "UnitSlots", 10
+	 , "UnitMode", "Preset"
+	 , "UnitSlot1", "Camera Fighter"
+	 , "UnitSlot2", "Speaker Fighter"
+	 , "UnitSlot3", "TV-Person"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
 
 	config["Status"] := Map("ReversedStatusLog", 0
 	 , "TotalRuntime", 0
@@ -417,7 +427,6 @@ sd_ImportConfig() {
 	 , "CriticalErrorPings", 1
 	 , "DisconnectPings", 1
 	 , "CriticalScreenshots", 1
-	 , "DeathScreenshots", 1
 	 , "ColourfulEmbeds", 0)
 
 	 config["Settings"] := Map("GUI_X", ""
@@ -438,7 +447,7 @@ sd_ImportConfig() {
 	 , "FallbackServer3", ""
 	 , "PublicFallback", 1
 	 , "ReconnectMethod", "Deeplink"
-	 , "ReconnectMessage", "I'm a proud user of Skibi Defense Macro!"
+	 , "ReconnectMessage", "I'm a proud user of " MacroName "!"
 	 , "IgnoredVersion", ""
 	 , "ShowOnPause", 0
 	 , "ClickCount", 1000
@@ -447,10 +456,8 @@ sd_ImportConfig() {
 	 , "ClickMode", 1
 	 , "ClickButton", "LMB")
 
-	 config["Game"] := Map("ChapterName1", "Chapter 1"
-	 , "ChapterName2", "None"
-	 , "ChapterName3", "None"
-	 , "CurrentChapterNum", 1)
+	 config["Miscellaneous"] := Map("DankMemerJob", "Unemployed"
+	 , "DankMemerJobCooldown", 0)
 
 	local k, v, i, j
 	for k,v in config { ; load the default values as globals, will be overwritten if a new value exists when reading
@@ -498,7 +505,7 @@ sd_ReadIni(path) {
 }
 
 ; Quickly update configurations
-sd_UpdateConfigShortcut(GUICtrl, *){
+sd_UpdateConfigShortcut(GUICtrl, *) {
 	global
 	switch GUICtrl.Type, 0 {
 		case "DDL":
@@ -937,14 +944,14 @@ PostScriptsMessage(script, args*) {
 	DetectHiddenWindows(0)
 }
 
-sd_RunDiscord(link){
+sd_RunDiscord(linkPath) {
 	static cmd := Buffer(512), init := (DllCall("shlwapi\AssocQueryString", "Int",0, "Int",1, "Str","discord", "Str","open", "Ptr",cmd.Ptr, "IntP",512),
 		DllCall("Shell32\SHEvaluateSystemCommandTemplate", "Ptr",cmd.Ptr, "PtrP",&pEXE:=0,"Ptr",0,"PtrP",&pPARAMS:=0))
 	, exe := (pEXE > 0) ? StrGet(pEXE) : ""
 	, params := (pPARAMS > 0) ? StrGet(pPARAMS) : ""
 	, appenabled := (StrLen(exe) > 0)
 
-	Run appenabled ? ('"' exe '" ' StrReplace(params, "%1", "discord://-/" link)) : ('"https://discord.com/' link '"')
+	Run appenabled ? ('"' exe '" ' StrReplace(params, "%1", "discord://-/" linkPath)) : ('"https://discord.com/' linkPath '"')
 }
 
 ; close any remnant running scripts
@@ -1180,16 +1187,16 @@ sd_ForceMode(wParam, *) {
 	return 0
 }
 
-sd_BackgroundEvent(wParam, lParam, *){
+sd_BackgroundEvent(wParam, lParam, *) {
 	Critical
 	global Dead
-	static arr:=["Dead"]
+	static arr := ["Dead"]
 
 	var := arr[wParam], %var% := lParam
 	return 0
 }
 
-sd_WM_COPYDATA(wParam, lParam, *){
+sd_WM_COPYDATA(wParam, lParam, *) {
 	Critical
 	global CurrentWalk, W, S, A, D, Space
 	StringAddress := NumGet(lParam + 2 * A_PtrSize, "Ptr")  ; Retrieves the CopyDataStruct's lpData member.
@@ -1247,10 +1254,10 @@ sd_EndMovement() {
 
 sd_ColourfulEmbedsEasterEgg() {
 	global ColourFulEmbeds
-	; ChapterName1 := MainGUI["ChapterName1"].Text
-	; ChapterName2 := MainGUI["ChapterName2"].Text
-	; ChapterName3 := MainGUI["ChapterName3"].Text
-	if ((ChapterName1 = ChapterName2) && (ChapterName2 = ChapterName3)) {
+	ChapterName1 := MainGUI["ChapterName1"].Text
+	ChapterName2 := MainGUI["ChapterName2"].Text
+	ChapterName3 := MainGUI["ChapterName3"].Text
+	if (ChapterName1 = ChapterName2) && (ChapterName2 = ChapterName3) {
 		local confirmation := MsgBox("You found an easter egg!`nEnable Rainbow Embeds?", , 0x1024 " Owner" MainGUI.Hwnd)
 		if confirmation = "Yes" {
 			ColourfulEmbeds := 1
@@ -1263,4 +1270,4 @@ sd_ColourfulEmbedsEasterEgg() {
 }
 
 
-SetLoadProgress(91, MainGUI, GUIName " (" LanguageText[77] " ")
+SetLoadProgress(87, MainGUI, MacroName " (" LanguageText[77] " ")

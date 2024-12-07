@@ -10,20 +10,23 @@ SetWorkingDir(A_ScriptDir "\..")
 #Include "externalFuncs\DurationFromSeconds.ahk"
 #Include "externalFuncs\nowUnix.ahk"
 
-; set version number
-Version := "0.4"
+; set version identifier
+VersionID := "0.5.0"
 
+MacroName := A_Args[1]
 ; assign variables from A_Args
-if A_Args.Length < 3 {
-	Msgbox("This script needs to be run by Skibi Defense Macro! You are not supposed to run it manually.")
+if A_Args.Length < 4 || A_Args.Length > 4 {
+	Msgbox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
 	ExitApp()
 }
-sdm_version := A_Args[1]
-offsetY := A_Args[2]
-windowDimensions := A_Args[3]
+MacroVersionID := A_Args[2]
+offsetY := A_Args[3]
+hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
+windowDimensions := A_Args[4]
+GrindMode := A_Args[5]
+Month := A_Args[6]
 A_SettingsWorkingDir := A_WorkingDir "\settings\"
 InLobby := 1
-Month := FormatTime("MM", "MMMM")
 
 ; ▰▰▰▰▰▰▰▰
 ; INITIAL SETUP
@@ -45,7 +48,7 @@ Gdip_SetInterpolationMode(G, 7)
 (bitmaps := Map()).CaseSense := 0
 
 #Include "%A_ScriptDir%\..\img_assets\"
-#Include "bitmaps.ahk"
+#Include "icons\bitmaps.ahk"
 #Include "offset\bitmaps.ahk"
 
 
@@ -69,7 +72,6 @@ for k, v in Map("Windows.Globalization.Language","{9B0252AC-0C27-44F8-B792-9793F
 		break
 	}
 }
-OCR_enabled := 0
 if OCR_enabled = 1 {
 	list := OCR("ShowAvailableLanguages")
 	for lang in ["ko", "en-"] { ; priority list
@@ -132,12 +134,12 @@ Loop 3 {
 
 ; FORM MESSAGE
 message := "Hourly Reports will start sending in **" DurationFromSeconds(60 * (59 - A_Min) + (60 - A_Sec), "m'm 's's'") "**\n"
- . "Version: **StatMonitor v" Version "**\n"
+ . "Version: **StatMonitor v" VersionID "**\n"
  . "Detected OS: **" OS_version "**\n"
- . (OCR_enabled ? "OCR Status: **Enabled (" OCR_language ")**\nCurrent Credits: **" (start_credits ? FormatNumber(start_credits) : "?") "**"
-	 : "OCR Status: **Force Disabled (Broken by New UI); Credit Graphs will be blank.**")
+ . (OCR_enabled ? "OCR Status: **Enabled (" OCR_language ")**\nCurrent Credits: **" (start_credits ? FormatNumber(start_credits) : "Unknown") "**"
+	 : "OCR Status: **Disabled; Credit Graphs will be blank.**")
 
-message .= (((IsSet(sdm_version)) ? ("\n\nMacro: **Skibi Defense Macro v" sdm_version "**\n") : ("\n\nMacro: **Unknown**\n"))
+message .= (((IsSet(MacroVersionID)) ? ("\n\nMacro: **" MacroName " v" MacroVersionID "**\n") : ("\n\nMacro: **Unknown**\n"))
  . ("Chapters: **" ChapterName1 ", " ChapterName2 " & " ChapterName3 "**\n"))
 
 
@@ -225,18 +227,16 @@ for k, v in graph_regions {
 	Gdip_FillRectangle(G, pBrush, v[1]-60, v[2], v[3]+120, v[4])
 }
 Gdip_DeleteBrush(pBrush), Gdip_DeletePen(pPen)
-if OCR_enabled = 0 {
-	pBrush := Gdip_BrushCreateSolid(0x40cc0000)
-	for k, v in ["Credits", "Credits12h"] {
-		Gdip_FillRectangle(G, pBrush, graph_regions[v][1], graph_regions[v][2], graph_regions[v][3], graph_regions[v][4])
-	}
-	Gdip_DeleteBrush(pBrush)
+pBrush := Gdip_BrushCreateSolid(0x40cc0000)
+for k, v in ["Credits", "Credits12h"] {
+	Gdip_FillRectangle(G, pBrush, graph_regions[v][1], graph_regions[v][2], graph_regions[v][3], graph_regions[v][4])
 }
+Gdip_DeleteBrush(pBrush)
 
 ; ▰▰▰▰
 ; TESTING
 ; ▰▰▰▰
-/*
+;/*
 start_time := A_Now
 status_changes[A_Min * 60 + A_Sec] := 0
 
@@ -265,7 +265,7 @@ SendHourlyReport()
 KeyWait("F4", "D")
 Reload()
 ExitApp()
-*/
+;*/
 
 ; ▰▰▰▰▰
 ; MAIN LOOP
@@ -380,7 +380,7 @@ DetectCredits() {
  * @description Creates a report (image) from the total credit arrays and sends it to Discord
 */
 SendHourlyReport() {
-	global pBM, regions, stat_regions, credit_values, credits_12h, status_changes, start_time, start_credits, stats, graph_regions, Version, sdm_version, OS_version, bitmaps, OCR_enabled, OCR_language
+	global pBM, regions, stat_regions, credit_values, credits_12h, status_changes, start_time, start_credits, stats, graph_regions, VersionID, MacroVersionID, OS_version, bitmaps, OCR_enabled, OCR_language
 	static credits_average := 0, credits_earned := 0, Lobby_time := 0, Game_time := 0, Other_time := 0, stats_old := [["Disconnects", 0], ["Games Played", 0], ["Wins", 0], ["Losses", 0]]
 
 	if credit_values.Count > 0 {
@@ -679,16 +679,26 @@ SendHourlyReport() {
 	}
 
 	; section 6: info
-	; row 1: statmonitor version
+	; row 1: grind mode
 	y := stat_regions["Info"][2] + 60
-	pos := Gdip_TextToGraphics(G, "StatMonitor v" Version, "s56 Center Bold c00ffffff x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
+	pos := Gdip_TextToGraphics(G, "Grind Mode: " (GrindMode ? (GrindMode) : ("Unknown")), "s56 Center Bold c00ffffff x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
 	x := SubStr(pos, 1, InStr(pos, "|", , , 1) - 1)
 
-	pos := Gdip_TextToGraphics(G, "StatMonitor v" Version, "s56 Left Bold cafffffff x" x " y" y, "Segoe UI")
+	pos := Gdip_TextToGraphics(G, "Grind Mode: ", "s56 Left Bold cafffffff x" x " y" y, "Segoe UI")
 	x := SubStr(pos, 1, InStr(pos, "|", , , 1) - 1) + SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2) - 1)
 
-	; row 2: report timestamp
+	Gdip_TextToGraphics(G, GrindMode ? (GrindMode) : ("Unknown"), "s56 Left Bold c" (GrindMode ? "ff4fdf26" : "ffcc0000") " x" x " y" y, "Segoe UI")
+
+	; row 2: statmonitor version
 	y := stat_regions["Info"][2] + 140
+	pos := Gdip_TextToGraphics(G, "StatMonitor v" VersionID, "s56 Center Bold c00ffffff x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
+	x := SubStr(pos, 1, InStr(pos, "|", , , 1) - 1)
+
+	pos := Gdip_TextToGraphics(G, "StatMonitor v" VersionID, "s56 Left Bold cafffffff x" x " y" y, "Segoe UI")
+	x := SubStr(pos, 1, InStr(pos, "|", , , 1) - 1) + SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2) - 1)
+
+	; row 3: report timestamp
+	y := stat_regions["Info"][2] + 220
 	FormatStr := Buffer(256), DllCall("GetLocaleInfoEx", "Ptr", 0, "UInt", 0x20, "Ptr", FormatStr.Ptr, "Int", 256)
 	DateStr := Buffer(512), DllCall("GetDateFormatEx", "Ptr", 0, "UInt", 0, "Ptr", 0, "Str", StrReplace(StrReplace(StrReplace(StrReplace(StrGet(FormatStr), ", dddd"), "dddd, "), " dddd"), "dddd "), "Ptr", DateStr.Ptr, "Int", 512, "Ptr", 0)
 	pos := Gdip_TextToGraphics(G, times[1] " - " times[7] " • " StrGet(DateStr), "s56 Center Bold c00ffffff x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
@@ -702,8 +712,8 @@ SendHourlyReport() {
 
 	Gdip_TextToGraphics(G, StrGet(DateStr), "s56 Left Bold cffffda3d x" x " y" y, "Segoe UI")
 
-	; row 3: OCR status
-	y := stat_regions["Info"][2] + 220
+	; row 4: OCR status
+	y := stat_regions["Info"][2] + 300
 	pos := Gdip_TextToGraphics(G, "OCR: " (OCR_enabled ? ("Enabled (" OCR_language ")") : ("Disabled (" ((A_OSVersion < "WIN") ? "Debloated" : "Not Installed") ")")), "s56 Center Bold c00ffffff x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
 	x := SubStr(pos, 1, InStr(pos, "|", , , 1) - 1)
 
@@ -712,16 +722,16 @@ SendHourlyReport() {
 
 	Gdip_TextToGraphics(G, OCR_enabled ? ("Enabled (" OCR_language ")") : ("Disabled (" ((A_OSVersion < "WIN") ? "Debloated" : "Not Installed") ")"), "s56 Left Bold c" (OCR_enabled ? "ff4fdf26" : "ffcc0000") " x" x " y" y, "Segoe UI")
 
-	; row 4: windows version
-	y := stat_regions["Info"][2] + 300
+	; row 5: windows version
+	y := stat_regions["Info"][2] + 380
 	Gdip_TextToGraphics(G, os_version, "s56 Center Bold cff04b4e4 x" stat_regions["Info"][1] + stat_regions["Info"][3]//2 " y" y, "Segoe UI")
 
-	; row 5: SDM information
-	if (IsSet(sdm_version)) {
-		y := stat_regions["Info"][2] + 380
+	; row 6: SDM information
+	if (IsSet(MacroVersionID)) {
+		y := stat_regions["Info"][2] + 460
 		x := stat_regions["Info"][1] + stat_regions["Info"][3]//2 - 50
 
-		pos := Gdip_TextToGraphics(G, "Skibi Defense Macro v" sdm_version, "s56 Left Bold c00ffffff x" x - 675 " y" y + 100, "Segoe UI")
+		pos := Gdip_TextToGraphics(G, MacroName " v" MacroVersionID, "s56 Left Bold c00ffffff x" x - 675 " y" y + 100, "Segoe UI")
 		x -= SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2) - 1) / 2
 		pos := Gdip_TextToGraphics(G, "discord.gg/Nfn6czrzbv", "s56 Left Bold c00ffffff x" x + 445 " y" y, "Segoe UI")
 		x -= SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2) - 1) / 2
@@ -732,10 +742,12 @@ SendHourlyReport() {
 			Gdip_DrawImage(G, bitmaps["pBMCursedIcon"], x - 775, y + 100, 80, 80)
 		} else if (Month = ("December" || "January" || "February")) {
 			Gdip_DrawImage(G, bitmaps["pBMJollyIcon"], x - 775, y + 100, 80, 80)
+		} else if (Month = ("March" || "April" || "May")) {
+			Gdip_DrawImage(G, bitmaps["pBMEasterIcon"], x - 775, y + 100, 80, 80)
 		} else {
 			Gdip_DrawImage(G, bitmaps["pBMSDMIcon"], x - 775, y + 100, 80, 80)
 		}
-		Gdip_TextToGraphics(G, "Skibi Defense Macro v" sdm_version, "s56 Left Bold cffb47bd1 x" x - 675 " y" y + 100, "Segoe UI")
+		Gdip_TextToGraphics(G, MacroName " v" MacroVersionID, "s56 Left Bold cffb47bd1 x" x - 675 " y" y + 100, "Segoe UI")
 	}
 
 	Gdip_DeleteGraphics(G)
@@ -744,8 +756,9 @@ SendHourlyReport() {
 	BotToken := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "BotToken")
 	DiscordMode := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "DiscordMode")
 	ReportChannelID := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "ReportChannelID")
-	if (StrLen(ReportChannelID) < 17)
+	if StrLen(ReportChannelID) < 17 {
 		ReportChannelID := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "MainChannelID")
+	}
 
 	try {
 		chars := "0|1|2|3|4|5|6|7|8|9|a|b|c|d|e|f|g|h|i|j|k|l|m|n|o|p|q|r|s|t|u|v|w|x|y|z"

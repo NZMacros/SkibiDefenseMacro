@@ -2,6 +2,12 @@
 #SingleInstance Force
 #MaxThreads 255
 
+MacroName := A_Args[1]
+if A_Args.Length < 1 || A_Args.Length > 1 {
+	MsgBox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
+	ExitApp()
+}
+
 #Include "%A_ScriptDir%\..\lib\externalFuncs\nowUnix.ahk"
 
 SetWorkingDir(A_ScriptDir "\..")

@@ -18,15 +18,19 @@ AsyncHTTPRequest(method, url, func?, headers?) {
 sd_AutoUpdateHandler(req) {
 	global
 
-	if (req.readyState != 4) {
+	if req.readyState != 4 {
 		return
     }
 
-	if (req.status = 200) {
+	if req.status = 200 {
 		LatestVer := Trim((latest_release := JSON.parse(req.responseText))["tag_name"], "v")
 	    if (VerCompare(VersionID, LatestVer) < 0) {
 			MainGUI["UpdateButton"].Visible := 1
-			if (LatestVer != IgnoredVersion) {
+			VersionWidth += 16
+			MainGUI["VersionText"].Move(494 - VersionWidth), MainGUI["VersionText"].Redraw()
+			MainGUI["GitHubButton"].Move(494 - VersionWidth - 23), MainGUI["GitHubButton"].Redraw()
+			MainGUI["DiscordButton"].Move(494 - VersionWidth - 48), MainGUI["DiscordButton"].Redraw()
+			if LatestVer != IgnoredVersion {
 				sd_AutoUpdateGUI()
             }
 		}
@@ -142,8 +146,5 @@ sd_UpdateButton(*) {
 }
 
 sd_MajorUpdateHelp(*) {
-	MsgBox("v" VersionID " to v" LatestVer " is a major version update.`n`nFor some information, you can review the convention at https://semver.org/", "Major Update", 0x1040)
+	MsgBox("v" VersionID " to v" LatestVer " is a major version update, meaning it introduces lots of new features.`n`nFor some information on how versions are numbered, you can review the convention at https://semver.org/", "Major Update", 0x1040)
 }
-
-
-SetLoadProgress(87, MainGUI, GUIName " (" LanguageText[77] " ")

@@ -14,8 +14,9 @@
 OnError (e, mode) => (mode = "Return") ? -1 : 0
 SetWorkingDir(A_ScriptDir "\..")
 
-if (A_Args.Length < 1) {
-	Msgbox("This script needs to be run by Skibi Defense Macro! You are not supposed to run it manually.")
+MacroName := A_Args[3]
+if A_Args.Length < 3 || A_Args.Length > 3 {
+	Msgbox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
 	ExitApp()
 }
 
@@ -24,6 +25,7 @@ ResetTime := LastState := nowUnix()
 state := 0
 MacroState := 2
 offsetY := A_Args[1]
+windowDimensions := A_Args[2]
 
 
 pToken := Gdip_Startup()

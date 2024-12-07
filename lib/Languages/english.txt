@@ -85,7 +85,7 @@ Click Duration (ms):
 Click Button:
 Are you sure you would like to reset your Hotkey configurations?
 It will also reset your AutoClicker confirgurations.
-[ALPHA]
+[BETA]
 Art:
     -   @ender4byss on Discord - Icon Art
 Translations:

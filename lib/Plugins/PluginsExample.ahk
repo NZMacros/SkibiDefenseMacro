@@ -29,3 +29,4 @@ SetWorkingDir(A_ScriptDir "\..\..")
 ; You now need to design the file and the tab and include any functions it uses
 ; Finally, find the #Include in lib\mainFiles\GUI.ahk that includes the lib\Plugins directory, and include your file underneath it
 ; If your plugin requires you to modify other things within the macro to make a functioning tab but would also like to share the plugin, you can create a fork (with permission) of the repository with your changes for others to use
+; To finalise your Plugin, ensure it abides by the Plugin_LICENSE.txt's terms!
