@@ -11,7 +11,7 @@ SetWorkingDir(A_ScriptDir "\..")
 #Include "externalFuncs\nowUnix.ahk"
 
 ; set version identifier
-VersionID := "0.5.0"
+VersionID := "0.5.1"
 
 MacroName := A_Args[1]
 ; assign variables from A_Args
