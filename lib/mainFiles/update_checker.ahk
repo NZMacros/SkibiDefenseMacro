@@ -53,7 +53,7 @@ sd_AutoUpdateGUI(*) {
 	UpdateGUI := Gui("+Border +Owner" MainGUI.Hwnd " -MinimizeBox", "Skibi Defense Macro Update")
 	UpdateGUI.OnEvent("Close", GUIClose), UpdateGUI.OnEvent("Escape", GUIClose)
 	UpdateGUI.SetFont("s9 cDefault Norm", "Tahoma")
-	local MajorUpdate := (StrSplit(VersionID, ".")[2] < StrSplit(LatestVer, ".")[2])
+	local MajorUpdate := (StrSplit(VersionID, ".")[1] < StrSplit(LatestVer, ".")[1])
 	UpdateText := UpdateGUI.AddText("x20 w260 +Center +BackgroundTrans", "A newer version of Skibi Defense Macro was found!`nDo you want to update now?")
 
 	if (MajorUpdate) {
@@ -70,13 +70,13 @@ sd_AutoUpdateGUI(*) {
 	UpdateGUI.AddText("x" 150-posW//2 " y54 +BackgroundTrans", size " MB // Downloads: " downloads)
 
 	hBM := Gdip_CreateHBITMAPFromBitmap(bitmaps["GitHubIcon"]), UpdateGUI.AddPicture("x76 y+25 w16 h16 +BackgroundTrans", "HBITMAP:*" hBM).OnEvent("Click", OpenGitHub), DllCall("DeleteObject", "ptr", hBM)
-	UpdateGUI.AddText("x+4 yp+1 c0046ee +BackgroundTrans", PatchesText).OnEvent("Click", OpenGithubReleases)
+	UpdateGUI.AddText("x+4 yp+1 c0046ee +BackgroundTrans", PatchesText).OnEvent("Click", OpenGitHubLatestRelease)
 
 	UpdateGUI.SetFont("s8 w700")
 	UpdateGUI.AddGroupBox("x5 y+10 w294 h" (MajorUpdate ? 74 : 50), "Options")
 	UpdateGUI.SetFont("Norm")
 	UpdateGUI.AddCheckBox("xp+8 yp+20 vCopySettings Checked", "Copy Settings")
-	UpdateGUI.AddCheckBox("xp+102 yp vDeleteOld", "Delete v" VersionID)
+	UpdateGUI.AddCheckBox("xp+102 yp vDeleteOld " ((MajorUpdate) ? "Disabled Checked" : "Checked"), "Delete v" VersionID)
 	if (MajorUpdate) {
 		UpdateGUI.AddButton("x60 y+5 w180 h20", "Major Update Information").OnEvent("Click", sd_MajorUpdateHelp)
     }
@@ -146,5 +146,5 @@ sd_UpdateButton(*) {
 }
 
 sd_MajorUpdateHelp(*) {
-	MsgBox("v" VersionID " to v" LatestVer " is a major version update, meaning it introduces lots of new features.`n`nFor some information on how versions are numbered, you can review the convention at https://semver.org/", "Major Update", 0x1040)
+	MsgBox("v" VersionID " to v" LatestVer " is a major version update, meaning it introduces lots of new features.`nThe old version is required to be deleted.`n`nFor some information on how versions are numbered, you can review the convention at https://semver.org/", "Major Update", 0x1040)
 }

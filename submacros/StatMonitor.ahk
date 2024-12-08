@@ -15,7 +15,7 @@ VersionID := "0.5.0"
 
 MacroName := A_Args[1]
 ; assign variables from A_Args
-if A_Args.Length < 4 || A_Args.Length > 4 {
+if A_Args.Length < 6 || A_Args.Length > 6 {
 	Msgbox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
 	ExitApp()
 }

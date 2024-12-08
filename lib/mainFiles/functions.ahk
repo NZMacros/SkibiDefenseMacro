@@ -253,11 +253,11 @@ sd_LoadLanguages() {
 	if Language = "english" {
 	DisplayedLanguage := "English"
 	}
-	if Language = "spanish" {
-		DisplayedLanguage := "Español"
-	}
 	if Language = "turkish" {
 		DisplayedLanguage := "Türkçe"
+	}
+	if Language = "spanish" {
+		DisplayedLanguage := "Español"
 	}
 	if Language = "portuguese" {
 		DisplayedLanguage := "Português"
@@ -268,36 +268,25 @@ sd_DefaultHandlers() {
 	global
 
 	if Language = "english" {
-		DisplayedLanguage := "English"
-
 		GUIThemeDDLXPos := "x75"
 		GUITransparencyTextXPos := "xp+98"
 		KeyDelayTextXPos := "x313"
 		LanguageTextXPos := "x390"
 		ResetSettingsButtonWidth := "w120"
-	}
-	if Language = "turkish" {
-		DisplayedLanguage := "Türkçe"
-
+	} else if (Language = "turkish") {
 		GUIThemeDDLXPos := "xp+63"
 		GUITransparencyTextXPos := "xp+90"
 		KeyDelayTextXPos := "xp+100"
 		LanguageTextXPos := "x410"
 		ResetSettingsButtonWidth := "w120"
 		ReconnectMethodLeftButtonXPos := ""
-	}
-	if Language = "spanish" {
-		DisplayedLanguage := "Español"
-
+	} else if (Language = "spanish") {
 		GUIThemeDDLXPos := "x100"
 		GUITransparencyTextXPos := "xp+120"
 		KeyDelayTextXPos := "x340"
 		LanguageTextXPos := "x400"
 		ResetSettingsButtonWidth := "w120"
-	}
-	if Language = "portuguese" {
-		DisplayedLanguage := "Português"
-
+	} else if (Language = "portuguese") {
 		GUIThemeDDLXPos := "x90"
 		GUITransparencyTextXPos := "xp+123"
 		KeyDelayTextXPos := "x350"
@@ -350,6 +339,120 @@ sd_ForceReconnect(wParam, *) {
 	sd_EndMovement()
 	CloseRoblox()
 	return 0
+}
+
+sd_Quickstart() {
+	global
+	GUIClose1(*) {
+		if (IsSet(QuickstartGUIStart) && (IsObject(QuickstartGUIStart))) {
+			QuickstartGUIStart.Destroy(), QuickstartGUIStart := ""
+			MainGUI.Restore()
+        }
+	}
+	GUIClose1()
+	QuickstartGUIStart := Gui("+AlwaysOnTop -MinimizeBox", "Quickstart")
+	QuickstartGUIStart.OnEvent("Close", GUIClose1)
+	QuickstartGUIStart.SetFont("Norm")
+	QuickstartGUIStart.AddText("x10 y10", "Ready to get the macro running?")
+	QuickstartGUIStart.AddText("x10 y25", "Lets get through the base options to start!")
+	QuickstartGUIStart.AddText("x10 y40", 'At any time, click "Cancel" to return to the main macro')
+	QuickstartGUIStart.AddText("x10 y55", "to configure more options (current configs will be saved)!")
+	QuickstartGUIStart.AddButton("x175 y75 w50", "Next").OnEvent("Click", QuickStart2)
+	QuickstartGUIStart.AddButton("x240 y75 w50", "Cancel").OnEvent("Click", GUIClose1)
+	QuickstartGUIStart.Show("w300 h100")
+	QuickStart2(*) {
+		global
+		local ChapterName1Edit, ChapterName2Edit, ChapterName3Edit, GrindModeEdit
+		QuickstartGUIStart.Destroy(), QuickstartGUIStart := ""
+		GUIClose2(*) {
+			if (IsSet(QuickstartGUI2) && (IsObject(QuickstartGUI2))) {
+				QuickstartGUI2.Destroy(), QuickstartGUI2 := ""
+				MainGUI.Restore()
+			}
+		}
+		GUIClose2()
+		QuickstartGUI2 := Gui("+AlwaysOnTop -MinimizeBox", "Quickstart")
+		QuickstartGUI2.OnEvent("Close", GUIClose2)
+		QuickstartGUI2.SetFont("Norm")
+		QuickstartGUI2.AddText("x10 y10", "First, choose the chapters you want to grind and how you want to grind them:")
+		(ChapterName1Edit := QuickstartGUI2.AddDropDownList("x18 y50 w106 vChapterName1", ChapterNamesList)).Text := ChapterName1, ChapterName1Edit.OnEvent("Change", sd_ChapterSelect_1)
+		(ChapterName2Edit := QuickstartGUI2.AddDropDownList("xp yp+25 wp vChapterName2 Disabled", ["None"])).Add(ChapterNamesList), ChapterName2Edit.Text := ChapterName2, ChapterName2Edit.OnEvent("Change", sd_ChapterSelect_2)
+		(ChapterName3Edit := QuickstartGUI2.AddDropDownList("xp yp+25 wp vChapterName3 Disabled", ["None"])).Add(ChapterNamesList), ChapterName3Edit.Text := ChapterName3, ChapterName3Edit.OnEvent("Change", sd_ChapterSelect_3)
+		(GrindModeEdit := QuickstartGUI2.AddDropDownList("x200 y50 vGrindMode Disabled", GrindModesArr)).Text := GrindMode, GrindModeEdit.OnEvent("Change", sd_GrindMode)
+		QuickstartGUI2.AddButton("x175 y125 w50", "Next").OnEvent("Click", QuickStart3)
+		QuickstartGUI2.AddButton("x240 y125 w50", "Cancel").OnEvent("Click", GUIClose2)
+		QuickstartGUI2.Show("x300 h150")
+		QuickStart3(*) {
+			global
+			local UnitModeEdit, UnitSlot1Edit, UnitSlot2Edit, UnitSlot3Edit, UnitSlot4Edit, UnitSlot5Edit, UnitSlot6Edit, UnitSlot7Edit, UnitSlot8Edit, UnitSlot9Edit, UnitSlot0Edit
+			QuickstartGUI2.Destroy(), QuickstartGUI2 := ""
+			GUIClose3(*) {
+				if (IsSet(QuickstartGUI3) && (IsObject(QuickstartGUI3))) {
+					QuickstartGUI3.Destroy(), QuickstartGUI3 := ""
+					MainGUI.Restore()
+				}
+			}
+			GUIClose3()
+			QuickstartGUI3 := Gui("+AlwaysOnTop -MinimizeBox", "Quickstart")
+			QuickstartGUI3.OnEvent("Close", GUIClose3)
+			QuickstartGUI3.SetFont("Norm")
+			QuickstartGUI3.AddText("x10 y10", "Choose your unit selection mode (bottom right)")
+			QuickstartGUI3.AddText("x10 y25", "and (if applicable) which units you want to use!")
+			UnitModesArr := ["Preset", "Input", "Detect"]
+			(UnitModeEdit := QuickstartGUI3.AddDropDownList("x150 y196 vUnitModeEdit Disabled", UnitModesArr)).Text := UnitMode, UnitModeEdit.OnEvent("Change", sd_UnitMode)
+			QuickstartGUI3.SetFont("w700")
+			QuickstartGUI3.AddText("x6 y49", "1:")
+			QuickstartGUI3.AddText("x6 y79", "2:")
+			QuickstartGUI3.AddText("x150 y79", "3:")
+			QuickstartGUI3.AddText("x6 y109", "4:")
+			QuickstartGUI3.AddText("x150 y109", "5:")
+			QuickstartGUI3.AddText("x6 y139", "6:")
+			QuickstartGUI3.AddText("x150 y139", "7:")
+			QuickstartGUI3.AddText("x6 y169", "8:")
+			QuickstartGUI3.AddText("x150 y169", "9:")
+			QuickstartGUI3.AddText("x6 y199", "10:")
+			QuickstartGUI3.SetFont("s8 cDefault Norm", "Tahoma")
+			(UnitSlot1Edit := QuickstartGUI3.AddDropDownList("x21 y46 vUnitSlot1Edit Disabled", UnitNamesList)).Text := UnitSlot1, UnitSlot1Edit.OnEvent("Change", sd_UnitSlotSelect_1)
+			(UnitSlot2Edit := QuickstartGUI3.AddDropDownList("x21 y76 vUnitSlot2Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot2Edit.Text := UnitSlot2, UnitSlot2Edit.OnEvent("Change", sd_UnitSlotSelect_2)
+			(UnitSlot3Edit := QuickstartGUI3.AddDropDownList("x165 y76 vUnitSlot3Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot3Edit.Text := UnitSlot3, UnitSlot3Edit.OnEvent("Change", sd_UnitSlotSelect_3)
+			(UnitSlot4Edit := QuickstartGUI3.AddDropDownList("x21 y106 vUnitSlot4Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot4Edit.Text := UnitSlot4, UnitSlot4Edit.OnEvent("Change", sd_UnitSlotSelect_4)
+			(UnitSlot5Edit := QuickstartGUI3.AddDropDownList("x165 y106 vUnitSlot5Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot5Edit.Text := UnitSlot5, UnitSlot5Edit.OnEvent("Change", sd_UnitSlotSelect_5)
+			(UnitSlot6Edit := QuickstartGUI3.AddDropDownList("x21 y136 vUnitSlot6Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot6Edit.Text := UnitSlot6, UnitSlot6Edit.OnEvent("Change", sd_UnitSlotSelect_6)
+			(UnitSlot7Edit := QuickstartGUI3.AddDropDownList("x165 y136 vUnitSlot7Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot7Edit.Text := UnitSlot7, UnitSlot7Edit.OnEvent("Change", sd_UnitSlotSelect_7)
+			(UnitSlot8Edit := QuickstartGUI3.AddDropDownList("x21 y166 vUnitSlot8Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot8Edit.Text := UnitSlot8, UnitSlot8Edit.OnEvent("Change", sd_UnitSlotSelect_8)
+			(UnitSlot9Edit := QuickstartGUI3.AddDropDownList("x165 y166 vUnitSlot9Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot9Edit.Text := UnitSlot9, UnitSlot9Edit.OnEvent("Change", sd_UnitSlotSelect_9)
+			(UnitSlot0Edit := QuickstartGUI3.AddDropDownList("x28 y196 vUnitSlot0Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot0Edit.Text := UnitSlot0, UnitSlot0Edit.OnEvent("Change", sd_UnitSlotSelect_0)
+			QuickstartGUI3.AddButton("x195 y220 w50", "Next").OnEvent("Click", QuickStart4)
+			QuickstartGUI3.AddButton("x260 y220 w50", "Cancel").OnEvent("Click", GUIClose3)
+			QuickstartGUI3.Show("w335 y245")
+			QuickStart4(*) {
+				global
+				QuickstartGUI3.Destroy(), QuickstartGUI3 := ""
+				GUIClose4(*) {
+					if (IsSet(QuickstartGUI4) && (IsObject(QuickstartGUI4))) {
+						QuickstartGUI4.Destroy(), QuickstartGUI4 := ""
+						MainGUI.Restore()
+					}
+				}
+				GUIClose4()
+				QuickstartGUI4 := Gui("+AlwaysOnTop -MinimizeBox", "Quickstart")
+				QuickstartGUI4.OnEvent("Close", GUIClose4)
+				QuickstartGUI4.SetFont("Norm")
+				QuickstartGUI4.AddText("x10 y10", "Now that necessary settings are configured,")
+				QuickstartGUI4.AddText("x10 y25", "the macro is ready to start!")
+				QuickstartGUI4.AddText("x8 y40", 'Click the "Start" button below to start the macro, or')
+				QuickstartGUI4.AddText("x10 y55", 'click "Cancel" to configure more settings.')
+				QuickstartGUI4.AddButton("x190 y75 w50", "Cancel").OnEvent("Click", GUIClose4)
+				QuickstartGUI4.SetFont("w700")
+				QuickstartGUI4.AddButton("x135 y75 w50", "Start").OnEvent("Click", StartMacro)
+				QuickStartGUI4.Show("w250 h100")
+				StartMacro(*) {
+					GUIClose4(), sd_Start()
+				}
+			}
+		}
+		IniWrite((FirstTime := 0), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "FirstTime")
+	}
 }
 
 Background() {
@@ -457,7 +560,8 @@ sd_ImportConfig() {
 	 , "ClickButton", "LMB")
 
 	 config["Miscellaneous"] := Map("DankMemerJob", "Unemployed"
-	 , "DankMemerJobCooldown", 0)
+	 , "DankMemerJobCooldown", 0
+	 , "FirstTime", 1)
 
 	local k, v, i, j
 	for k,v in config { ; load the default values as globals, will be overwritten if a new value exists when reading
@@ -1189,8 +1293,8 @@ sd_ForceMode(wParam, *) {
 
 sd_BackgroundEvent(wParam, lParam, *) {
 	Critical
-	global Dead
-	static arr := ["Dead"]
+	; global
+	static arr := []
 
 	var := arr[wParam], %var% := lParam
 	return 0

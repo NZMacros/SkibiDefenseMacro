@@ -15,7 +15,7 @@ global A_MacroWorkingDir := A_WorkingDir "\"
 global A_SettingsWorkingDir := A_MacroWorkingDir "settings\"
 global A_ThemesWorkingDir := A_MacroWorkingDir "lib\Themes\"
 global exe_path32 := A_AhkPath
-global exe_path64 := (A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath
+global exe_path64 := ((A_Is64bitOS && FileExist("AutoHotkey64.exe")) ? (A_MacroWorkingDir "submacros\AutoHotkey64.exe") : A_AhkPath)
 global Month := FormatTime("MM", "MMMM")
 sd_LoadLanguages()
 if Month = ("September" || "October" || "November") {
@@ -43,6 +43,23 @@ if Month = ("September" || "October" || "November") {
 		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Defense Macro.lnk")
 	}
 }
+A_TrayMenu.Delete()
+A_TrayMenu.Add()
+A_TrayMenu.Add("Open Logs", (*) => ListLines())
+A_TrayMenu.Add("Edit This Script", (*) => Edit())
+A_TrayMenu.Add()
+A_TrayMenu.Add("Open Window Information", (*) => WindowInformation())
+A_TrayMenu.Add("Suspend Hotkeys", (*) => (A_TrayMenu.ToggleCheck("Suspend Hotkeys"), Suspend()))
+A_TrayMenu.Add()
+A_TrayMenu.Add()
+A_TrayMenu.Add("Start Macro", sd_Start)
+A_TrayMenu.Add("Pause Macro", sd_Pause)
+A_TrayMenu.Add("Stop Macro", sd_Stop)
+A_TrayMenu.Add()
+A_TrayMenu.Add("Start AutoClicker", sd_AutoClicker)
+A_TrayMenu.Add("Close Macro", sd_Close)
+A_TrayMenu.Add()
+A_TrayMenu.Default := "Start Macro"
 
 
 ;@Ahk2Exe-SetOrigFilename "skibi_defense_macro.exe"
@@ -50,10 +67,10 @@ if Month = ("September" || "October" || "November") {
 ;@Ahk2Exe-SetDescription %MacroName% " [BETA]"
 
 ; global vars
-global CurrentWalk := {pid: "", name:""} ; stores "pid" (script process ID) and "name" (path-to-game name)
+global CurrentWalk := {pid: "", name: ""} ; stores "pid" (script process ID) and "name" (in-game pathing name)
 global MacroState := 0 ; 0 = stopped, 1 = paused, 2 = running
 ; set version identifier
-global VersionID := "0.4.1"
+global VersionID := "0.4.2"
 global ResetTime := MacroStartTime := MacroReloadTime := nowUnix()
 global PausedStartTime := 0
 global GameStartTime := 0
@@ -93,8 +110,6 @@ global UnitNamesList := ["ALC", "Alliance DJ", "Astro Detainer", "Astro Juggerna
  , "Scientist Cam", "Scythe Mutant Toilet", "Secret Agent", "Six Lens", "Speaker Strider", "Speakerman"
  , "TCM", "TCT", "Timer Clockman", "TSM", "TST", "TTVM", "TV Man", "TV Woman"
  , "UCS", "ULLC", "Ult Cam", "Ult Speakerman", "Ult TV Man", "Upg Cam", "Upg Camerawoman", "Upg DJ Woman", "Upg Knife Speaker", "Upg Mech", "Upgraded TV Man", "UTCM", "UTSM", "UTTVM"]
-GrindModes := ["Loss Farm", "Games Played", "CC Farm", "XP Farm", "Win Farm"]
-GrindModesList := ["CC Farm", "Games Played", "Loss Farm", "Win Farm", "XP Farm"]
 ; finish globals with configurations from main_config.ini
 sd_ImportConfig()
 try {
@@ -102,9 +117,8 @@ try {
 }
 
 RunWith32()
-CreateFolder(A_SettingsWorkingDir "personal_commands")
-
 ElevateScript()
+
 sd_DefaultHandlers()
 
 DetectHiddenWindows(1)
@@ -189,6 +203,11 @@ Run('"' exe_path64 '" /script "' A_MacroWorkingDir 'lib\Discord.ahk" ' ; path
 #Include "functions.ahk"
 #Include "Roblox.ahk"
 #Include "Status.ahk"
+if FirstTime = 1 {
+	sd_LockTabs()
+	MainGUI.Minimize()
+	sd_Quickstart()
+}
 
 
 

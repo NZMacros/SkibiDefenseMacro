@@ -1,24 +1,5 @@
 OnExit(sd_Close)
 
-A_TrayMenu.Delete()
-A_TrayMenu.Add()
-A_TrayMenu.Add("Open Logs", (*) => ListLines())
-A_TrayMenu.Add("Edit This Script", (*) => Edit())
-A_TrayMenu.Add()
-A_TrayMenu.Add("Open Window Information", (*) => WindowInformation())
-A_TrayMenu.Add("Suspend Hotkeys", (*) => (A_TrayMenu.ToggleCheck("Suspend Hotkeys"), Suspend()))
-A_TrayMenu.Add()
-A_TrayMenu.Add()
-A_TrayMenu.Add("Start Macro", sd_Start)
-A_TrayMenu.Add("Pause Macro", sd_Pause)
-A_TrayMenu.Add("Stop Macro", sd_Stop)
-A_TrayMenu.Add()
-A_TrayMenu.Add("Start AutoClicker", sd_AutoClicker)
-A_TrayMenu.Add("Close Macro", sd_Close)
-A_TrayMenu.Add()
-A_TrayMenu.Default := "Start Macro"
-
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; GUI SKINNING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -33,10 +14,10 @@ DllCall(DllCall("GetProcAddress"
 if (GUI_X && GUI_Y) {
 	Loop (MonitorCount := MonitorGetCount()) {
 		MonitorGetWorkArea(A_Index, &MonLeft, &MonTop, &MonRight, &MonBottom)
-		if (GUI_X > MonLeft && GUI_X < MonRight && GUI_Y > MonTop && GUI_Y < MonBottom) {
+		if (GUI_X > MonLeft) && (GUI_X < MonRight) && (GUI_Y > MonTop) && (GUI_Y < MonBottom) {
 			break
 		}
-		if (A_Index = MonitorCount) {
+		if A_Index = MonitorCount {
 			global GUI_X := GUI_Y := 0
 		}
 	}
@@ -52,7 +33,7 @@ MainGUI.Show("x" GUI_X " y" GUI_Y " w500 h300")
 MainGUI.OnEvent("Close", sd_Close)
 VersionTextEdit := MainGUI.AddText("x482 y282 vVersionText", "v" VersionID), VersionTextEdit.Move(494 - (VersionWidth := TextExtent("v" VersionID, VersionTextEdit)))
 hBM := Gdip_CreateHBITMAPFromBitmap(bitmaps["WarningIcon"])
-MainGUI.AddPicture("+BackgroundTrans x420 y280 w14 h14 Hidden vUpdateButton", "HBITMAP:*" hBM).OnEvent("Click", sd_AutoUpdateGUI)
+MainGUI.AddPicture("+BackgroundTrans x380 y280 w14 h14 Hidden vUpdateButton", "HBITMAP:*" hBM).OnEvent("Click", sd_AutoUpdateGUI)
 DllCall("DeleteObject", "Ptr", hBM)
 hBM := Gdip_CreateHBITMAPFromBitmap(bitmaps["GitHubIcon"])
 MainGUI.AddPicture("+BackgroundTrans x" 470 - VersionWidth - 3 " y271 w25 h23 vGitHubButton", "HBITMAP:*" hBM).OnEvent("Click", OpenGitHub)
@@ -105,8 +86,9 @@ MainGUI.SetFont("s8 cDefault Norm", "Tahoma")
 MainGUI.AddText("x220 y40 +BackgroundTrans", "Unit Slots:")
 MainGUI.AddText("x280 y40 +Center +BackgroundTrans vUnitSlots", UnitSlots)
 MainGUI.AddUpDown("xp+17 yp-1 h16 -16 Range5-10 vUnitSlotsUpDown Disabled", UnitSlots).OnEvent("Change", sd_UnitSlots)
+GrindModesArr := ["Loss Farm", "Games Played", "CC Farm", "XP Farm", "Win Farm"]
 MainGUI.AddText("x15 y155", "Grind Mode:")
-(GrindModeEdit := MainGUI.AddDropDownList("x15 y170 vGrindMode Disabled", GrindModesList)).Text := GrindMode, GrindModeEdit.OnEvent("Change", sd_GrindMode)
+(GrindModeEdit := MainGUI.AddDropDownList("x15 y170 vGrindMode Disabled", GrindModesArr)).Text := GrindMode, GrindModeEdit.OnEvent("Change", sd_GrindMode)
 MainGUI.AddButton("x140 y171 w20 h20 vGrindModesHelp Disabled", "?").OnEvent("Click", sd_GrindModesHelp)
 UnitModesArr := ["Preset", "Input", "Detect"]
 MainGUI.AddText("x15 y195", "Units Mode:")
@@ -136,6 +118,7 @@ MainGUI.SetFont("s8 cDefault Norm", "Tahoma")
 (UnitSlot0Edit := MainGUI.AddDropDownList("x228 y186 vUnitSlot0Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot0Edit.Text := UnitSlot0, UnitSlot0Edit.OnEvent("Change", sd_UnitSlotSelect_0)
 MainGUI.AddButton("x400 y187 w20 h20 vUnitsHelp Disabled", "?").OnEvent("Click", sd_UnitsHelp)
 MainGUI.AddButton("x205 y220 vResetGameConfig", "Reset Configs").OnEvent("Click", sd_ResetGameConfigButton)
+MainGUI.AddButton("x305 y220 vQuickStartButton", "Quickstart").OnEvent("Click", sd_QuickstartButton)
 
 
 TabCtrl.UseTab("Status")
@@ -213,7 +196,7 @@ MainGUI.AddButton("x15 y65 w150 h20 vMakeSuggestions Disabled", "Make a Suggesti
 MainGUI.AddButton("x15 y90 w150 h30 vReportSecurityBreaches Disabled", "Report a Security Vulnerability").OnEvent("Click", sd_ReportSecurityVulnerabilitiesButton)
 ; sd server
 MainGUI.AddButton("x15 y160 h30 vDankMemerAutoGrinder Disabled", "Dank Memer AutoGrinder").OnEvent("Click", sd_DankMemerAutoGrinderGUI)
-MainGUI.AddText("x20 y200", '"Does it work" counter: 107').OnEvent("Click", sd_CommunityCreationsPost)
+MainGUI.AddText("x20 y200", '"Does it work" counter: 109').OnEvent("Click", sd_CommunityCreationsPost)
 
 
 TabCtrl.UseTab("Credits")
@@ -558,10 +541,12 @@ sd_ResetSettings() {
 	IniWrite((ReconnectMethod := "Deeplink"), A_SettingsWorkingDir "main_config.ini", "Settings", "ReconnectMethod")
 	IniWrite((PublicFallback := 1), A_SettingsWorkingDir "main_config.ini", "Settings", "PublicFallback")
 	IniWrite((DankMemerJob := "Unemployed"), A_SettingsWorkingDIr "main_config.ini", "Miscellaneous", "DankMemerJob")
+	IniWrite((DisplayedDankMemerJobCooldown := DankMemerJobCooldown := 0), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
 	sd_ResetSessionStats(), sd_ResetTotalStats()
 	sd_ResetHotkeys(), sd_ResetAdvancedOptions(), sd_ResetDiscordIntegration(), sd_ResetGameConfig()
 	FileDelete(A_SettingsWorkingDir "debug_log.txt")
-	FileAppend("[" A_DD "/" A_MM "][" A_Hour ":" A_Min ":" A_Sec "] Hello world!`n", A_SettingsWorkingDir "debug_log.txt")
+	FileAppend("[" (A_DD + 1) "/" (A_MM - 1) "][" (A_Hour//2) ":" (A_Min * 2.51) ":" (A_Sec - (A_Min * A_Hour)) "] Hello world!`n", A_SettingsWorkingDir "debug_log.txt")
+	IniWrite((FirstTime := 1), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "FirstTime")
 }
 
 sd_ResetGameConfigButton(*) {
@@ -665,13 +650,19 @@ DiscordServer(*) {
 
 OpenGitHub(*) {
 	try {
-		Run("https://github.com/NegativeZero01/skibi-defense-macro")
+		Run("https://github.com/NZMacros/SkibiDefenseMacro")
 	}
 }
 
 OpenGitHubReleases(*) {
 	try {
-		Run("https://github.com/NegativeZero01/skibi-defense-macro/releases")
+		Run("https://github.com/NZMacros/SkibiDefenseMacro/releases")
+	}
+}
+
+OpenGitHubLatestRelease(*) {
+	try {
+		Run("https://github.com/NZMacros/SkibiDefenseMacro/releases/latest")
 	}
 }
 
@@ -1490,7 +1481,6 @@ sd_UnitSlotDefaults(*) {
 }
 
 gofys(*) {
-	Critical
 	gofuckyourself()
 }
 
@@ -1617,6 +1607,12 @@ sd_DankMemerAutoGrinderGUI(*) {
 		Run("https://discord.com/channels/1145457576432128011/1315005994211872888")
 		sd_DankMemerAutoGrinder()
 	}
+}
+
+sd_QuickstartButton(*) {
+	sd_LockTabs()
+	MainGUI.Minimize()
+	sd_Quickstart()
 }
 
 
