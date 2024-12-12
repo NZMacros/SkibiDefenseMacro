@@ -28,7 +28,7 @@ if (GUI_X && GUI_Y) {
 
 
 MainGUI := Gui((AlwaysOnTop ? "+AlwaysOnTop " : "") "+Border +OwnDialogs", MacroName " (Loading: 0%)")
-WinSetTransparent(255-Floor(GUITransparency * 2.55), MainGUI)
+WinSetTransparent(255 - Floor(GUITransparency * 2.55), MainGUI)
 MainGUI.Show("x" GUI_X " y" GUI_Y " w500 h300")
 MainGUI.OnEvent("Close", sd_Close)
 VersionTextEdit := MainGUI.AddText("x482 y282 vVersionText", "v" VersionID), VersionTextEdit.Move(494 - (VersionWidth := TextExtent("v" VersionID, VersionTextEdit)))
@@ -41,11 +41,9 @@ DllCall("DeleteObject", "Ptr", hBM)
 pBM := Gdip_BitmapConvertGray(bitmaps["DiscordIcon"]), hBM := Gdip_CreateHBITMAPFromBitmap(pBM)
 MainGUI.AddPicture("+BackgroundTrans x" 440 - VersionWidth - 2 " y271 w25 h24 vDiscordButton", "HBITMAP:*" hBM).OnEvent("Click", DiscordServer)
 Gdip_DisposeImage(pBM), DllCall("DeleteObject", "Ptr", hBM)
-MainGUI.AddButton("x10 y275 w65 h20 -Wrap vStartButton Disabled", " " LanguageText[21] " " StartHotkey).OnEvent("Click", StartButton)
-MainGUI.AddButton("x80 y275 w65 h20 -Wrap vPauseButton Disabled", " " LanguageText[22] " " PauseHotkey).OnEvent("Click", PauseButton)
-MainGUI.AddButton("x150 y275 w65 h20 -Wrap vStopButton Disabled", " " LanguageText[23] " " StopHotkey).OnEvent("Click", StopButton)
-MainGUI.AddButton("x220 y275 w65 h20 -Wrap vAutoClickerButton Disabled", " " LanguageText[24] " " AutoClickerHotkey).OnEvent("Click", AutoClickerButton)
-MainGUI.AddButton("x290 y275 w65 h20 -Wrap vCloseButton Disabled", " " LanguageText[25] " " CloseHotkey).OnEvent("Click", CloseButton)
+MainGUI.AddButton("x10 y275 w65 h20 -Wrap vStartButton Disabled", " Start (" StartHotkey ")").OnEvent("Click", StartButton)
+MainGUI.AddButton("x80 y275 w65 h20 -Wrap vPauseButton Disabled", " Pause (" PauseHotkey ")").OnEvent("Click", PauseButton)
+MainGUI.AddButton("x150 y275 w65 h20 -Wrap vStopButton Disabled", " Stop (" StopHotkey ")").OnEvent("Click", StopButton)
 MainGUI.SetFont("s8 cDefault Norm", "Tahoma")
 MainGUI.SetFont("w700")
 MainGUI.AddText("x12 y255 -Wrap +BackgroundTrans", "Current Chapter:")
@@ -145,71 +143,78 @@ sd_SetStats()
 
 TabCtrl.UseTab("Settings")
 MainGUI.SetFont("s8 cDefault Bold", "Tahoma")
-MainGUI.AddGroupBox("x10 y25 w200 h100 +BackgroundTrans", LanguageText[26])
-MainGUI.AddGroupBox("x10 y130 w200 h100 +BackgroundTrans", LanguageText[27])
-MainGUI.AddGroupBox("x220 y25 w270 h70 +BackgroundTrans", LanguageText[28])
-MainGUI.AddGroupBox("x220 y100 w270 h130 +BackgroundTrans", LanguageText[29])
+MainGUI.AddGroupBox("x10 y25 w200 h100 +BackgroundTrans", "GUI Settings")
+MainGUI.AddGroupBox("x10 y130 w200 h100 +BackgroundTrans", "Hotkey Settings")
+MainGUI.AddGroupBox("x220 y25 w270 h70 +BackgroundTrans", "General Settings")
+MainGUI.AddGroupBox("x220 y100 w270 h130 +BackgroundTrans", "Reconnect Settings")
 
 MainGUI.SetFont("Norm")
-MainGUI.AddText("x15 y80 +BackgroundTrans", LanguageText[30])
+MainGUI.AddText("x15 y80 +BackgroundTrans", "GUI Theme:")
 ThemesList := []
 Loop Files A_ThemesWorkingDir "*.msstyles" {
 	ThemesList.Push(StrReplace(A_LoopFileName, ".msstyles"))
 }
 (ThemesEdit := MainGUI.Add("DropDownList", GUIThemeDDLXPos " y76 w72 h100 vGUITheme Disabled", ThemesList)).Text := GUITheme, ThemesEdit.OnEvent("Change", sd_GUITheme)
-MainGUI.AddCheckBox("x15 y40 vAlwaysOnTop Disabled Checked" AlwaysOnTop, LanguageText[31]).OnEvent("Click", sd_AlwaysOnTop)
-MainGUI.AddText("x15 y57 +BackgroundTrans", LanguageText[32])
+MainGUI.AddCheckBox("x15 y40 vAlwaysOnTop Disabled Checked" AlwaysOnTop, "Always On Top").OnEvent("Click", sd_AlwaysOnTop)
+MainGUI.AddText("x15 y57 +BackgroundTrans", "GUI Transparency")
 MainGUI.AddText(GUITransparencyTextXPos " y57 +Center +BackgroundTrans vGUITransparency", GUITransparency)
 MainGUI.AddUpDown("xp+17 yp-1 h16 -16 Range0-14 vGUITransparencyUpDown Disabled", GUITransparency//5).OnEvent("Change", sd_GUITransparency)
-MainGUI.AddButton("x14 y100 w150 h20 vAdvancedOptions Disabled", LanguageText[33]).OnEvent("Click", sd_AdvancedOptionsGUI)
-MainGUI.AddButton("x15 y155 w150 h20 vHotkeyGUI Disabled", LanguageText[34]).OnEvent("Click", sd_HotkeyGUI)
-MainGUI.AddButton("x16 yp+24 w150 h20 vAutoClickerGUI Disabled", LanguageText[35]).OnEvent("Click", sd_AutoClickerGUI)
-MainGUI.AddButton("x20 yp+24 w140 h20 vHotkeyRestore Disabled", LanguageText[36]).OnEvent("Click", sd_ResetHotkeysButton)
-MainGUI.AddText("x230 y41 +BackgroundTrans", LanguageText[37])
+MainGUI.AddButton("x14 y100 w150 h20 vAdvancedOptions Disabled", "Advanced Options").OnEvent("Click", sd_AdvancedOptionsGUI)
+MainGUI.AddButton("x15 y155 w150 h20 vHotkeyGUI Disabled", "Change Hotkeys").OnEvent("Click", sd_HotkeyGUI)
+MainGUI.AddButton("x16 yp+24 w150 h20 vAutoClickerGUI Disabled", "AutoClicker Settings").OnEvent("Click", sd_AutoClickerGUI)
+MainGUI.AddButton("x20 yp+24 w140 h20 vHotkeyRestore Disabled", "Restore Defaults").OnEvent("Click", sd_ResetHotkeysButton)
+MainGUI.AddText("x230 y41 +BackgroundTrans", "Input Delay (ms):")
 MainGUI.AddText(KeyDelayTextXPos " y39 w47 h18 0x201")
 MainGUI.AddUpDown("Range0-9999 vKeyDelay Disabled", KeyDelay).OnEvent("Change", sd_SaveKeyDelay)
-MainGUI.AddButton("x227 yp+27 " ResetSettingsButtonWidth " h20 vSettingsRestore Disabled", LanguageText[38]).OnEvent("Click", sd_ResetSettingsButton)
-MainGUI.AddButton("x400 y97 w30 h20 vReconnectTest Disabled", LanguageText[39]).OnEvent("Click", sd_ReconnectTest)
-MainGUI.AddText("x230 y125 +BackgroundTrans", LanguageText[40])
+MainGUI.AddButton("x227 yp+27 " ResetSettingsButtonWidth " h20 vSettingsRestore Disabled", "Reset Settings").OnEvent("Click", sd_ResetSettingsButton)
+MainGUI.AddButton("x400 y97 w30 h20 vReconnectTest Disabled", "Test").OnEvent("Click", sd_ReconnectTest)
+MainGUI.AddText("x230 y125 +BackgroundTrans", "Private Server Link:")
 MainGUI.AddEdit("x230 y150 w250 h20 vPrivServer Lowercase Disabled", PrivServer).OnEvent("Change", sd_ServerLink)
-MainGUI.AddText("x235 yp+37 +BackgroundTrans", LanguageText[41])
+MainGUI.AddText("x235 yp+37 +BackgroundTrans", "Reconnect Method:")
 MainGUI.AddText("xp+110 yp w48 vReconnectMethod +Center +BackgroundTrans", ReconnectMethod)
 MainGUI.AddButton("xp-12 yp-1 w12 h15 vRMLeft Disabled", "<").OnEvent("Click", sd_ReconnectMethod)
 MainGUI.AddButton("xp+59 yp w12 h15 vRMRight Disabled", ">").OnEvent("Click", sd_ReconnectMethod)
 MainGUI.AddButton("xp+25 yp-3 w20 h20 vReconnectMethodHelp Disabled", "?").OnEvent("Click", sd_ReconnectMethodHelp)
 (FallbackEdit := MainGUI.AddCheckBox("x230 y210 w132 h15 vPublicFallback Disabled Checked" PublicFallback, "Fallback to Public Server")).Section := "Settings", FallbackEdit.OnEvent("Click", sd_UpdateConfigShortcut)
 MainGUI.AddButton("x380 y207 w20 h20 vPublicFallbackHelp Disabled", "?").OnEvent("Click", sd_PublicFallbackHelp)
-LangArr := ["English", "Türkçe", "Español", "Português"]
-MainGUI.AddText(LanguageTextXPos " y42 +BackgroundTrans", LanguageText[42])
-(LanguageEdit := MainGUI.AddDropDownList("x360 y65 vLanguageSelection Disabled", LangArr)).Text := DisplayedLanguage, LanguageEdit.OnEvent("Change", sd_LanguageManager)
+LangArr := ["English"]
+MainGUI.AddText(LanguageTextXPos " y42 +BackgroundTrans", "Language")
+(LanguageEdit := MainGUI.AddDropDownList("x360 y65 vLanguageEdit Disabled", LangArr)).Text := Language, LanguageEdit.OnEvent("Change", sd_Language)
 
 
 TabCtrl.UseTab("Miscellaneous")
 MainGUI.SetFont("s8 cDefault Bold", "Tahoma")
-MainGUI.AddGroupBox("x5 y23 w180 h105", "GitHub")
-MainGUI.AddGroupBox("x5 y140 w160 h80", "Skibi Defense Server")
+MainGUI.AddGroupBox("x5 y23 w180 h130", "GitHub")
+MainGUI.AddGroupBox("x5 y155 w180 h75", "Skibi Defense Server")
+MainGUI.AddGroupBox("x200 y23 w155 h80", "Other Cool Stuff")
 
 MainGUI.SetFont("Norm")
 ; reporting
 MainGUI.AddButton("x15 y40 w150 h20 vReportBugs Disabled", "Report a Bug").OnEvent("Click", sd_ReportBugButton)
 MainGUI.AddButton("x15 y65 w150 h20 vMakeSuggestions Disabled", "Make a Suggestion").OnEvent("Click", sd_MakeSuggestionButton)
-MainGUI.AddButton("x15 y90 w150 h30 vReportSecurityBreaches Disabled", "Report a Security Vulnerability").OnEvent("Click", sd_ReportSecurityVulnerabilitiesButton)
+MainGUI.AddButton("x15 y90 w150 h32 vReportSecurityBreaches Disabled", "Report a Security Vulnerability").OnEvent("Click", sd_ReportSecurityVulnerabilitiesButton)
+MainGUI.AddButton("x15 y125 w150 h20 vAskQuestions Disabled", "Ask a Question").OnEvent("Click", sd_MacroQuestionsButton)
 ; sd server
-MainGUI.AddButton("x15 y160 h30 vDankMemerAutoGrinder Disabled", "Dank Memer AutoGrinder").OnEvent("Click", sd_DankMemerAutoGrinderGUI)
-MainGUI.AddText("x20 y200", '"Does it work" counter: 109').OnEvent("Click", sd_CommunityCreationsPost)
+MainGUI.AddButton("x15 y175 h30 vDankMemerAutoGrinder Disabled", "Dank Memer AutoGrinder").OnEvent("Click", sd_DMAGPriorWarning)
+MainGUI.AddButton("x155 y179 w20 h20 vDMAGDefinition Disabled", "?").OnEvent("Click", sd_DMAGDefinition)
+MainGUI.AddText("x20 y210 vDoesItWork Disabled", '"Does it work" counter: 118').OnEvent("Click", sd_CommunityCreationsPost)
+; other
+MainGUI.AddButton("x210 y40 vRandomStringGenerator Disabled", "Random String Generator").OnEvent("Click", sd_RandomStringGenerator)
+MainGUI.AddButton("x210 y70 vRegistryDumper Disabled", "Registry Dumper").OnEvent("Click", sd_RegistryDumperGUI)
+MainGUI.AddButton("x312 y72 w20 h20 vRegDumpHelp Disabled", "?").OnEvent("Click", sd_RegDumpHelp)
 
 
 TabCtrl.UseTab("Credits")
 MainGUI.SetFont("Bold Norm c000000 s15")
-MainGUI.AddText("x10 y30", LanguageText[89])
+MainGUI.AddText("x10 y30", "Art:")
 MainGUI.SetFont("Underline Norm c0000FF s8")
-MainGUI.AddText("xp yp+30 vDiscordIconArtist", LanguageText[90]).OnEvent("Click", DiscordIconArtist)
+MainGUI.AddText("xp yp+30 vDiscordIconArtist", "    -   @ender4byss on Discord - Icons").OnEvent("Click", DiscordIconArtist)
 MainGUI.SetFont("Bold Norm c000000 s15")
-MainGUI.AddText("x10 y100", LanguageText[91])
+MainGUI.AddText("x10 y100", "Translations:")
 MainGUI.SetFont("Underline Norm c0000FF s8")
-MainGUI.AddText("x10 yp+30 vTurkishDiscordTranslator", LanguageText[92]).OnEvent("Click", TurkishDiscordTranslator)
-MainGUI.AddText("x10 yp+20 vSpanishDiscordTranslator", LanguageText[93]).OnEvent("Click", SpanishDiscordTranslator)
-MainGUI.AddText("x10 yp+20 vPortugueseDiscordTranslator", LanguageText[94]).OnEvent("Click", PortugueseDiscordTranslator)
+MainGUI.AddText("x10 yp+30 vTurkishDiscordTranslator", "    -   @ekmekdover12 on Discord - Current Turkish Translation").OnEvent("Click", TurkishDiscordTranslator)
+MainGUI.AddText("x10 yp+20 vSpanishDiscordTranslator", "    -   @taneoron on Discord - Previous Spanish Translation").OnEvent("Click", SpanishDiscordTranslator)
+MainGUI.AddText("x10 yp+20 vPortugueseDiscordTranslator", "    -   @the.hex.guy on Discord - Previous Portuguese Translation").OnEvent("Click", PortugueseDiscordTranslator)
 
 #Include "%A_ScriptDir%\..\lib\Plugins\"
 ; #Include "*i .ahk"
@@ -249,7 +254,7 @@ sd_GUITransparency(*) {
 	global GUITransparency
 	MainGUI["GUITransparency"].Text := GUITransparency := MainGUI["GUITransparencyUpDown"].Value * 5
 	IniWrite(GUITransparency, A_SettingsWorkingDir "main_config.ini", "Settings", "GUITransparency")
-	WinSetTransparent(255-Floor(GUITransparency * 2.55), MainGUI)
+	WinSetTransparent(255 - Floor(GUITransparency * 2.55), MainGUI)
 }
 
 sd_SaveKeyDelay(*) {
@@ -295,6 +300,7 @@ sd_LockTabs(lock := 1) {
 	for i, tab in tabs {
 		sd_%tab%Tab%c%()
 	}
+	gofys()
 }
 
 sd_GameTabLock() {
@@ -397,14 +403,26 @@ sd_MiscellaneousTabLock() {
 	MainGUI["ReportBugs"].Enabled := 0
 	MainGUI["MakeSuggestions"].Enabled := 0
 	MainGUI["ReportSecurityBreaches"].Enabled := 0
+	MainGUI["AskQuestions"].Enabled := 0
 	MainGUI["DankMemerAutoGrinder"].Enabled := 0
+	MainGUI["DMAGDefinition"].Enabled := 0
+	MainGUI["DoesItWork"].Enabled := 0
+	MainGUI["RandomStringGenerator"].Enabled := 0
+	MainGUI["RegistryDumper"].Enabled := 0
+	MainGUI["RegDumpHelp"].Enabled := 0
 }
 
 sd_MiscellaneousTabUnlock() {
 	MainGUI["ReportBugs"].Enabled := 1
 	MainGUI["MakeSuggestions"].Enabled := 1
 	MainGUI["ReportSecurityBreaches"].Enabled := 1
+	MainGUI["AskQuestions"].Enabled := 1
 	MainGUI["DankMemerAutoGrinder"].Enabled := 1
+	MainGUI["DMAGDefinition"].Enabled := 1
+	MainGUI["DoesItWork"].Enabled := 1
+	MainGUI["RandomStringGenerator"].Enabled := 1
+	MainGUI["RegistryDumper"].Enabled := 1
+	MainGUI["RegDumpHelp"].Enabled := 1
 }
 
 sd_CreditsTabLock() {
@@ -428,34 +446,44 @@ sd_HotkeyGUI(*) {
 			Suspend(0)
 			sd_LockTabs(0)
 			HotkeyGUI.Destroy(), HotkeyGUI := ""
-            Reload()
         }
 	}
 	GUIClose()
     Suspend(1)
-	HotkeyGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, LanguageText[43])
+	HotkeyGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, "Hotkeys")
     sd_LockTabs()
 	HotkeyGUI.OnEvent("Close", GUIClose)
 	HotkeyGUI.SetFont("s8 cDefault Bold", "Tahoma")
-	HotkeyGUI.AddGroupBox("x5 y2 w290 h190", LanguageText[76])
+	HotkeyGUI.AddGroupBox("x5 y2 w275 h130", "Change Hotkeys")
 	HotkeyGUI.SetFont("Norm")
-	HotkeyGUI.AddText("x10 y30 +BackgroundTrans", LanguageText[21])
-	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", LanguageText[22])
-	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", LanguageText[23])
-	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", LanguageText[24])
-    HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", LanguageText[25])
-	HotkeyGUI.AddHotkey("x70 y30 w200 h18 vStartHotkeyEdit", StartHotkey).OnEvent("Change", sd_SaveHotkey)
+	HotkeyGUI.AddText("x10 y30 +BackgroundTrans", "Start:")
+	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", "Pause:")
+	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", "Stop:")
+	HotkeyGUI.AddText("x10 yp+25 +BackgroundTrans", "AutoClicker:")
+	HotkeyGUI.AddHotkey("x70 y28 w200 h18 vStartHotkeyEdit", StartHotkey).OnEvent("Change", sd_SaveHotkey)
 	HotkeyGUI.AddHotkey("xp yp+25 w200 h18 vPauseHotkeyEdit", PauseHotkey).OnEvent("Change", sd_SaveHotkey)
 	HotkeyGUI.AddHotkey("xp yp+25 w200 h18 vStopHotkeyEdit", StopHotkey).OnEvent("Change", sd_SaveHotkey)
 	HotkeyGUI.AddHotkey("xp yp+25 w200 h18 vAutoClickerHotkeyEdit", AutoClickerHotkey).OnEvent("Change", sd_SaveHotkey)
-	HotkeyGUI.AddHotkey("xp yp+25 w200 h18 vCloseHotkeyEdit", CloseHotkey).OnEvent("Change", sd_SaveHotkey)
-	HotkeyGUI.AddText("xp+2 yp+35", LanguageText[78])
-	HotkeyGUI.Show("w300 h200")
+	HotkeyGUI.Show("w280 h135")
+}
+
+sd_DMAGDefinition(*) {
+	MsgBox("Dank Memer Auto Grinder", '"DMAG"', 0x1020 " T60")
+}
+
+sd_RegDumpHelp(*) {
+	MsgBox("Registry dumper is a gimmick that I (NegativeZero) wanted to test from within the macro.`n`nRegistry dumper exports the contents of the specified path in your registry editor to the dump path, giving information on the full path, item, type and value (you may need to run it as administrator for some of these if you encounter issues).", "RegDump Help", 0x1020 " T90")
+}
+
+sd_DMAGPriorWarning(*) {
+	if (MsgBox("Use this at your own risk!!!`nAs stated in the macro's license, only you are responsible for any damages or issues caused by macroing Dank Memer!`n`nClick confirm to continue to the GUI.", "DMAG Warning", 0x1031) = "OK") {
+		sd_DankMemerAutoGrinderGUI()
+	}
 }
 
 sd_SaveHotkey(GUICtrl, *) {
 	global
-	local k, v, l, NewHotkey, StartHotkeyEdit, PauseHotkeyEdit, StopHotkeyEdit, AutoClickerHotkeyEdit, CloseHotkeyEdit
+	local k, v, l, NewHotkey, StartHotkeyEdit, PauseHotkeyEdit, StopHotkeyEdit, AutoClickerHotkeyEdit
 	k := GUICtrl.Name, %k% := GUICtrl.Value
 
 	v := StrReplace(k, "Edit")
@@ -464,27 +492,27 @@ sd_SaveHotkey(GUICtrl, *) {
 		switch Format("sc{:03X}", GetKeySC(%k%)), 0 {
 			case W, A, S, D, I, O, E, R, "sc026", Escape, Enter, LShift, RShift, Space:
 			GUICtrl.Value := %v%
-			MsgBox(LanguageText[44] "`n" LanguageText[45], LanguageText[46], 0x1030)
+			MsgBox("That hotkey cannot be used!`nThe key is already used elsewhere in the macro.", "Unnaceptable Hotkey", 0x1030)
 			return
 
 			case Zero, One, Two, Three, Four, Five, Six, Seven, Eight, Nine:
 			GUICtrl.Value := %v%
-			MsgBox(LanguageText[44] "`n" LanguageText[47], LanguageText[46], 0x1030)
+			MsgBox("That hotkey cannot be used!`nIt will be needed to place your units.", "Unnaceptable Hotkey", 0x1030)
 			return
 		}
 
-		if ((StrLen(%k%) = 0) || (%k% = StartHotkey) || (%k% = PauseHotkey) || (%k% = StopHotkey) || (%k% = AutoClickerHotkey) || (%k% = CloseHotkey)) { ; do not allow empty or already used hotkey (not necessary in most cases)
+		if ((StrLen(%k%) = 0) || (%k% = StartHotkey) || (%k% = PauseHotkey) || (%k% = StopHotkey) || (%k% = AutoClickerHotkey)) { ; do not allow empty or already used hotkey (not necessary in most cases)
 			GUICtrl.Value := %v%
-			MsgBox(LanguageText[44] "`n" LanguageText[48] "`n`n" LanguageText[79], LanguageText[46], 0x1030)
+			MsgBox("That hotkey cannot be used!`nThe key is already used as a different hotkey.`n`nIf you wish to use this hotkey, please remove it from the other one (Key: " %k% ").", "Unnaceptable Hotkey", 0x1030)
 		} else { ; update the hotkey
 			l := StrReplace(v, "Hotkey")
 			try {
-				Hotkey(%v%, (l = "Pause") ? sd_Pause : %l%, "Off")
+				Hotkey(%v%, sd_%l%, "Off")
 			}
 			IniWrite((%v% := %k%), A_SettingsWorkingDir "main_config.ini", "Settings", v)
-			; MainGUI[l "Button"].Text := ((l = "Close") ? " Show " : (l = "AutoClicker") ? "" : " ") l " (" %v% ")"
+			(l != "AutoClicker") ? (MainGUI[l "Button"].Text := " " l " (" %v% ")") : (IsSet(AutoClickerGUI) ? (AutoClickerGUI["StartAutoClicker"].Text := "Start (" AutoClickerHotkey ")") : "")
 			try {
-				Hotkey(%v%, (l = "Pause") ? sd_Pause : %l%, (v = "AutoClickerHotkey") ? "On T2" : "On")
+				Hotkey(%v%, sd_%l%, (v = "AutoClickerHotkey") ? "On T2" : "On")
 			}
 		}
 	}
@@ -498,95 +526,109 @@ sd_ResetHotkeys() {
 		Hotkey(PauseHotkey, sd_Pause, "Off")
 		Hotkey(StopHotkey, sd_Stop, "Off")
 		Hotkey(AutoClickerHotkey, sd_AutoClicker, "Off")
-		Hotkey(CloseHotkey, sd_Close, "Off")
 	}
 	IniWrite((StartHotkey := "F1"), A_SettingsWorkingDir "main_config.ini", "Settings", "StartHotkey")
 	IniWrite((PauseHotkey := "F2"), A_SettingsWorkingDir "main_config.ini", "Settings", "PauseHotkey")
 	IniWrite((StopHotkey := "F3"), A_SettingsWorkingDir "main_config.ini", "Settings", "StopHotkey")
 	IniWrite((AutoClickerHotkey := "F4"), A_SettingsWorkingDir "main_config.ini", "Settings", "AutoClickerHotkey")
-	IniWrite((CloseHotkey := "F5"), A_SettingsWorkingDir "main_config.ini", "Settings", "CloseHotkey")
 	IniWrite((ClickCount := 1000), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickCount")
 	IniWrite((ClickDelay := 100), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickDelay")
 	IniWrite((ClickDuration := 50), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickDuration")
 	IniWrite((ClickMode := 1), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickMode")
-	IniWrite((ClickButton := "LMB"), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickButton")
-
+	IniWrite((ClickButton := "LButton"), A_SettingsWorkingDir "main_config.ini", "Settings", "ClickButton")
+	try {
+		Hotkey(StartHotkey, sd_Start, "On")
+		Hotkey(PauseHotkey, sd_Pause, "On")
+		Hotkey(StopHotkey, sd_Stop, "On")
+		Hotkey(AutoClickerHotkey, sd_AutoClicker, "On T2")
+	}
 }
 
 sd_ResetHotkeysButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your confirgurations for Hotkeys?`nThis action cannot be undone!", "Reset Hotkeys", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your confirgurations for Hotkeys?`nThis action cannot be undone!", "Reset Hotkeys", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 		sd_ResetHotkeys()
-		Reload()
 	}
+	sd_LockTabs(0)
 }
 
 sd_ResetSettingsButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your confirgurations for the macro?`nThis action cannot be undone!", "Reset Macro Configurations", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your confirgurations for the macro?`nThis action cannot be undone!", "Reset Macro Configurations", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 		sd_ResetSettings()
-		ExitApp()
+		sd_Close()
 	}
+	sd_LockTabs(0)
 }
 
 sd_ResetSettings() {
 	global
 	sd_SetStatus("GUI", "Resetting Settings")
+	IniWrite((GUI_X := 0), A_SettingsWorkingDir "main_config.ini", "Settings", "GUI_X")
+	IniWrite((GUI_Y := 0), A_SettingsWorkingDir "main_config.ini", "Settings", "GUI_Y")
 	IniWrite((AlwaysOnTop := 0), A_SettingsWorkingDir "main_config.ini", "Settings", "AlwaysOnTop")
 	IniWrite((GUITransparency := 0), A_SettingsWorkingDir "main_config.ini", "Settings", "GUITransparency")
 	IniWrite((GUITheme := "None"), A_SettingsWorkingDir "main_config.ini", "Settings", "GUITheme")
 	IniWrite((KeyDelay := 25), A_SettingsWorkingDir "main_config.ini", "Settings", "KeyDelay")
-	IniWrite((Language := "english"), A_SettingsWorkingDir "main_config.ini", "Settings", "Language")
+	IniWrite((Language := "English"), A_SettingsWorkingDir "main_config.ini", "Settings", "Language")
 	IniWrite((PrivServer := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "PrivServer")
 	IniWrite((ReconnectMethod := "Deeplink"), A_SettingsWorkingDir "main_config.ini", "Settings", "ReconnectMethod")
 	IniWrite((PublicFallback := 1), A_SettingsWorkingDir "main_config.ini", "Settings", "PublicFallback")
+	IniWrite((IgnoredUpdateVersion := VersionID), A_SettingsWorkingDir "main_config.ini", "Settings", "IgnoredUpdateVersion")
 	IniWrite((DankMemerJob := "Unemployed"), A_SettingsWorkingDIr "main_config.ini", "Miscellaneous", "DankMemerJob")
-	IniWrite((DisplayedDankMemerJobCooldown := DankMemerJobCooldown := 0), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
+	IniWrite((DankMemerJobCooldown := 0), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
+	IniWrite((DankMemerSlashCommands := 1), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
+	IniWrite((DankMemerFarmBeg := 1), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
+	IniWrite((RandomStringCount := 32), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
+	IniWrite((RegLogPath := "HKEY_LOCAL_MACHINE"), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegLogPath")
+	IniWrite((RegDumpPath := "C:\Users\"), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegDumpPath")
 	sd_ResetSessionStats(), sd_ResetTotalStats()
 	sd_ResetHotkeys(), sd_ResetAdvancedOptions(), sd_ResetDiscordIntegration(), sd_ResetGameConfig()
-	FileDelete(A_SettingsWorkingDir "debug_log.txt")
-	FileAppend("[" (A_DD + 1) "/" (A_MM - 1) "][" (A_Hour//2) ":" (A_Min * 2.51) ":" (A_Sec - (A_Min * A_Hour)) "] Hello world!`n", A_SettingsWorkingDir "debug_log.txt")
+	DirDelete(A_SettingsWorkingDir "misc", true)
+	DirCreate(A_SettingsWorkingDir "misc\randomstrings"), DirCreate(A_SettingsWorkingDir "misc\regdumps")
+	FileDelete(A_SettingsWorkingDir "debug_log.txt"), FileAppend("[" A_DD "/" A_MM "][" A_Hour ":" A_Min ":" A_Sec "] Hello world!`n", A_SettingsWorkingDir "debug_log.txt")
 	IniWrite((FirstTime := 1), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "FirstTime")
 }
 
 sd_ResetGameConfigButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your game configurations?`nThis action cannot be undone!", "Reset Game Config", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your game configurations?`nThis action cannot be undone!", "Reset Game Config", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 		sd_ResetGameConfig()
 	}
+	sd_LockTabs(0)
 }
 
 sd_ResetGameConfig() {
 	global
-	IniWrite((ChapterName1 := "Chapter 1"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName1")
-	IniWrite((ChapterName2 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName2")
-	IniWrite((ChapterName3 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName3")
-	IniWrite((GrindMode := "Loss Farm"), A_SettingsWorkingDir "main_config.ini", "Game", "GrindMode")
-	IniWrite((UnitMode := "Preset"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitMode")
-	IniWrite((UnitSlot1 := "Cameraman"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot1")
-	IniWrite((UnitSlot2 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot2")
-	IniWrite((UnitSlot3 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot3")
-	IniWrite((UnitSlot4 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot4")
-	IniWrite((UnitSlot5 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot5")
-	IniWrite((UnitSlot6 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot6")
-	IniWrite((UnitSlot7 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot7")
-	IniWrite((UnitSlot8 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot8")
-	IniWrite((UnitSlot9 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot9")
-	IniWrite((UnitSlot0 := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot0")
+	IniWrite((ChapterName1 := ChapterName1Edit.Text := "Chapter 1"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName1")
+	IniWrite((ChapterName2 := ChapterName2Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName2")
+	IniWrite((ChapterName3 := ChapterName3Edit := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName3")
+	IniWrite((GrindMode := GrindModeEdit.Text := "Loss Farm"), A_SettingsWorkingDir "main_config.ini", "Game", "GrindMode")
+	IniWrite((UnitMode := UnitModeEdit.Text := "Preset"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitMode")
+	IniWrite((UnitSlot1 := UnitSlot1Edit.Text := "Cameraman"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot1")
+	IniWrite((UnitSlot2 := UnitSlot2Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot2")
+	IniWrite((UnitSlot3 := UnitSlot3Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot3")
+	IniWrite((UnitSlot4 := UnitSlot4Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot4")
+	IniWrite((UnitSlot5 := UnitSlot5Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot5")
+	IniWrite((UnitSlot6 := UnitSlot6Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot6")
+	IniWrite((UnitSlot7 := UnitSlot7Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot7")
+	IniWrite((UnitSlot8 := UnitSlot8Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot8")
+	IniWrite((UnitSlot9 := UnitSlot9Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot9")
+	IniWrite((UnitSlot0 := UnitSlot0Edit.Text := "None"), A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot0")
 }
 
 sd_GUITheme(*) {
 	global
 	GUITheme := MainGUI["GUITheme"].Text
 	IniWrite(GUITheme, A_SettingsWorkingDir "main_config.ini", "Settings", "GUITheme")
-	Reload()
+	MsgBox("GUI Theme will apply next reload.", "GUI Theme", 0x1020 " T60 Owner" MainGUI.Hwnd)
 }
 
 sd_ReconnectTest(*) {
 	sd_SetStatus("GUI", "Testing Reconnect")
 	CloseRoblox()
 	if (DisconnectCheck(1) = 2) {
-		MsgBox(LanguageText[52], LanguageText[53], 0x1000)
+		MsgBox("Success!", "Reconnect Test Complete", 0x1000)
 	}
 }
 
@@ -606,9 +648,9 @@ sd_ServerLink(GUICtrl, *) {
 		GUICtrl.Value := %k%
 		SendMessage 0xB1, p-2, p-2, GUICtrl
 		if InStr(str, "/share?code") {
-			sd_ErrorBalloon(GUICtrl, LanguageText[56], LanguageText[57] "`n" LanguageText[58] "`n" LanguageText[59] "`n" LanguageText[60])
+			sd_ErrorBalloon(GUICtrl, "Unresolved Private Server Link", 'You entered a "share?code" link! To fix this, follow these steps:`n    1. Paste the link into your browser`n    2. Wait for Skibi Defense to load`n    3. Copy the link at the top of your browser')
 		} else {
-			sd_ErrorBalloon(GUICtrl, LanguageText[61], LanguageText[62] "`r`n" LanguageText[63] "`r`n" LanguageText[64])
+			sd_ErrorBalloon(GUICtrl, "Invalid Private Server Link", "Make sure your link:`r`    - Is copied correctly and completely`r`n    - Is for Skibi Defense by Archkos Studios`n    - Does not have a language specification")
 		}
 	} else {
 		GUICtrl.Value := %k% := IsObject(NewPrivServer) ? NewPrivServer[0] : ""
@@ -696,11 +738,10 @@ sd_AdvancedOptionsGUI(*) {
 		if (IsSet(AdvancedOptionsGUI) && (IsObject(AdvancedOptionsGUI))) {
 			sd_LockTabs(0)
 			AdvancedOptionsGUI.Destroy(), AdvancedOptionsGUI := ""
-            Reload()
         }
 	}
 	GUIClose()
-	AdvancedOptionsGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, LanguageText[65])
+	AdvancedOptionsGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, "Advanced Options")
     sd_LockTabs()
 	AdvancedOptionsGUI.OnEvent("Close", GUIClose)
 	AdvancedOptionsGUI.AddButton("x265 y55 w40 h120 vStartupManagerGUI", "Open Macro on Startup").OnEvent("Click", sd_StartupManager)
@@ -731,7 +772,6 @@ sd_SaveReconnectMessage(*) {
 
 sd_StartupManager(*) {
 	global SMGUI
-	
 	if (A_IsAdmin) {
 		MsgBox(MacroName " has been run as administrator!`nStartup Manager can only launch " MacroName " on logon without admin privileges.`n`nIf you need to run " MacroName " as admin, either:`n	- Fix the reason why admin is required (reinstall Roblox unelevated, move " MacroName " folder)`n    - Manually set up a Scheduled Task in Task Scheduler with 'Run with highest privileges' checked`n    - Disable User Account Control (not recommended at all!)", "Startup Manager", 0x40030 " T120 Owner" MainGUI.Hwnd)
 	}
@@ -808,32 +848,33 @@ AddButton(*) {
 
 	Startup := SMGUI["StartupCheck"].Value
 	secs := SMGUI["DelayDuration"].Value
-
-	RegWrite('"' A_MacroWorkingDir 'Start.bat"'
-	 . ((Startup = 1) ?  ' "1"' : ' ""')		; Startup parameter
-	 . ' ""'										; existing heartbeat PID
-	 . ((secs > 0) ?  ' "' secs '"' : ' ""')		; delay before run (.bat)
-	 , "REG_SZ", "HKCU\Software\Microsoft\Windows\CurrentVersion\Run", "SkibiDefenseMacro")
-
-	SMGUI["Delay"].Text := "Delay Duration: " ((secs > 0) ? hmsFromSeconds(secs) : "None")
-	SMGUI["StatusVal"].SetFont("cGreen", "Tahoma"), SMGUI["StatusVal"].Text := "Active"
-	CenterText(SMGUI["StatusLabel"], SMGUI["StatusVal"], SMGUI["StatusLabel"])
-	SMGUI["StatusText"].SetFont("cGreen"), SMGUI["StatusText"].Text := MacroName " will automatically start on user login using the settings below:"
-	SMGUI["NTVal"].SetFont("cGreen"), SMGUI["NTVal"].Text := "Valid"
-	CenterText(SMGUI["NTLabel"], SMGUI["NTVal"], SMGUI["StatusText"])
-	SMGUI["ASVal"].SetFont((Startup = 1) ? "cGreen" : "cRed"), SMGUI["ASVal"].Text := (Startup = 1) ? "Enabled" : "Disabled"
-	CenterText(SMGUI["ASLabel"], SMGUI["ASVal"], SMGUI["StatusText"])
+	try {
+		RegWrite('"' A_MacroWorkingDir 'Start.bat"'
+	 	 . ((Startup = 1) ?  ' "1"' : ' ""')		; Startup parameter
+		 . ' ""'										; existing heartbeat PID
+		 . ((secs > 0) ?  ' "' secs '"' : ' ""')		; delay before run (.bat)
+		 , "REG_SZ", "HKCU\Software\Microsoft\Windows\CurrentVersion\Run", "SkibiDefenseMacro")
+	} catch {
+		MsgBox("Failed to create Startup Parameter! This could be due to the fact that the macro does not have sufficient permissions and needs to be run as administrator!", "Startup Manager", 0x1020 " T60 Owner" SMGUI.Hwnd)
+	} else {
+		SMGUI["Delay"].Text := "Delay Duration: " ((secs > 0) ? hmsFromSeconds(secs) : "None")
+		SMGUI["StatusVal"].SetFont("cGreen", "Tahoma"), SMGUI["StatusVal"].Text := "Active"
+		CenterText(SMGUI["StatusLabel"], SMGUI["StatusVal"], SMGUI["StatusLabel"])
+		SMGUI["StatusText"].SetFont("cGreen"), SMGUI["StatusText"].Text := MacroName " will automatically start on user login using the settings below:"
+		SMGUI["NTVal"].SetFont("cGreen"), SMGUI["NTVal"].Text := "Valid"
+		CenterText(SMGUI["NTLabel"], SMGUI["NTVal"], SMGUI["StatusText"])
+		SMGUI["ASVal"].SetFont((Startup = 1) ? "cGreen" : "cRed"), SMGUI["ASVal"].Text := (Startup = 1) ? "Enabled" : "Disabled"
+		CenterText(SMGUI["ASLabel"], SMGUI["ASVal"], SMGUI["StatusText"])
+	}
 }
 
 RemoveButton(*) {
 	global
-
 	try {
 		RegDelete("HKCU\Software\Microsoft\Windows\CurrentVersion\Run", "SkibiDefenseMacro")
 	} catch {
-		; show MsgBox
-	}
-	else {
+		; show MsgBox	
+	} else {
 		SMGUI["Delay"].Text := "Delay Duration: None"
 		SMGUI["StatusVal"].SetFont("cRed", "Tahoma"), SMGUI["StatusVal"].Text := "Inactive"
 		CenterText(SMGUI["StatusLabel"], SMGUI["StatusVal"], SMGUI["StatusLabel"])
@@ -845,23 +886,12 @@ RemoveButton(*) {
 	}
 }
 
-sd_LanguageManager(*) {
+sd_Language(*) {
 	global
-	if MainGUI["LanguageSelection"].Value = 1 {
-		Language := "english"
-	}
-	if MainGUI["LanguageSelection"].Value = 2 {
-		Language := "turkish"
-	}
-	if MainGUI["LanguageSelection"].Value = 3 {
-		Language := "spanish"
-	}
-	if MainGUI["LanguageSelection"].Value = 4 {
-		Language := "portuguese"
-	}
+	Language := LanguageEdit.Text
 	IniWrite(Language, A_SettingsWorkingDir "main_config.ini", "Settings", "Language")
-	sd_SetStatus("GUI", "Language set to " MainGUI["LanguageSelection"].Text)
-	Reload()
+	sd_SetStatus("GUI", "Language set to " Language)
+	MsgBox("Language will apply next reload.", "Language", 0x1020 " T60 Owner" MainGUI.Hwnd)
 }
 
 sd_ReconnectMethod(GUICtrl, *) {
@@ -869,7 +899,7 @@ sd_ReconnectMethod(GUICtrl, *) {
 	static val := ["Deeplink", "Browser"], l := val.Length
 
 	if (ReconnectMethod = "Deeplink") {
-		if (MsgBox(LanguageText[66] "`n`n" LanguageText[67] "`n`n" LanguageText[68], LanguageText[69], 0x1034 ' T60 Owner' MainGUI.Hwnd) = 'Yes') {
+		if (MsgBox('Setting reconnect method to "Browser" is not recommended!`n`nEven if you have problems while using the "Deeplink" method, fixing it is a much better option than using the "Browser" method. Read the [?] for more information.`n`Are you sure you want to change this?', "Reconnect Method Warning", 0x1034 " Owner" MainGUI.Hwnd) = 'Yes') {
 			i := 1
 		} else {
 			return
@@ -886,7 +916,7 @@ sd_ReconnectMethod(GUICtrl, *) {
 
 ; reconnect method information
 sd_ReconnectMethodHelp(*) {
-	MsgBox(LanguageText[70] "`n`n" LanguageText[71] "`n" LanguageText[72] "`n`n" LanguageText[73] "`n" LanguageText[74], LanguageText[75], 0x40000)
+	MsgBox("This option lets you choose between the 'Deeplink' and 'Browser' reconnect methods.`n`n'Deeplink' is the recommended method; it's faster (since it skips opening your browser and waiting for it to load completely) and works with the Roblox UWP (Microsoft Store) app.`nIt can also join SD directly without the need for a redirecting game like SD Rejoin. You can search 'Roblox Developer Deeplinking' online for more information.`n`n'Browser' should only be used when 'Deeplink' absolutely fails and is unfixable.`nThis is the old/legacy method of reconnecting; it can have inconsistencies between browsers (e.g. failure to close tabs, Roblox not logged in) and you will not be able to join a public server directly (because 'Deeplink' is forced when joining public servers).", "Reconnect Methods", 0x1020)
 }
 
 sd_AutoClickerGUI(*) {
@@ -894,31 +924,39 @@ sd_AutoClickerGUI(*) {
 	local ClickCountEdit, ClickDurationEdit, ClickDelayEdit
 	GUIClose(*) {
 		if (IsSet(AutoClickerGUI) && IsObject(AutoClickerGUI)) {
+			sd_LockTabs(0)
 			AutoClickerGUI.Destroy(), AutoClickerGUI := ""
 		}
 	}
 	GUIClose()
-	AutoClickerGUI := Gui("+AlwaysOnTop +Border", LanguageText[24])
+	sd_LockTabs()
+	AutoClickerGUI := Gui("+AlwaysOnTop +Border -MaximizeBox -MinimizeBox", "AutoClicker")
 	AutoClickerGUI.OnEvent("Close", GUIClose)
 	AutoClickerGUI.SetFont("s8 cDefault w700", "Tahoma")
-	AutoClickerGUI.AddGroupBox("x5 y2 w195 h100", LanguageText[80])
+	AutoClickerGUI.AddGroupBox("x5 y2 w195 h105", "Settings")
 	AutoClickerGUI.SetFont("Norm")
 	AutoClickerGUI.AddCheckBox("x110 y2 vClickMode Checked" ClickMode, "Infinite").OnEvent("Click", sd_AutoClickerClickMode)
-	AutoClickerGUI.AddText("x13 y27", LanguageText[81])
+	AutoClickerGUI.AddText("x13 y27", "Repeat")
 	AutoClickerGUI.AddEdit("x50 yp-2 w80 h18 vClickCountEdit Number Limit7 Disabled" ClickMode)
 	(ClickCountEdit := AutoClickerGUI.AddUpDown("vClickCount Range0-9999999 Disabled" ClickMode, ClickCount)).Section := "Settings", ClickCountEdit.OnEvent("Change", sd_UpdateConfigShortcut)
-	AutoClickerGUI.AddText("x133 y27", LanguageText[82])
-	AutoClickerGUI.AddText("x10 yp+20", LanguageText[83])
+	AutoClickerGUI.AddText("x133 y27", "times")
+	AutoClickerGUI.AddText("x10 yp+22", "Click Interval (ms):")
 	AutoClickerGUI.AddEdit("xp+100 yp-2 w61 h18 vClickDelayEdit Number Limit5", ClickDelay).OnEvent("Change", (*) => sd_UpdateConfigShortcut(ClickDelayEdit))
 	(ClickDelayEdit := AutoClickerGUI.AddUpDown("vClickDelay Range0-99999", ClickDelay)).Section := "Settings", ClickDelayEdit.OnEvent("Change", sd_UpdateConfigShortcut)
-	AutoClickerGUI.AddText("x10 yp+20", LanguageText[84])
+	AutoClickerGUI.AddText("x10 yp+22", "Click Duration (ms):")
 	AutoClickerGUI.AddEdit("xp+116 yp-2 w57 h18 vClickDurationEdit Number Limit4", ClickDuration).OnEvent("Change", (*) => sd_UpdateConfigShortcut(ClickDurationEdit))
 	(ClickDurationEdit := AutoClickerGUI.AddUpDown("vClickDuration Range0-9999", ClickDuration)).Section := "Settings", ClickDurationEdit.OnEvent("Change", sd_UpdateConfigShortcut)
-	AutoClickerGUI.AddText("x10 yp+20", LanguageText[85])
+	AutoClickerGUI.AddText("x10 yp+22", "Click Button:")
 	AutoClickerGUI.AddText("xp+105 yp w48 vClickButton +Center ", ClickButton)
 	AutoClickerGUI.AddButton("xp-12 yp-1 w10 h12 vCBLeft", "<").OnEvent("Click", sd_AutoClickerClickButton)
 	AutoClickerGUI.AddButton("xp+59 yp w10 h12 vCBRight", ">").OnEvent("Click", sd_AutoClickerClickButton)
-	AutoClickerGUI.Show("w206 h104")
+	AutoClickerGui.AddButton("x60 y108 w80 h20 vStartAutoClicker", "Start (" AutoClickerHotkey ")").OnEvent("Click", sd_StartAutoClicker)
+	sd_StartAutoClicker(*) {
+		GUIClose()
+		MainGUI.Minimize()
+		sd_AutoClicker()
+	}
+	AutoClickerGUI.Show("w206 h130")
 }
 
 sd_AutoClickerClickMode(*) {
@@ -935,9 +973,9 @@ sd_AutoClickerClickMode(*) {
 
 sd_AutoClickerClickButton(GUICtrl, *) {
 	global ClickButton
-	static val := ["LMB", "RMB"], l := val.Length
+	static val := ["LButton", "RButton"], l := val.Length
 
-	i := (ClickButton = "LMB") ? 1 : 2
+	i := (ClickButton = "LButton") ? 1 : 2
 
 	AutoClickerGUI["ClickButton"].Text := ClickButton := val[(GUICtrl.Name = "CBRight") ? (Mod(i, l) + 1) : (Mod(l + i - 2, l) + 1)]
 	IniWrite(ClickButton, A_SettingsWorkingDir "main_config.ini", "Settings", "ClickButton")
@@ -957,12 +995,11 @@ sd_ReverseStatusLog(*) {
 }
 
 sd_ResetTotalStatsButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your total statistics?`nThis action cannot be undone!", "Reset Total Statistics", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your total statistics?`nThis action cannot be undone!", "Reset Total Statistics", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 		sd_ResetTotalStats()
-		sd_SetStats()
-		Reload()
 	}
+	sd_LockTabs(0)
 }
 
 sd_ResetTotalStats() {
@@ -971,6 +1008,10 @@ sd_ResetTotalStats() {
 	IniWrite((TotalPlaytime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalPlaytime")
 	IniWrite((TotalPausedTime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalPausedTime")
 	IniWrite((TotalDisconnects := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalDisconnects")
+	IniWrite((TotalWins := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalWins")
+	IniWrite((TotalLosses := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalLosses")
+	IniWrite((TotalCredits := 0), A_SettingsWorkingDir "main_config.ini", "Status", "TotalCredits")
+	sd_SetStats()
 }
 
 sd_DiscordIntegrationGUI(*) {
@@ -980,7 +1021,6 @@ sd_DiscordIntegrationGUI(*) {
 		if (IsSet(DiscordIntegrationGUI) && IsObject(DiscordIntegrationGUI)) {
 			sd_LockTabs(0)
 			DiscordIntegrationGUI.Destroy(), DiscordIntegrationGUI := ""
-            Reload()
 		}
 	}
 	GUIClose()
@@ -988,7 +1028,7 @@ sd_DiscordIntegrationGUI(*) {
 	sd_LockTabs()
 	DiscordIntegrationGUI.OnEvent("Close", GUIClose)
 	DiscordIntegrationGUI.SetFont("s8 cDefault Bold", "Tahoma")
-	DiscordIntegrationGUI.AddGroupBox("x5 y2 w150 h85", LanguageText[80])
+	DiscordIntegrationGUI.AddGroupBox("x5 y2 w150 h85", "Settings")
 	DiscordIntegrationGUI.AddGroupBox("x5 y90 w270 h77", "Channels")
 	DiscordIntegrationGUI.AddGroupBox("x160 y2 w380 h85", "Pings")
 	DiscordIntegrationGUI.AddGroupBox("x280 y90 w235 h45", "Screenshots")
@@ -1021,7 +1061,7 @@ sd_DiscordIntegrationHelp(*) {
 }
 
 sd_DiscordIntegrationDocumentation(*) {
-	Run("https://rawcdn.githack.com/NZMacros/GitHub/main/docs/DiscordIntegration/DiscordIntegrationDocumentation.html")
+	Run("https://rawcdn.githack.com/NZMacros/GitHub/main/skibi_defense_macro/docs/DiscordIntegration/DiscordIntegrationDocumentation.html")
 }
 
 sd_EnableDiscord(*) {
@@ -1049,7 +1089,6 @@ sd_SetDiscordModetoWebhook(*) {
 		IniWrite((DiscordMode := 2), A_SettingsWorkingDir "main_config.ini", "Discord", "DiscordMode")
 		DiscordIntegrationGUI["SetBot"].Value := 1
 	}
-	Reload()
 }
 
 sd_SetDiscordModetoBot(*) {
@@ -1061,7 +1100,6 @@ sd_SetDiscordModetoBot(*) {
 		IniWrite((DiscordMode := 1), A_SettingsWorkingDir "main_config.ini", "Discord", "DiscordMode")
 		DiscordIntegrationGUI["SetWebhook"].Value := 1
 	}
-	Reload()
 }
 
 sd_EnableMainChannel(*) {
@@ -1112,20 +1150,6 @@ StopButton(GUICtrl, *) {
 	}
 }
 
-AutoClickerButton(GUICtrl, *) {
-	MouseGetPos( , , , &hCtrl, 2)
-	if hCtrl = GUICtrl.Hwnd {
-		return sd_AutoClicker()
-	}
-}
-
-CloseButton(GUICtrl, *) {
-	MouseGetPos( , , , &hCtrl, 2)
-	if hCtrl = GUICtrl.Hwnd {
-		return sd_Close()
-	}
-}
-
 WindowInformation(*) {
 	try {
 		Run('"' exe_path32 '" /script "' A_MacroWorkingDir 'submacros\WindowInformation.ahk" ')
@@ -1146,6 +1170,10 @@ sd_CommunityCreationsPost(*) {
 
 sd_ReportSecurityVulnerabilitiesButton(*) {
 	Run("https://github.com/NZMacros/SkibiDefenseMacro/security/advisories/new")
+}
+
+sd_MacroQuestionsButton(*) {
+	Run("https://github.com/NZMacros/GitHub/issues/new?assignees=&labels=type%3Aquestion%2Cmacro%3Askibi_defense_macro&projects=&template=skibi-defense-macro_question.yml")
 }
 
 ; current chapter up/down
@@ -1255,37 +1283,56 @@ sd_ChapterSelect_3(GUICtrl?, *) {
 
 sd_ResetAdvancedOptions() {
 	global
-	sd_SetStatus("GUI", "Resetting Advanced Options")
-	Loop 3 {
-		IniWrite((FallbackServer%A_Index% := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "FallbackServer" A_Index)
-	}
+	IniWrite((FallbackServer1 := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "FallbackServer1")
+	IniWrite((FallbackServer2 := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "FallbackServer2")
+	IniWrite((FallbackServer3 := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "FallbackServer3")
 	IniWrite((DebuggingScreenshots := 0), A_SettingsWorkingDir "main_config.ini", "Discord", "DebuggingScreenshots")
 	IniWrite((DebugLogEnabled := 1), A_SettingsWorkingDir "main_config.ini", "Discord", "DebugLogEnabled")
 	IniWrite((ReconnectMessage := ""), A_SettingsWorkingDir "main_config.ini", "Settings", "ReconnectMessage")
 	try {
 		RegDelete("HKCU\Software\Microsoft\Windows\CurrentVersion\Run", "SkibiDefenseMacro")
 	}
+	IsSet(AdvancedOptionsGUI) ? sd_ResetGUITexts("advopt") : ""
+}
+
+sd_ResetGUITexts(GUI) {
+	global
+	switch GUI, 0 {
+		case "advopt":
+		AdvancedOptionsGUI["FallbackServer1"].Text := ""
+		AdvancedOptionsGUI["FallbackServer2"].Text := ""
+		AdvancedOptionsGUI["FallbackServer3"].Text := ""
+		AdvancedOptionsGUI["CustomReconnectMessage"].Text := ""
+
+
+		case "di":
+		
+
+
+		default:
+		throw Error('Invalid parameter specified for "sd_ResetGUITexts".', -1, 'Try using "advopt".')
+	}
 }
 
 sd_ResetAdvancedOptionsButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your confirgurations for Advanced Options?`nThis action cannot be undone!", "Reset Advanced Options", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your confirgurations for Advanced Options?`nThis action cannot be undone!", "Reset Advanced Options", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 		sd_ResetAdvancedOptions()
-		Reload()
 	}
+	sd_LockTabs(1)
 }
 
 sd_ResetDiscordIntegrationButton(*) {
-	local confirmation := MsgBox("Are you sure you would like to reset your confirgurations for Discord Integration?`nThis action cannot be undone!", "Reset Discord Integration", 0x1024 " Owner" MainGUI.Hwnd)
-	if confirmation = "Yes" {
+	sd_LockTabs()
+	if (MsgBox("Are you sure you would like to reset your confirgurations for Discord Integration?`nThis action cannot be undone!", "Reset Discord Integration", 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
+		sd_SetStatus("Discord", "Resetting Integration")
 		sd_ResetDiscordIntegration()
-		Reload()
 	}
+	sd_LockTabs(1)
 }
 
 sd_ResetDiscordIntegration() {
 	global
-	sd_SetStatus("GUI", "Resetting Discord Integration")
 	IniWrite((BotToken := ""), A_SettingsWorkingDir "main_config.ini", "Discord", "BotToken")
 	IniWrite((ColourfulEmbeds := 0), A_SettingsWorkingDir "main_config.ini", "Discord", "ColourfulEmbeds")
 	IniWrite((CommandPrefix := "?"), A_SettingsWorkingDir "main_config.ini", "Discord", "CommandPrefix")
@@ -1402,16 +1449,16 @@ sd_GrindMode(*) {
 			UnitSlot0 := "None"
 		}
 	}
-	IniWrite(UnitSlot1, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot1"), UnitSlot1Edit.Text := UnitSlot1, UnitSlot1Edit.Redraw()
-	IniWrite(UnitSlot2, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot2"), UnitSlot2Edit.Text := UnitSlot2, UnitSlot2Edit.Redraw()
-	IniWrite(UnitSlot3, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot3"), UnitSlot3Edit.Text := UnitSlot3, UnitSlot3Edit.Redraw()
-	IniWrite(UnitSlot4, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot4"), UnitSlot4Edit.Text := UnitSlot4, UnitSlot4Edit.Redraw()
-	IniWrite(UnitSlot5, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot5"), UnitSlot5Edit.Text := UnitSlot5, UnitSlot5Edit.Redraw()
-	IniWrite(UnitSlot6, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot6"), UnitSlot6Edit.Text := UnitSlot6, UnitSlot6Edit.Redraw()
-	IniWrite(UnitSlot7, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot7"), UnitSlot7Edit.Text := UnitSlot7, UnitSlot7Edit.Redraw()
-	IniWrite(UnitSlot8, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot8"), UnitSlot8Edit.Text := UnitSlot8, UnitSlot8Edit.Redraw()
-	IniWrite(UnitSlot9, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot9"), UnitSlot9Edit.Text := UnitSlot9, UnitSlot9Edit.Redraw()
-	IniWrite(UnitSlot0, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot0"), UnitSlot0Edit.Text := UnitSlot0, UnitSlot0Edit.Redraw()
+	IniWrite(UnitSlot1, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot1"), UnitSlot1Edit.Text := UnitSlot1
+	IniWrite(UnitSlot2, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot2"), UnitSlot2Edit.Text := UnitSlot2
+	IniWrite(UnitSlot3, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot3"), UnitSlot3Edit.Text := UnitSlot3
+	IniWrite(UnitSlot4, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot4"), UnitSlot4Edit.Text := UnitSlot4
+	IniWrite(UnitSlot5, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot5"), UnitSlot5Edit.Text := UnitSlot5
+	IniWrite(UnitSlot6, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot6"), UnitSlot6Edit.Text := UnitSlot6
+	IniWrite(UnitSlot7, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot7"), UnitSlot7Edit.Text := UnitSlot7
+	IniWrite(UnitSlot8, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot8"), UnitSlot8Edit.Text := UnitSlot8
+	IniWrite(UnitSlot9, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot9"), UnitSlot9Edit.Text := UnitSlot9
+	IniWrite(UnitSlot0, A_SettingsWorkingDir "main_config.ini", "Game", "UnitSlot0"), UnitSlot0Edit.Text := UnitSlot0
 }
 
 sd_UnitSlotDefaults(*) {
@@ -1477,7 +1524,6 @@ sd_UnitSlotDefaults(*) {
 	} else {
 		UnitSlot0Edit.Text := UnitSlot0
 	}
-	gofys()
 }
 
 gofys(*) {
@@ -1500,7 +1546,6 @@ gofuckyourself() {
 	ChapterName2Edit.Enabled := 0
 	ChapterName3Edit.Enabled := 0
 	LanguageEdit.Enabled := 0
-	MainGUI["DankMemerAutoGrinder"].Enabled := 0
 }
 
 sd_UnitsHelp(*) {
@@ -1563,13 +1608,14 @@ sd_DankMemerAutoGrinderGUI(*) {
         }
 	}
 	GUIClose()
-	DankMemerAutoGrinderGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, "Dank Memer Auto-Grinder")
+	DankMemerAutoGrinderGUI := Gui("-MinimizeBox +Owner" MainGUI.Hwnd, "Dank Memer Auto-Grinder")
     sd_LockTabs()
 	DankMemerAutoGrinderGUI.OnEvent("Close", GUIClose)
 	DankMemerAutoGrinderGUI.SetFont("s8 cDefault Bold", "Tahoma")
-	DankMemerAutoGrinderGUI.AddGroupBox("x5 y2 w290 h96", "Settings")
+	DankMemerAutoGrinderGUI.AddGroupBox("x5 y2 w150 h200", "Farms")
+	DankMemerAutoGrinderGUI.AddGroupBox("x160 y2 w135 h120", "Job Settings")
 	DankMemerAutoGrinderGUI.SetFont("Norm")
-	DankMemerAutoGrinderGUI.AddText("x20 y30", "My job as ")
+	DankMemerAutoGrinderGUI.AddText("x220 y27", "Job:")
 	DankMemerJobsArr := ["Discord Mod", "Babysitter", "Fast Food Cook", "House Wife"
 	 , "Twitch Streamer", "YouTuber", "Professional Hunter", "Professional Fisherman"
 	 , "Grave Digger", "Bartender", "Robber", "Police Officer"
@@ -1577,11 +1623,13 @@ sd_DankMemerAutoGrinderGUI(*) {
 	 , "Developer", "Day Trader", "Santa Claus", "Politician"
 	 , "Veterinarian", "Pharmacist", "Dank Memer Shopkeeper", "Lawyer"
 	 , "Doctor", "Scientist", "Ghost", "Adventurer"]
-	(DankMemerJobEdit := DankMemerAutoGrinderGUI.AddDropDownList("x75 y27 vDankMemerJobEdit", ["Unemployed"])).Add(DankMemerJobsArr), DankMemerJobEdit.Text := DankMemerJob, DankMemerJobEdit.OnEvent("Change", sd_DankMemerJob)
-	DankMemerAutoGrinderGUI.AddText("x195 y30", "  has a cooldown of")
-	(DisplayedDankMemerJobCooldownEdit := DankMemerAutoGrinderGUI.AddText("x30 y60 vDisplayedDankMemerJobCooldown", (DankMemerJobCooldown//60000) " minutes."))
-	DankMemerAutoGrinderGUI.AddButton("x150 y60", "Start Grind").OnEvent("Click", sd_StartDankMemerAutoGrinder)
-	DankMemerAutoGrinderGUI.Show("w300 h100")
+	(DankMemerJobEdit := DankMemerAutoGrinderGUI.AddDropDownList("x168 y47 vDankMemerJobEdit Disabled", ["Unemployed"])).Add(DankMemerJobsArr), DankMemerJobEdit.Text := DankMemerJob, DankMemerJobEdit.OnEvent("Change", sd_DankMemerJob)
+	(DisplayedDankMemerJobCooldownEdit := DankMemerAutoGrinderGUI.AddText("x175 y75 vDisplayedDankMemerJobCooldown", "Cooldown: " (DankMemerJobCooldown//60000) " minutes."))
+	DankMemerAutoGrinderGUI.AddCheckBox("x10 y32 vUseSlashCommands Checked" DankMemerSlashCommands, "Message Farm (" ((DankMemerSlashCommands = 1) ? "Off" : "On") ")").OnEvent("Click", sd_DMAGswitchNewCmds)
+	DankMemerAutoGrinderGUI.AddCheckBox("x10 y67 vBegEdit Checked" DankMemerFarmBeg, "Beg Farm").OnEvent("Click", sd_DankMemerBegFarm)
+	DankMemerAutoGrinderGUI.AddButton("x170 y130", "Start Grind").OnEvent("Click", sd_StartDankMemerAutoGrinder)
+	DankMemerAutoGrinderGUI.AddButton("x170 y160", "End Grind").OnEvent("Click", sd_Stop)
+	DankMemerAutoGrinderGUI.Show("w300 h200")
 	sd_DankMemerJob(*) {
 		IniWrite((DankMemerJob := DankMemerJobEdit.Text), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJob")
 		if DankMemerJob = "Unemployed" {
@@ -1601,12 +1649,23 @@ sd_DankMemerAutoGrinderGUI(*) {
 		} else if (DankMemerJob = "Lawyer" || DankMemerJob = "Doctor" || DankMemerJob = "Scientist" || DankMemerJob = "Ghost" || DankMemerJob = "Adventurer") {
 			IniWrite((DankMemerJobCooldown := (58 * 60000)), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
 		}
-		DisplayedDankMemerJobCooldownEdit.Text := (DankMemerJobCooldown//60000) " minutes.", DisplayedDankMemerJobCooldownEdit.Redraw()
+		DisplayedDankMemerJobCooldownEdit.Text := "Cooldown: " (DankMemerJobCooldown//60000) " minutes."
 	}
 	sd_StartDankMemerAutoGrinder(*) {
-		Run("https://discord.com/channels/1145457576432128011/1315005994211872888")
+		MainGUI.Minimize(), DankMemerAutoGrinderGUI.Minimize()
 		sd_DankMemerAutoGrinder()
 	}
+}
+
+sd_DankMemerBegFarm(*) {
+	global
+	IniWrite((DankMemerFarmBeg := DankMemerAutoGrinderGUI["BegEdit"].Value), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerFarmBeg")
+}
+
+sd_DMAGswitchNewCmds(*) {
+	global
+	IniWrite((DankMemerSlashCommands := DankMemerAutoGrinderGUI["UseSlashCommands"].Value), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerSlashCommands")
+	((DankMemerAutoGrinderGUI["UseSlashCommands"].Value = 1) ? (DankMemerAutoGrinderGUI["UseSlashCommands"].Text := "Message Farm (Off)") : (DankMemerAutoGrinderGUI["UseSlashCommands"].Text := "Message Farm (On)"))
 }
 
 sd_QuickstartButton(*) {
@@ -1615,5 +1674,79 @@ sd_QuickstartButton(*) {
 	sd_Quickstart()
 }
 
+sd_RandomStringGenerator(*) {
+	global
+	GUIClose(*) {
+		if (IsSet(RandomStringGeneratorGUI) && (IsObject(RandomStringGeneratorGUI))) {
+			sd_LockTabs(0)
+			RandomStringGeneratorGUI.Destroy(), RandomStringGeneratorGUI := ""
+        }
+	}
+	GUIClose()
+	RandomStringGeneratorGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, "Random Strings")
+    sd_LockTabs()
+	RandomStringGeneratorGUI.OnEvent("Close", GUIClose)
+	RandomStringGeneratorGUI.SetFont("s8 cDefault Bold", "Tahoma")
+	RandomStringGeneratorGUI.AddGroupBox("x5 y2 w175 h55", "Settings")
+	RandomStringGeneratorGUI.SetFont("Norm")
+	RandomStringGeneratorGUI.AddText("x10 y30 +BackgroundTrans", "Length:")
+	RandomStringGeneratorGUI.AddText("x50 y30 +Center +BackgroundTrans vRandomStringCount", RandomStringCount)
+	RandomStringGeneratorGUI.AddUpDown("xp+17 yp-1 h16 -16 Range1-93 vRandomStringCountUpDown", RandomStringCount).OnEvent("Change", sd_RandomStringLength)
+	RandomStringGeneratorGUI.AddButton("x110 y27 vGenerateRandomString", "Generate").OnEvent("Click", RandomString)
+	RandomStringGeneratorGUI.Show("w185 h60")
+	RandomString(*) {
+		local NewFile :=  A_YYYY "-" A_DD "-" A_MM "--" A_Hour "-" A_Min "-" A_Sec
+		FileAppend("<!DOCTYPE html>`n<head>`n<title>SDM Random String</title>`n</head>`n<body>`n<b>" GenerateRandomString() "</b>`n</body>`n</html>", A_SettingsWorkingDir "misc\randomstrings\randomstring_" NewFile ".html")
+		Run(A_SettingsWorkingDir "misc\randomstrings\randomstring_" NewFile ".html")
+	}
+}
 
-SetLoadProgress(Round(83.3333333333333343, 1), MainGUI, MacroName " (" LanguageText[77] " ")
+sd_RandomStringLength(*) { 
+	global RandomStringCount
+	RandomStringGeneratorGUI["RandomStringCount"].Text := RandomStringCount := RandomStringGeneratorGUI["RandomStringCountUpDown"].Value
+	IniWrite(RandomStringCount, A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RandomStringCount")
+}
+
+sd_RegistryDumperGUI(*) {
+	global
+	GUIClose(*) {
+		if (IsSet(RegistryDumperGUI) && (IsObject(RegistryDumperGUI))) {
+			sd_LockTabs(0)
+			RegistryDumperGUI.Destroy(), RegistryDumperGUI := ""
+        }
+	}
+	GUIClose()
+	RegistryDumperGUI := Gui("+AlwaysOnTop -MinimizeBox +Owner" MainGUI.Hwnd, "RegDump")
+    sd_LockTabs()
+	RegistryDumperGUI.OnEvent("Close", GUIClose)
+	RegistryDumperGUI.SetFont("s8 cDefault Bold", "Tahoma")
+	RegistryDumperGUI.AddGroupBox("x5 y2 w293 h146", "Settings")
+	RegistryDumperGUI.SetFont("Norm")
+	RegistryDumperGUI.AddText("x10 y25 +BackgroundTrans", "Registry Path:")
+	RegistryDumperGUI.AddEdit("x10 y50 w285 h20 +Center vRegPath", RegDumpPath).OnEvent("Change", sd_RegDumpPath)
+	RegistryDumperGUI.AddText("x10 y75 +BackgroundTrans", "Dump Path:")
+	RegistryDumperGUI.AddEdit("x10 y95 w285 h20 +Center vDumpPath", RegLogPath).OnEvent("Change", sd_RegLogPath)
+	RegistryDumperGUI.AddButton("x110 y120 vStartRegDump", "Begin").OnEvent("Click", StartRegDump)
+	RegistryDumperGUI.AddButton("x150 y120 vEndRegDump", "Stop").OnEvent("Click", sd_Stop)
+	RegistryDumperGUI.Show("w300 h150")
+	StartRegDump(*) {
+		MsgBox("Click OK to confirm, or press F3 to stop.", "RegDump.ahk", 0x1010 " T60 Owner" RegistryDumperGUI.Hwnd)
+		sd_DumpRegistry(RegDumpPath, RegLogPath)
+		if MsgBox("Complete! Time: " RegDumpTotalTime " minutes.`nOpen dump file?", "RegDump.ahk", 0x1004 " T120") = "Yes" {
+			Run(ExtendedRegLogPath)
+		}
+	}
+}
+
+sd_RegDumpPath(*) {
+	global
+	IniWrite((RegDumpPath := RegistryDumperGUI["RegPath"].Value), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegDumpPath")
+}
+
+sd_RegLogPath(*) {
+	global
+	IniWrite((RegLogPath := RegistryDumperGUI["DumpPath"].Value), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegLogPath")
+}
+
+
+SetLoadProgress(Round(83.3333333333333343, 1), MainGUI, MacroName " (Loading: ")

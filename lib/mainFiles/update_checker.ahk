@@ -30,7 +30,7 @@ sd_AutoUpdateHandler(req) {
 			MainGUI["VersionText"].Move(494 - VersionWidth), MainGUI["VersionText"].Redraw()
 			MainGUI["GitHubButton"].Move(494 - VersionWidth - 23), MainGUI["GitHubButton"].Redraw()
 			MainGUI["DiscordButton"].Move(494 - VersionWidth - 48), MainGUI["DiscordButton"].Redraw()
-			if LatestVer != IgnoredVersion {
+			if LatestVer != IgnoredUpdateVersion {
 				sd_AutoUpdateGUI()
             }
 		}
@@ -126,9 +126,8 @@ sd_DismissButton(*) {
 
 sd_NeverButton(*) {
 	global UpdateGUI
-	local confirmation := MsgBox("Are you sure you want to disable prompts for v" LatestVer "? You can still update manually, or by clicking the red symbol in the bottom right corner of the GUI.", "Disable Automatic Update Reminders for v" LatestVer, 0x1044 " Owner" UpdateGUI.Hwnd)
-	if confirmation = "Yes" {
-		IniWrite((IgnoredVersion := LatestVer), A_SettingsWorkingDir "main_config.ini", "Settings", "IgnoredVersion")
+	if (MsgBox("Are you sure you want to disable prompts for v" LatestVer "? You can still update manually, or by clicking the red symbol in the bottom right corner of the GUI.", "Disable Automatic Update Reminders for v" LatestVer, 0x1044 " Owner" UpdateGUI.Hwnd) = "Yes") {
+		IniWrite((IgnoredUpdateVersion := LatestVer), A_SettingsWorkingDir "main_config.ini", "Settings", "IgnoredUpdateVersion")
 		UpdateGUI.Destroy(), UpdateGUI := ""
 	}
 }

@@ -1,2 +1,1 @@
-[9/11][1:125.49999999999999:-114] Hello world!
-[08/12][03:50:35] GUI: Resetting Discord Integration
+[12/12][23:56:54] Hello world!

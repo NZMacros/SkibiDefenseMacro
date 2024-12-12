@@ -8,23 +8,23 @@ sd_Pause(*) {
 		sd_LockTabs()
 		ActivateRoblox()
 		DetectHiddenWindows(1)
-		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid) {
+		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid) {
 			Send "{F16}"
 		} else {
 			if (W_State) {
-				SendInput "{" W " down}"
+				Send "{" W " down}"
 			}
 			if (S_State) {
-				SendInput "{" S " down}"
+				Send "{" S " down}"
 			}
 			if (A_State) {
-				SendInput "{" A " down}"
+				Send "{" A " down}"
 			}
 			if (D_State) {
-				SendInput "{" D " down}"
+				Send "{" D " down}"
 			}
 			if (Space_State) {
-				SendInput "{" Space " down}"
+				Send "{" Space " down}"
 			}
 		}
 		MacroState := 2
@@ -55,11 +55,11 @@ sd_Pause(*) {
 			WinActivate("ahk_id " MainGUI.Hwnd)
 		}
 		DetectHiddenWindows(1)
-		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid) {
+		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid) {
 			Send "{F16}"
 		} else {
 			W_State := GetKeyState(W), S_State := GetKeyState(S), A_State := GetKeyState(A), D_State := GetKeyState(D), Space_State := GetKeyState(Space)
-			SendInput "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
+			Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
 			Click("Up")
 		}
 		MacroState := 1
@@ -107,8 +107,8 @@ sd_Stop(*) {
 		Hotkey(PauseHotkey, sd_Pause, "Off")
 		Hotkey(StopHotkey, sd_Stop, "Off")
 	}	
-	sd_EndMovement()
-	SendInput "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
+	sd_EndStrategy()
+	Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
 	Click("Up")    
 	if (MacroState) {
 		SessionRuntime := SessionRuntime + (nowUnix() - MacroStartTime)
@@ -133,6 +133,7 @@ sd_Stop(*) {
 	sd_SetStatus("End", "Macro")
 	DetectHiddenWindows(1)
 	MacroState := 0
+	PreserveState()
 	Reload()
 	Sleep 10000
 }
@@ -140,33 +141,70 @@ sd_Stop(*) {
 ; autoclicker
 sd_AutoClicker(*) {
 	global ClickButton, ClickDuration, ClickDelay
-	static toggle:=0
+	static toggle := 0
 	toggle := !toggle
 
-	for var, default in Map("ClickButton", "LMB", "ClickDuration", 50, "ClickDelay", 10) {
+	for var, default in Map("ClickButton", "LButton", "ClickDuration", 50, "ClickDelay", 50) {
 		if (!IsNumber(%var%)) {
 			%var% := default
 		}
 	}	
 
-	while ((ClickMode || (A_Index <= ClickCount)) && toggle) {
-		SendInput "{" ClickButton " down}"
+	while (((ClickMode) || (A_Index <= ClickCount)) && (toggle)) {
+		Send "{" ClickButton " down}"
 		Sleep(ClickDuration)
-		SendInput "{" ClickButton " up}"
+		Send "{" ClickButton " up}"
 		Sleep(ClickDelay)
 	}
 	toggle := 0
 }
 
+; close
 sd_Close(*) {
-	SaveGUIPos()
-	sd_EndMovement()
-	CloseScripts()
-	try {
-		Gdip_Shutdown(pToken)
-	}
-	DllCall(A_ThemesWorkingDir "USkin.dll\USkinExit")
+	PreserveState()
 	ExitApp()
+}
+
+; dank memer
+sd_DankMemerAutoGrinder() {
+	global DankMemerJob, DankMemerJobCooldown, DankMemerFarmJob, DankMemerSlashCommands, DankMemerFarmBeg
+	static toggle := 0
+	toggle := !toggle
+	
+	Run("https://discord.com/channels/1145457576432128011/1315005994211872888")
+	Sleep 60000
+
+	while (toggle) {
+		if DankMemerFarmBeg = 1 {
+			if DankMemerSlashCommands = 1 {
+				slashbeg()
+			} else {
+				beg()
+			}
+			Sleep 60000
+		}
+	}
+	toggle := 0
+	beg() {
+		SendText("pls beg"), Sleep(250), SendText("`n")
+	}
+	slashbeg() {
+		SendText "/beg"
+		Sleep 2500
+		SendText("`n"), Sleep(1500), SendText("`n")
+	}
+}
+
+sd_DumpRegistry(DumpPath, LogPath) {
+	global
+	RegDumpStartTime := nowUnix()
+	Loop Reg DumpPath, "KVR" {
+		PrintStr := "Full Path: " A_LoopRegKey "`n`nType: " A_LoopRegType "`n`nRetrieved Item: " A_LoopRegName "`n`nValue: " (((A_LoopRegType = "REG_SZ" || A_LoopRegType = "REG_EXPAND_SZ" || A_LoopRegType = "REG_MULTI_SZ" || A_LoopRegType = "REG_DWORD" || A_LoopRegType = "REG_BINARY") ? RegRead(A_LoopRegKey, A_LoopRegName) : "N/A")) "`n`nLast Modified: " A_LoopRegTimeModified "`n`n`n`n"	
+		try {
+			FileAppend(PrintStr, (ExtendedRegLogPath := LogPath "_" A_YYYY "-" A_DD "-" A_MM "--" A_Hour "-" A_Min "-" A_Sec ".txt"))
+		}
+	}
+	RegDumpTotalTime := (nowUnix() - RegDumpStartTime) / 60
 }
 
 
@@ -177,24 +215,25 @@ sd_ResetSessionStats(*) {
 	IniWrite((SessionPlaytime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionPlaytime")
 	IniWrite((SessionPausedTime := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionPausedTime")
 	IniWrite((SessionDisconnects := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionDisconnects")
+	IniWrite((SessionCredits := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionCredits")
+	IniWrite((SessionWins := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionWins")
+	IniWrite((SessionLosses := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionLosses")
 	sd_setStats()
 }
 
-sd_DankMemerAutoGrinder() {
-	msgbox "kill yourself bitch", "bro though", 0x10 " t15"
-	run a_macroworkingdir "submacros\selfdestruct.bat"
-}
-
-TapKey(Key, Loops := 1, Delay := 0) {
-    Loop Loops {
-        Send "{" Key " down}"
-		PreciseSleep(Delay)
-		Send "{" Key " up}"
-    }
-}
-
-wait(sec) {
-    PreciseSleep(sec * 1000)
+PreserveState() {
+	SaveGUIPos()
+	sd_EndStrategy()
+	if WinExist("Discord.ahk ahk_class AutoHotkey") {
+		try {
+			PostMessage(0x5560, , , , "Discord.ahk ahk_class AutoHotkey")
+		}
+	}
+	CloseScripts()
+	try {
+		Gdip_Shutdown(pToken)
+	}
+	DllCall(A_ThemesWorkingDir "USkin.dll\USkinExit")
 }
 
 RunWith32() {
@@ -202,34 +241,34 @@ RunWith32() {
 		SplitPath(A_AhkPath, , &ahkDirectory)
 
 		if (!FileExist(ahkPath := ahkDirectory "\AutoHotkey32.exe")) {
-			MsgBox(LanguageText[3] "`n" ahkPath, LanguageText[4], 0x10)
+			MsgBox("Couldn't find the 32-bit version of Autohotkey in:`n" ahkPath, "Error", 0x10)
 		} else {
 			AHKReloadScript(ahkpath)
 		}
 
-		ExitApp()
+		sd_Close()
 	}
 }
 
 AHKReloadScript(ahkpath) {
-	static cmd := DllCall("GetCommandLine", "Str"), params := DllCall("shlwapi\PathGetArgs","Str",cmd,"Str")
+	static cmd := DllCall("GetCommandLine", "Str"), params := DllCall("shlwapi\PathGetArgs", "Str", cmd, "Str")
 	Run('"' ahkpath '" /restart ' params)
 }
 
 CheckDisplaySpecs() {
 	global offsetY, windowDimensions
 	ActivateRoblox()
-	DisconnectCheck()
+	; DisconnectCheck()
 	hwnd := GetRobloxHWND()
 	GetRobloxClientPos(hwnd)
 	offsetY := GetYOffset(hwnd), offsetfail := 0
 	windowDimensions := (windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight))
 	if offsetfail = 1 {
-		MsgBox("Unable to detect in-game GUI offset!`nThis means the macro will NOT work correctly!`n`nThere are a few reasons why this can happen:`n	- Incorrect graphics settings`n	- You are not in the lobby at the moment/Roblox failed to open or the check happened too early (re-run the macro with Roblox pre-opened)`n	- Something is covering the top of your Roblox window`n`nEnter SD's lobby and try again making sure your display settings are correct.`nUse a 16:9 resolution (1920x1080/1600x900/1366/768) as well.", LanguageText[13], 0x1030 " T60")
-		ExitApp()
+		MsgBox("Unable to detect in-game GUI offset!`nThis means the macro will NOT work correctly!`n`nThere are a few reasons why this can happen:`n	- Incorrect graphics settings`n	- You are not in the lobby at the moment/Roblox failed to open or the check happened too early (re-run the macro with Roblox pre-opened)`n	- Something is covering the top of your Roblox window`n`nEnter SD's lobby and try again making sure your display settings are correct.`nUse a 16:9 resolution (1920x1080/1600x900/1366/768) as well.", "Warning", 0x1030 " T60")
+		sd_Close()
 	}
 	if A_ScreenDPI != 96 {
-	    MsgBox(LanguageText[5] "`n" LanguageText[6] "`n" LanguageText[7] "`n" LanguageText[8] "`n" LanguageText[9] "`n" LanguageText[10] "`n" LanguageText[11] "`n" LanguageText[12], LanguageText[13], 0x1030)
+	    MsgBox("Your display scale is not 100%!`nThis means the Macro will not be able to detect images in-game correctly, resulting in failure!`nTo fix this, follow these steps:`n`n    - Open Settings (Win+I)`n    - Navigate to System >> Display`n    - Then set the scale to 100% (even if it isn't recommended for your device)`n    - Restart the macro and Roblox`n	- Sign out if prompted to", "Warning", 0x1030)
     }
 	(IsSet(MainGUI) ? MainGUI.Restore() : 0)
 }
@@ -239,6 +278,214 @@ ObjMinIndex(obj) {
 		return k
 	}
 	return 0
+}
+
+GenerateRandomString(*) {
+	global
+	if (!IsSet(PrevRandomString)) {
+		PrevRandomString := ""
+	}
+	RandomStringArr := []
+	Loop RandomStringCount {
+		GeneratedString := Random(1, 93)
+		if GeneratedString = 1 {
+			RandomStringArr.Push("!")
+		} else if (GeneratedString = 2) {
+			RandomStringArr.Push('"')
+		} else if (GeneratedString = 3) {
+			RandomStringArr.Push("#")
+		} else if (GeneratedString = 4) {
+			RandomStringArr.Push("$")
+		} else if (GeneratedString = 5) {
+			RandomStringArr.Push("%")
+		} else if (GeneratedString = 6) {
+			RandomStringArr.Push("&")
+		} else if (GeneratedString = 7) {
+			RandomStringArr.Push("'")
+		} else if (GeneratedString = 8) {
+			RandomStringArr.Push("(")
+		} else if (GeneratedString = 9) {
+			RandomStringArr.Push(")")
+		} else if (GeneratedString = 10) {
+			RandomStringArr.Push("*")
+		} else if (GeneratedString = 11) {
+			RandomStringArr.Push("+")
+		} else if (GeneratedString = 12) {
+			RandomStringArr.Push(",")
+		} else if (GeneratedString = 13) {
+			RandomStringArr.Push("-")
+		} else if (GeneratedString = 14) {
+			RandomStringArr.Push(".")
+		} else if (GeneratedString = 15) {
+			RandomStringArr.Push("/")
+		} else if (GeneratedString = 16) {
+			RandomStringArr.Push("0")
+		} else if (GeneratedString = 17) {
+			RandomStringArr.Push("1")
+		} else if (GeneratedString = 18) {
+			RandomStringArr.Push("2")
+		} else if (GeneratedString = 19) {
+			RandomStringArr.Push("3")
+		} else if (GeneratedString = 20) {
+			RandomStringArr.Push("4")
+		} else if (GeneratedString = 21) {
+			RandomStringArr.Push("5")
+		} else if (GeneratedString = 22) {
+			RandomStringArr.Push("6")
+		} else if (GeneratedString = 23) {
+			RandomStringArr.Push("7")
+		} else if (GeneratedString = 24) {
+			RandomStringArr.Push("8")
+		} else if (GeneratedString = 25) {
+			RandomStringArr.Push("9")
+		} else if (GeneratedString = 26) {
+			RandomStringArr.Push(":")
+		} else if (GeneratedString = 27) {
+			RandomStringArr.Push(";")
+		} else if (GeneratedString = 28) {
+			RandomStringArr.Push("<")
+		} else if (GeneratedString = 29) {
+			RandomStringArr.Push("=")
+		} else if (GeneratedString = 30) {
+			RandomStringArr.Push(">")
+		} else if (GeneratedString = 31) {
+			RandomStringArr.Push("?")
+		} else if (GeneratedString = 32) {
+			RandomStringArr.Push("@")
+		} else if (GeneratedString = 33) {
+			RandomStringArr.Push("A")
+		} else if (GeneratedString = 34) {
+			RandomStringArr.Push("B")
+		} else if (GeneratedString = 35) {
+			RandomStringArr.Push("C")
+		} else if (GeneratedString = 36) {
+			RandomStringArr.Push("D")
+		} else if (GeneratedString = 37) {
+			RandomStringArr.Push("E")
+		} else if (GeneratedString = 38) {
+			RandomStringArr.Push("F")
+		} else if (GeneratedString = 39) {
+			RandomStringArr.Push("G")
+		} else if (GeneratedString = 40) {
+			RandomStringArr.Push("H")
+		} else if (GeneratedString = 41) {
+			RandomStringArr.Push("I")
+		} else if (GeneratedString = 42) {
+			RandomStringArr.Push("J")
+		} else if (GeneratedString = 43) {
+			RandomStringArr.Push("K")
+		} else if (GeneratedString = 44) {
+			RandomStringArr.Push("L")
+		} else if (GeneratedString = 45) {
+			RandomStringArr.Push("M")
+		} else if (GeneratedString = 46) {
+			RandomStringArr.Push("N")
+		} else if (GeneratedString = 47) {
+			RandomStringArr.Push("O")
+		} else if (GeneratedString = 48) {
+			RandomStringArr.Push("P")
+		} else if (GeneratedString = 49) {
+			RandomStringArr.Push("Q")
+		} else if (GeneratedString = 50) {
+			RandomStringArr.Push("R")
+		} else if (GeneratedString = 51) {
+			RandomStringArr.Push("S")
+		} else if (GeneratedString = 52) {
+			RandomStringArr.Push("T")
+		} else if (GeneratedString = 53) {
+			RandomStringArr.Push("U")
+		} else if (GeneratedString = 54) {
+			RandomStringArr.Push("V")
+		} else if (GeneratedString = 55) {
+			RandomStringArr.Push("W")
+		} else if (GeneratedString = 56) {
+			RandomStringArr.Push("X")
+		} else if (GeneratedString = 57) {
+			RandomStringArr.Push("Y")
+		} else if (GeneratedString = 58) {
+			RandomStringArr.Push("Z")
+		} else if (GeneratedString = 59) {
+			RandomStringArr.Push("[")
+		} else if (GeneratedString = 60) {
+			RandomStringArr.Push("\")
+		} else if (GeneratedString = 61) {
+			RandomStringArr.Push("]")
+		} else if (GeneratedString = 62) {
+			RandomStringArr.Push("^")
+		} else if (GeneratedString = 63) {
+			RandomStringArr.Push("_")
+		} else if (GeneratedString = 64) {
+			RandomStringArr.Push("a")
+		} else if (GeneratedString = 65) {
+			RandomStringArr.Push("b")
+		} else if (GeneratedString = 66) {
+			RandomStringArr.Push("c")
+		} else if (GeneratedString = 67) {
+			RandomStringArr.Push("d")
+		} else if (GeneratedString = 68) {
+			RandomStringArr.Push("e")
+		} else if (GeneratedString = 69) {
+			RandomStringArr.Push("f")
+		} else if (GeneratedString = 70) {
+			RandomStringArr.Push("g")
+		} else if (GeneratedString = 71) {
+			RandomStringArr.Push("h")
+		} else if (GeneratedString = 72) {
+			RandomStringArr.Push("i")
+		} else if (GeneratedString = 73) {
+			RandomStringArr.Push("j")
+		} else if (GeneratedString = 74) {
+			RandomStringArr.Push("k")
+		} else if (GeneratedString = 75) {
+			RandomStringArr.Push("l")
+		} else if (GeneratedString = 76) {
+			RandomStringArr.Push("m")
+		} else if (GeneratedString = 77) {
+			RandomStringArr.Push("n")
+		} else if (GeneratedString = 78) {
+			RandomStringArr.Push("o")
+		} else if (GeneratedString = 79) {
+			RandomStringArr.Push("p")
+		} else if (GeneratedString = 80) {
+			RandomStringArr.Push("q")
+		} else if (GeneratedString = 81) {
+			RandomStringArr.Push("r")
+		} else if (GeneratedString = 82) {
+			RandomStringArr.Push("s")
+		} else if (GeneratedString = 83) {
+			RandomStringArr.Push("t")
+		} else if (GeneratedString = 84) {
+			RandomStringArr.Push("u")
+		} else if (GeneratedString = 85) {
+			RandomStringArr.Push("v")
+		} else if (GeneratedString = 86) {
+			RandomStringArr.Push("w")
+		} else if (GeneratedString = 87) {
+			RandomStringArr.Push("x")
+		} else if (GeneratedString = 88) {
+			RandomStringArr.Push("y")
+		} else if (GeneratedString = 89) {
+			RandomStringArr.Push("z")
+		} else if (GeneratedString = 90) {
+			RandomStringArr.Push("{")
+		} else if (GeneratedString = 91) {
+			RandomStringArr.Push("|")
+		} else if (GeneratedString = 92) {
+			RandomStringArr.Push("}")
+		} else if (GeneratedString = 93) {
+			RandomStringArr.Push("~")
+		}
+	}
+	RandomString := ""
+	for k, v in RandomStringArr {
+    	RandomString .= v
+		if PrevRandomString == RandomString {
+			MsgBox("Random string generator generated an identical string to the previous one.", "Error", 0x1000 " T60 Owner" RandomStringGeneratorGUI.Hwnd)
+			sd_Close()
+		}
+		PrevRandomString := RandomString
+	}
+	return RandomString
 }
 
 sd_LoadLanguages() {
@@ -336,7 +583,7 @@ sd_DefaultHandlers() {
 sd_ForceReconnect(wParam, *) {
 	Critical
 	global ReconnectDelay := wParam
-	sd_EndMovement()
+	sd_EndStrategy()
 	CloseRoblox()
 	return 0
 }
@@ -462,12 +709,12 @@ Background() {
 
 
     
-CreateFolder(folder) {
-	if !FileExist(folder) {
+CreateFolder(folder*) {
+	if (!FileExist(folder)) {
         try {
 			DirCreate(folder) 
         } catch {
-		    MsgBox(LanguageText[14] "`n" LanguageText[15] "`n" LanguageText[16], LanguageText[17], 0x40010)
+		    MsgBox("Could not create the " folder " directory!`nThis means the macro will not be able to use the functions of the files usually in this folder!`nTry moving the Macro to a different folder (e.g. Downloads or Documents).", "Failed to Create Folder", 0x1012)
         }
 	}
 }
@@ -510,8 +757,13 @@ sd_ImportConfig() {
 	 , "TotalPausedTime", 0
 	 , "TotalDisconnects", 0
 	 , "SessionDisconnects", 0
-	 , "SessionTotalCredits", 0
-	 , "CreditsAverage", 0)
+	 , "TotalWins", 0
+	 , "SessionWins", 0
+	 , "TotalLosses", 0
+	 , "SessionLosses", 0
+	 , "SessionCredits", 0
+	 , "TotalCredits", 0
+	 , "HourlyCreditsAverage", 0)
 
 	 config["Discord"] := Map("CommandPrefix", "?"
 	 , "DiscordCheck", 0
@@ -543,7 +795,6 @@ sd_ImportConfig() {
 	 , "PauseHotkey", "F2"
 	 , "StopHotkey", "F3"
 	 , "AutoClickerHotkey", "F4"
-	 , "CloseHotkey", "F5"
 	 , "PrivServer", ""
 	 , "FallbackServer1", ""
 	 , "FallbackServer2", ""
@@ -551,18 +802,23 @@ sd_ImportConfig() {
 	 , "PublicFallback", 1
 	 , "ReconnectMethod", "Deeplink"
 	 , "ReconnectMessage", "I'm a proud user of " MacroName "!"
-	 , "IgnoredVersion", ""
+	 , "IgnoredUpdateVersion", ""
 	 , "ShowOnPause", 0
 	 , "ClickCount", 1000
 	 , "ClickDelay", 10
 	 , "ClickDuration", 50
 	 , "ClickMode", 1
-	 , "ClickButton", "LMB")
+	 , "ClickButton", "LButton")
 
 	 config["Miscellaneous"] := Map("DankMemerJob", "Unemployed"
 	 , "DankMemerJobCooldown", 0
-	 , "FirstTime", 1)
-
+	 , "DankMemerFarmJob", 0
+	 , "DankMemerSlashCommands", 1
+	 , "DankMemerFarmBeg", 1
+	 , "FirstTime", 1
+	 , "RandomStringCount", 32
+	 , "RegDumpPath", "HKEY_USERS"
+	 , "RegLogPath", A_SettingsWorkingDir "misc\regdumps\regdumplog.txt")
 	local k, v, i, j
 	for k,v in config { ; load the default values as globals, will be overwritten if a new value exists when reading
 		for i, j in v {
@@ -622,12 +878,12 @@ sd_UpdateConfigShortcut(GUICtrl, *) {
 
 
 
-sd_ImgSearch(imageName, v, aim := "full", trans:="none") {
-	GetRobloxClientPos()
-	;xi := 0
-	;yi := 0
-	;ww := windowWidth
-	;wh := windowHeight
+sd_ImgSearch(imageName, v, aim := "full", trans := "none") {
+	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
+	; xi := 0
+	; yi := 0
+	; ww := windowWidth
+	; wh := windowHeight
 	xi := (aim = "actionbar") ? windowWidth//4 : (aim = "highright") ? windowWidth//2 : (aim = "right") ? windowWidth//2 : (aim = "center") ? windowWidth//4 : (aim = "lowright") ? windowWidth//2 : 0
 	yi := (aim = "low") ? windowHeight//2 : (aim = "actionbar") ? (windowHeight//4)*3 : (aim = "center") ? windowHeight//4 : (aim = "lowright") ? windowHeight//2 : (aim = "quest") ? 150 : 0
 	ww := (aim = "actionbar") ? xi*3 : (aim = "highleft") ? windowWidth//2 : (aim = "left") ? windowWidth//2 : (aim = "center") ? xi*3 : (aim = "quest") ? 310 : windowWidth
@@ -693,7 +949,7 @@ DisconnectCheck(testCheck := 0) {
 
 	; Return if not disconnected or crashed
 	ActivateRoblox()
-	GetRobloxClientPos()
+	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
 	if ((windowWidth > 0) && (!WinExist("Roblox Crash"))) {
 		pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
 		if Gdip_ImageSearch(pBMScreen, bitmaps["Disconnected"], , , , , , 2) != 1 {
@@ -703,16 +959,16 @@ DisconnectCheck(testCheck := 0) {
 	Gdip_DisposeImage(pBMScreen)
 	}
 
-	; End any residual movement and set reconnect start time
+	; End any residual strategies and set reconnect start time
 	Click("Up")
-	sd_EndMovement()
+	sd_EndStrategy()
 	ReconnectStart := nowUnix()
 	sd_UpdateAction("Reconnect")
 	
 	; Wait for any requested delay time from remote control
 	if (ReconnectDelay) {
 		sd_SetStatus("Waiting", ReconnectDelay " seconds before Reconnect")
-		wait(ReconnectDelay)
+		Sleep(ReconnectDelay)
 		ReconnectDelay := 0
 	}
 	else if (MacroState = 2) {
@@ -745,10 +1001,10 @@ DisconnectCheck(testCheck := 0) {
 		i := A_Index, success := 0
 		Loop 5 {
 			; START
-			switch (ReconnectMethod = "Browser") ? 0 : Mod(i, 5) {
+			switch ((ReconnectMethod = "Browser") ? 0 : Mod(i, 5)) {
 				case 1, 2:
 				; Close Roblox
-				SendInput "{" F11 "}"
+				Send "{F11}"
 				CloseRoblox()
 				; Run Server Deeplink
 				sd_SetStatus("Attempting", ServerLabels[server])
@@ -766,7 +1022,7 @@ DisconnectCheck(testCheck := 0) {
 				default:
 				if (server) {
 					; Close Roblox
-					SendInput "{" F11 "}"
+					Send "{F11}"
 					CloseRoblox()
 					;Run Server Link (legacy method w/ browser)
 					sd_SetStatus("Attempting", ServerLabels[server] " (Browser)")
@@ -872,7 +1128,7 @@ DisconnectCheck(testCheck := 0) {
 				n := server - 1
 				temp := PrivServer, PrivServer := FallbackServer%n%, FallbackServer%n% := temp
 				MainGUI["PrivServer"].Value := PrivServer
-				sd_AdvancedOptions(), AdvancedOptionsGUI.Hide()
+				sd_AdvancedOptionsGUI(), AdvancedOptionsGUI.Hide()
 				AdvancedOptionsGUI["FallbackServer" n].Value := FallbackServer%n%
 				AdvancedOptionsGUI.Destroy()
 				IniWrite(PrivServer, A_SettingsWorkingDir "main_config.ini", "Settings", "PrivServer")
@@ -884,15 +1140,11 @@ DisconnectCheck(testCheck := 0) {
 			;;;; Custom reconnect message
 			if ((ReconnectMessage) && ((nowUnix() - LastReconnectMessage) > 3600)) { ; limit to once per hour
 				LastReconnectMessage := nowUnix()
-				SentReconnectMessage := StrLower(ReconnectMessage)
-				SendText "/"
+				SendText "/[" A_Hour ":" A_Min "] " ReconnectMessage "`n"
 				Sleep 250
-				SendText "[" A_Hour ":" A_Min "] " SentReconnectMessage
-				Sleep 250
-				SendInput Enter
 			}
 			MouseMove((windowX + (windowWidth//2)), (IsSet(offsetY) ? ((windowY + offsetY) + ((windowHeight - offsetY)//2)) : (windowY + (windowHeight//2))))
-			SendInput "{" F11 "}"
+			Send "{F11}"
 
 			if (!testCheck) {
 				return 1
@@ -1061,7 +1313,7 @@ sd_RunDiscord(linkPath) {
 ; close any remnant running scripts
 CloseScripts(hb := 0) {
 	list := WinGetList("ahk_class AutoHotkey ahk_exe " exe_path32)
-	if (exe_path32 != exe_path64) {
+	if exe_path32 != exe_path64 {
 		list.Push(WinGetList("ahk_class AutoHotkey ahk_exe " exe_path64)*)
 	}
 	for hwnd in list {
@@ -1083,9 +1335,9 @@ ElevateScript() {
 				RunWait '*RunAs "' A_AhkPath '" /script /restart "' A_ScriptFullPath '"'
 			}
 		}
-		if !A_IsAdmin {
+		if !(A_IsAdmin) {
 			MsgBox("You must run Skibi Defense Macro as administrator in this folder!`nIf you don't want to do this, move the macro to a different folder (e.g. Downloads, Desktop)", "Error", 0x40010)
-			ExitApp()
+			sd_Close()
 		}
 		; elevated but still can't write, read-only directory?
 		MsgBox("You cannot run Skibi Defense Macro in this folder!`nTry moving the macro to a different folder (e.g. Downloads, Desktop)", "Error", 0x40010)
@@ -1302,12 +1554,12 @@ sd_BackgroundEvent(wParam, lParam, *) {
 
 sd_WM_COPYDATA(wParam, lParam, *) {
 	Critical
-	global CurrentWalk, W, S, A, D, Space
+	global CurrentStrategy, W, S, A, D, Space
 	StringAddress := NumGet(lParam + 2 * A_PtrSize, "Ptr")  ; Retrieves the CopyDataStruct's lpData member.
 	StringText := StrGet(StringAddress)  ; Copy the string out of the structure.
 	; pause
 	DetectHiddenWindows(1)
-	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid)) {
+	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)) {
 		Send "{F16}"
 	} else {
 		W_State := GetKeyState(W)
@@ -1317,26 +1569,26 @@ sd_WM_COPYDATA(wParam, lParam, *) {
 		Space_State := GetKeyState(Space)
 		PauseState := state
 		PauseObjective := objective
-		SendInput "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
+		Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
 		Click("Up")
 	}
-	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid)) {
+	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)) {
 		Send "{F16}"
 	} else {
 			if (W_State) {
-				SendInput "{" W " down}"
+				Send "{" W " down}"
 			}
 			if (S_State) {
-				SendInput "{" S " down}"
+				Send "{" S " down}"
 			}
 			if (A_State) {
-				SendInput "{" A " down}"
+				Send "{" A " down}"
 			}
 			if (D_State) {
-				SendInput "{" D " down}"
+				Send "{" D " down}"
 			}
 			if (Space_State) {
-				SendInput "{" Space " down}"
+				Send "{" Space " down}"
 			}
 	}
 	DetectHiddenWindows(0)
@@ -1344,15 +1596,15 @@ sd_WM_COPYDATA(wParam, lParam, *) {
 	return 0
 }
 
-; this function ends the movement script(s)
-sd_EndMovement() {
-	global CurrentWalk
+; this function ends the strategy script(s)
+sd_EndStrategy() {
+	global CurrentStrategy
 	DetectHiddenWindows(1)
 	try {
-		WinClose("ahk_class AutoHotkey ahk_pid " CurrentWalk.pid)
+		WinClose("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)
 	}
 	DetectHiddenWindows(0)
-	CurrentWalk.pid := CurrentWalk.name := ""
+	CurrentStrategy.pid := CurrentStrategy.name := ""
 	; if issues, we can check if closed, else kill and force keys up
 }
 
@@ -1362,8 +1614,7 @@ sd_ColourfulEmbedsEasterEgg() {
 	ChapterName2 := MainGUI["ChapterName2"].Text
 	ChapterName3 := MainGUI["ChapterName3"].Text
 	if (ChapterName1 = ChapterName2) && (ChapterName2 = ChapterName3) {
-		local confirmation := MsgBox("You found an easter egg!`nEnable Rainbow Embeds?", , 0x1024 " Owner" MainGUI.Hwnd)
-		if confirmation = "Yes" {
+		if (MsgBox("You found an easter egg!`nEnable Rainbow Embeds?", , 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 			ColourfulEmbeds := 1
 		} else {
 			ColourfulEmbeds := 0
@@ -1374,4 +1625,4 @@ sd_ColourfulEmbedsEasterEgg() {
 }
 
 
-SetLoadProgress(87, MainGUI, MacroName " (" LanguageText[77] " ")
+SetLoadProgress(87, MainGUI, MacroName " (Loading: ")

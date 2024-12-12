@@ -18,7 +18,10 @@ sd_SetStats() {
 		"Runtime: " DurationFromSeconds(SessionRuntime + rundelta) "
 		Playtime: " DurationFromSeconds(SessionPlaytime + gamedelta) "
 		Paused: " DurationFromSeconds(SessionPausedTime + pauseddelta) "
-		Disconnects=" SessionDisconnects
+		Disconnects=" SessionDisconnects "
+		Credits=" SessionCredits "
+		Wins=" SessionWins "
+		Losses=" SessionLosses
 	)
 
 	TotalStatsString :=
@@ -26,7 +29,10 @@ sd_SetStats() {
 		"Runtime: " DurationFromSeconds(TotalRuntime + rundelta) "
 		Playtime: " DurationFromSeconds(TotalPlaytime + gamedelta) "
 		Paused: " DurationFromSeconds(TotalPausedTime + pauseddelta) "
-		Disconnects=" TotalDisconnects
+		Disconnects=" TotalDisconnects "
+		Credits=" SessionCredits "
+		Wins=" TotalWins "
+		Losses=" TotalLosses
 	)
 
 	MainGUI["SessionStats"].Text := SessionStatsString
@@ -74,7 +80,7 @@ sd_SetStatus(newState := 0, newObjective := 0){
 	; update status
 	DetectHiddenWindows(1)
 	if (newState != "Detected") {
-		num := ((state = "Grinding") && (!InStr(objective, "Ended"))) ? 1 : ((state = "Returned") && (InStr(objective, "Lobby"))) ? 2 : 0
+		num := ((state = "Grinding") && (!InStr(objective, "Ended"))) ? 1 : ((state = "Returned") && (objective = "Lobby")) ? 2 : 0
 		if num != status_number {
 			status_number := num
 			if WinExist("StatMonitor.ahk ahk_class AutoHotkey") {

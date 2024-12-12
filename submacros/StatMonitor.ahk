@@ -11,7 +11,7 @@ SetWorkingDir(A_ScriptDir "\..")
 #Include "externalFuncs\nowUnix.ahk"
 
 ; set version identifier
-VersionID := "0.5.0"
+VersionID := "0.5.1"
 
 MacroName := A_Args[1]
 ; assign variables from A_Args
@@ -236,7 +236,7 @@ Gdip_DeleteBrush(pBrush)
 ; ▰▰▰▰
 ; TESTING
 ; ▰▰▰▰
-;/*
+/*
 start_time := A_Now
 status_changes[A_Min * 60 + A_Sec] := 0
 
@@ -265,7 +265,7 @@ SendHourlyReport()
 KeyWait("F4", "D")
 Reload()
 ExitApp()
-;*/
+*/
 
 ; ▰▰▰▰▰
 ; MAIN LOOP
@@ -315,8 +315,7 @@ DetectCredits() {
 	global credit_values, start_credits, start_time, OCR_language
 
 	; check roblox window exists
-	hwnd := GetRobloxHWND()
-	GetRobloxClientPos(hwnd), offsetY := GetYOffset(hwnd)
+	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd), offsetY := GetYOffset(hwnd)
 	if !(windowHeight >= 500) {
 		return 0
 	}
@@ -363,13 +362,13 @@ DetectCredits() {
 			session_time := DateDiff(A_Now, start_time, "S")
 			session_total := current_credits - start_credits
 			try {
-				IniWrite((FormatNumber(session_total)), A_SettingsWorkingDir "main_config.ini", "Status", "SessionTotalCredits")
+				IniWrite((FormatNumber(session_total)), A_SettingsWorkingDir "main_config.ini", "Status", "SessionCredits")
+				IniWrite((FormatNumber(session_total)), A_SettingsWorkingDir "main_config.ini", "Status", "TotalCredits")
 			}
 			try {
-				IniWrite((FormatNumber(session_total * 3600 / session_time)), A_SettingsWorkingDir "main_config.ini", "Status", "CreditsAverage")
+				IniWrite((FormatNumber(session_total * 3600 / session_time)), A_SettingsWorkingDir "main_config.ini", "Status", "HourlyCreditsAverage")
 			}
 		}
-		msgbox current_credits
 		return current_credits
 	} else {
 		return 0

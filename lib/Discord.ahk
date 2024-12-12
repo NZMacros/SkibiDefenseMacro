@@ -168,8 +168,8 @@ Loop {
 }
 
 sd_Status(status) {
-	stateString := SubStr(status, InStr(status, "] ")+2)
-	state := SubStr(stateString, 1, InStr(stateString, ": ")-1), objective := SubStr(stateString, InStr(stateString, ": ")+2)
+	stateString := SubStr(status, InStr(status, "] ") + 2)
+	state := SubStr(stateString, 1, InStr(stateString, ": ") - 1), objective := SubStr(stateString, InStr(stateString, ": ") + 2)
 
 	; write to debug log
 	global logsize
@@ -186,11 +186,12 @@ sd_Status(status) {
 		if (ColourfulEmbeds = 1) {
 			colour := colours[colourIndex := Mod(colourIndex, 7) + 1]
 		} else {
-			colour := ((state = "Disconnected") || (state = "You Died") || (state = "Failed") || (state = "Error") || (state = "Aborting") || (state = "Missing") || (state = "Canceling")) ? 15085139 ; red - error
+			colour := ((state = "Disconnected") || (state = "Failed") || (state = "Error") || (state = "Aborting") || (state = "Missing") || (state = "Canceling")) ? 15085139 ; red - error
 			: ((state = "Interupted") || (state = "Warning")) ? 14408468 ; yellow - alert
-			: ((state = "Completed") || (InStr(state, "Success"))) ? 48128 ; green - success
-			: ((state = "Starting") || (state = "Grinding")) ? 16366336 ; orange - game
-			: ((state = "GUI") || (state = "Paused") || (state = "GitHub") || (state = "Detected") || (state = "Closing") || (state = "Begin") || (state = "End")) ? 15658739 ; white - GUI / utility
+			: ((state = "Completed") || (state = "Success")) ? 48128 ; green - success
+			: ((state = "Starting") || (state = "Joining") || (state = "Grinding") || (state = "Collecting")) ? 16366336 ; orange - game
+			: ((state = "GUI") || (state = "Resetting") || (state = "Testing") || (state = "Attempting") || (state = "Paused") || (state = "GitHub") || (state = "Detected") || (state = "Closing") || (state = "Begin") || (state = "End")) ? 15658739 ; white - GUI / utility
+			: ((state = "Discord") || (state = "Dank Memer")) ? 5066239 ; blue - discord
 			: 3223350
 		}
 
@@ -198,19 +199,18 @@ sd_Status(status) {
 		content := ((Criticals = 1) && DiscordUserID
 			&& (((CriticalErrorPings = 1) && (state = "Error"))
 			|| ((DisconnectPings = 1) && InStr(stateString, "Disconnected"))
-			|| ((InStr(stateString, "Resetting: Character") && (Mod(SubStr(objective, InStr(objective, " ") + 1), 10) = 5)))
-			|| ((state = "You Died"))))
+			|| ((InStr(stateString, "Resetting: Character") && (Mod(SubStr(objective, InStr(objective, " ") + 1), 10) = 5)))))
 			? (DiscordUserID) : ""
 
 		; status update (embed)
-		message := StrReplace(StrReplace(StrReplace(StrReplace(SubStr(status, InStr(status, "]")+1), "\", "\\"), "`n", "\n"), Chr(9), "  "), "`r")
+		message := StrReplace(StrReplace(StrReplace(StrReplace(SubStr(status, InStr(status, "]") + 1), "\", "\\"), "`n", "\n"), Chr(9), "  "), "`r")
 
 		; screenshot
 		if ((Screenshots = 1) 
 			&& ((((CriticalScreenshots = 1) && (content != ""))
-			|| ((state = "Grinding") && (!InStr(objective, "Ended")) && (pBM := CreateGameBitmap()))
+			|| ((state = "Grinding") && (pBM := CreateGameBitmap()))
 			|| ((state = "Returned") && (objective = "Lobby") && (pBM := CreateGameBitmap()))
-			|| ((DebuggingScreenshots = 1) && (state = "Collecting") || (state = "Failed")))))
+			|| ((DebuggingScreenshots = 1) && ((state = "Collecting") || (state = "Failed"))))))
 							  {
 			if (!IsSet(pBM)) {
 				hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd), pBM := Gdip_BitmapFromScreen((windowWidth > 0) ? (IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)) : 0)
@@ -1308,7 +1308,7 @@ sd_TrimLog(size) {
 	global logsize
 	try {
 		log := FileOpen("\settings\debug_log.txt", "r-d"), log.Seek(-((log.Length < size) ? (f := log.Length) : size), 2), txt := log.Read(), log.Close()
-		log := FileOpen("\settings\debug_log.txt", "w-d"), log.Write(SubStr(txt, f ? 1 : InStr(txt, "`n")+1)), logsize := log.Length, log.Close()
+		log := FileOpen("\settings\debug_log.txt", "w-d"), log.Write(SubStr(txt, f ? 1 : InStr(txt, "`n") + 1)), logsize := log.Length, log.Close()
 	}
 }
 
@@ -1385,34 +1385,223 @@ sd_SendHeartbeat(*) {
 }
 
 RandomPrefix(*) {
+	RandomPrefix := GenerateRandomString(1)
+	return RandomPrefix
+}
+
+GenerateRandomString(count, *) {
 	global
-	prevRandomVar := randomVar
-	randomVar := Random(1, 5)
-	if randomVar := prevRandomVar {
-		return "?"
+	if (!IsSet(PrevRandomString)) {
+		PrevRandomString := ""
 	}
-	if randomVar = 1 {
-		return ";"
+	RandomStringArr := []
+	Loop count {
+		GeneratedString := Random(1, 93)
+		if GeneratedString = 1 {
+			RandomStringArr.Push("!")
+		} else if (GeneratedString = 2) {
+			RandomStringArr.Push('"')
+		} else if (GeneratedString = 3) {
+			RandomStringArr.Push("#")
+		} else if (GeneratedString = 4) {
+			RandomStringArr.Push("$")
+		} else if (GeneratedString = 5) {
+			RandomStringArr.Push("%")
+		} else if (GeneratedString = 6) {
+			RandomStringArr.Push("&")
+		} else if (GeneratedString = 7) {
+			RandomStringArr.Push("'")
+		} else if (GeneratedString = 8) {
+			RandomStringArr.Push("(")
+		} else if (GeneratedString = 9) {
+			RandomStringArr.Push(")")
+		} else if (GeneratedString = 10) {
+			RandomStringArr.Push("*")
+		} else if (GeneratedString = 11) {
+			RandomStringArr.Push("+")
+		} else if (GeneratedString = 12) {
+			RandomStringArr.Push(",")
+		} else if (GeneratedString = 13) {
+			RandomStringArr.Push("-")
+		} else if (GeneratedString = 14) {
+			RandomStringArr.Push(".")
+		} else if (GeneratedString = 15) {
+			RandomStringArr.Push("/")
+		} else if (GeneratedString = 16) {
+			RandomStringArr.Push("0")
+		} else if (GeneratedString = 17) {
+			RandomStringArr.Push("1")
+		} else if (GeneratedString = 18) {
+			RandomStringArr.Push("2")
+		} else if (GeneratedString = 19) {
+			RandomStringArr.Push("3")
+		} else if (GeneratedString = 20) {
+			RandomStringArr.Push("4")
+		} else if (GeneratedString = 21) {
+			RandomStringArr.Push("5")
+		} else if (GeneratedString = 22) {
+			RandomStringArr.Push("6")
+		} else if (GeneratedString = 23) {
+			RandomStringArr.Push("7")
+		} else if (GeneratedString = 24) {
+			RandomStringArr.Push("8")
+		} else if (GeneratedString = 25) {
+			RandomStringArr.Push("9")
+		} else if (GeneratedString = 26) {
+			RandomStringArr.Push(":")
+		} else if (GeneratedString = 27) {
+			RandomStringArr.Push(";")
+		} else if (GeneratedString = 28) {
+			RandomStringArr.Push("<")
+		} else if (GeneratedString = 29) {
+			RandomStringArr.Push("=")
+		} else if (GeneratedString = 30) {
+			RandomStringArr.Push(">")
+		} else if (GeneratedString = 31) {
+			RandomStringArr.Push("?")
+		} else if (GeneratedString = 32) {
+			RandomStringArr.Push("@")
+		} else if (GeneratedString = 33) {
+			RandomStringArr.Push("A")
+		} else if (GeneratedString = 34) {
+			RandomStringArr.Push("B")
+		} else if (GeneratedString = 35) {
+			RandomStringArr.Push("C")
+		} else if (GeneratedString = 36) {
+			RandomStringArr.Push("D")
+		} else if (GeneratedString = 37) {
+			RandomStringArr.Push("E")
+		} else if (GeneratedString = 38) {
+			RandomStringArr.Push("F")
+		} else if (GeneratedString = 39) {
+			RandomStringArr.Push("G")
+		} else if (GeneratedString = 40) {
+			RandomStringArr.Push("H")
+		} else if (GeneratedString = 41) {
+			RandomStringArr.Push("I")
+		} else if (GeneratedString = 42) {
+			RandomStringArr.Push("J")
+		} else if (GeneratedString = 43) {
+			RandomStringArr.Push("K")
+		} else if (GeneratedString = 44) {
+			RandomStringArr.Push("L")
+		} else if (GeneratedString = 45) {
+			RandomStringArr.Push("M")
+		} else if (GeneratedString = 46) {
+			RandomStringArr.Push("N")
+		} else if (GeneratedString = 47) {
+			RandomStringArr.Push("O")
+		} else if (GeneratedString = 48) {
+			RandomStringArr.Push("P")
+		} else if (GeneratedString = 49) {
+			RandomStringArr.Push("Q")
+		} else if (GeneratedString = 50) {
+			RandomStringArr.Push("R")
+		} else if (GeneratedString = 51) {
+			RandomStringArr.Push("S")
+		} else if (GeneratedString = 52) {
+			RandomStringArr.Push("T")
+		} else if (GeneratedString = 53) {
+			RandomStringArr.Push("U")
+		} else if (GeneratedString = 54) {
+			RandomStringArr.Push("V")
+		} else if (GeneratedString = 55) {
+			RandomStringArr.Push("W")
+		} else if (GeneratedString = 56) {
+			RandomStringArr.Push("X")
+		} else if (GeneratedString = 57) {
+			RandomStringArr.Push("Y")
+		} else if (GeneratedString = 58) {
+			RandomStringArr.Push("Z")
+		} else if (GeneratedString = 59) {
+			RandomStringArr.Push("[")
+		} else if (GeneratedString = 60) {
+			RandomStringArr.Push("\")
+		} else if (GeneratedString = 61) {
+			RandomStringArr.Push("]")
+		} else if (GeneratedString = 62) {
+			RandomStringArr.Push("^")
+		} else if (GeneratedString = 63) {
+			RandomStringArr.Push("_")
+		} else if (GeneratedString = 64) {
+			RandomStringArr.Push("a")
+		} else if (GeneratedString = 65) {
+			RandomStringArr.Push("b")
+		} else if (GeneratedString = 66) {
+			RandomStringArr.Push("c")
+		} else if (GeneratedString = 67) {
+			RandomStringArr.Push("d")
+		} else if (GeneratedString = 68) {
+			RandomStringArr.Push("e")
+		} else if (GeneratedString = 69) {
+			RandomStringArr.Push("f")
+		} else if (GeneratedString = 70) {
+			RandomStringArr.Push("g")
+		} else if (GeneratedString = 71) {
+			RandomStringArr.Push("h")
+		} else if (GeneratedString = 72) {
+			RandomStringArr.Push("i")
+		} else if (GeneratedString = 73) {
+			RandomStringArr.Push("j")
+		} else if (GeneratedString = 74) {
+			RandomStringArr.Push("k")
+		} else if (GeneratedString = 75) {
+			RandomStringArr.Push("l")
+		} else if (GeneratedString = 76) {
+			RandomStringArr.Push("m")
+		} else if (GeneratedString = 77) {
+			RandomStringArr.Push("n")
+		} else if (GeneratedString = 78) {
+			RandomStringArr.Push("o")
+		} else if (GeneratedString = 79) {
+			RandomStringArr.Push("p")
+		} else if (GeneratedString = 80) {
+			RandomStringArr.Push("q")
+		} else if (GeneratedString = 81) {
+			RandomStringArr.Push("r")
+		} else if (GeneratedString = 82) {
+			RandomStringArr.Push("s")
+		} else if (GeneratedString = 83) {
+			RandomStringArr.Push("t")
+		} else if (GeneratedString = 84) {
+			RandomStringArr.Push("u")
+		} else if (GeneratedString = 85) {
+			RandomStringArr.Push("v")
+		} else if (GeneratedString = 86) {
+			RandomStringArr.Push("w")
+		} else if (GeneratedString = 87) {
+			RandomStringArr.Push("x")
+		} else if (GeneratedString = 88) {
+			RandomStringArr.Push("y")
+		} else if (GeneratedString = 89) {
+			RandomStringArr.Push("z")
+		} else if (GeneratedString = 90) {
+			RandomStringArr.Push("{")
+		} else if (GeneratedString = 91) {
+			RandomStringArr.Push("|")
+		} else if (GeneratedString = 92) {
+			RandomStringArr.Push("}")
+		} else if (GeneratedString = 93) {
+			RandomStringArr.Push("~")
+		}
 	}
-	if randomVar = 2 {
-		return "#"
+	RandomString := ""
+	for k, v in RandomStringArr {
+    	RandomString .= v
+		if PrevRandomString == RandomString {
+			sd_Status("ERROR: Random string generator generated an identical string to the previous one.")
+			ExitFunc()
+		}
+		PrevRandomString := RandomString
 	}
-	if randomVar = 3 {
-		return "$"
-	}
-	if randomVar = 4 {
-		return "!"
-	}
-	if randomVar = 5 {
-		return "*"
-	}
+	return RandomString
 }
 
 ExitFunc(*) {
 	Critical
 	global status_buffer
 	arr := []
-	for k,v in status_buffer {
+	for k, v in status_buffer {
 		arr.Push(v)
 	}
 	for k,v in arr {

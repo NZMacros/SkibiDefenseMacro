@@ -6,9 +6,10 @@
 #Warn VarUnset, Off
 Persistent(true)
 SetWorkingDir(A_ScriptDir "\..")
-CoordMode("Pixel", "Client")
-SendMode("Event")
-; OnError (e, mode) => (mode = "Return") ? -1 : 0
+CoordMode("Mouse", "Screen")
+CoordMode("Pixel", "Screen")
+SendMode("Input")
+OnError (e, mode) => (mode = "Return") ? -1 : 0
 
 ; important vars
 global A_MacroWorkingDir := A_WorkingDir "\"
@@ -20,13 +21,13 @@ global Month := FormatTime("MM", "MMMM")
 sd_LoadLanguages()
 if Month = ("September" || "October" || "November") {
 	TraySetIcon(A_MacroWorkingDir "img_assets\icons\sdm_halloweenlogo.ico")
-	global MacroName := LanguageText[19]
+	global MacroName := "Skibi Cursed Macro"
 	if (!FileExist(A_Desktop "\Start Skibi Cursed Macro.lnk")) {
 		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Cursed Macro.lnk")
 	}
 } else if (Month = ("December" || "January" || "February")) {
 	TraySetIcon(A_MacroWorkingDir "img_assets\icons\sdm_jollylogo.ico")
-	global MacroName := LanguageText[20]
+	global MacroName := "Skibi Jolly Macro"
 	if (!FileExist(A_Desktop "\Start Skibi Jolly Macro.lnk")) {
 		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Jolly Macro.lnk")
 	}
@@ -38,7 +39,7 @@ if Month = ("September" || "October" || "November") {
 	}
 } else {
 	TraySetIcon(A_MacroWorkingDir "img_assets\icons\sdm_logo.ico")
-	global MacroName := LanguageText[18]
+	global MacroName := "Skibi Defense Macro"
 	if (!FileExist(A_Desktop "\Start Skibi Defense Macro.lnk")) {
 		FileCreateShortcut(A_MacroWorkingDir "Start.bat", A_Desktop "\Start Skibi Defense Macro.lnk")
 	}
@@ -56,21 +57,23 @@ A_TrayMenu.Add("Start Macro", sd_Start)
 A_TrayMenu.Add("Pause Macro", sd_Pause)
 A_TrayMenu.Add("Stop Macro", sd_Stop)
 A_TrayMenu.Add()
-A_TrayMenu.Add("Start AutoClicker", sd_AutoClicker)
-A_TrayMenu.Add("Close Macro", sd_Close)
+A_TrayMenu.Add("AutoClicker", sd_AutoClicker)
 A_TrayMenu.Add()
 A_TrayMenu.Default := "Start Macro"
 
 
-;@Ahk2Exe-SetOrigFilename "skibi_defense_macro.exe"
-;@Ahk2Exe-SetCopyright "Copyright © NZ Macros"
-;@Ahk2Exe-SetDescription %MacroName% " [BETA]"
+; Compiler directives:
+;@Ahk2Exe-SetName Skibi Defense Macro
+;@Ahk2Exe-SetDescription Skibi Defense Macro
+;@Ahk2Exe-SetCompanyName NZ Macros
+;@Ahk2Exe-SetCopyright Copyright © NZ Macros
+;@Ahk2Exe-SetOrigFilename skibi_defense_macro.exe
 
 ; global vars
-global CurrentWalk := {pid: "", name: ""} ; stores "pid" (script process ID) and "name" (in-game pathing name)
+global CurrentStrategy := {pid: "", name: ""} ; stores "pid" (script process ID) and "name" (in-game pathing name)
 global MacroState := 0 ; 0 = stopped, 1 = paused, 2 = running
 ; set version identifier
-global VersionID := "0.4.2"
+global VersionID := "0.4.3-rc.1"
 global ResetTime := MacroStartTime := MacroReloadTime := nowUnix()
 global PausedStartTime := 0
 global GameStartTime := 0
@@ -134,14 +137,16 @@ W := "sc011"
 A := "sc01e"
 S := "sc01f"
 D := "sc020"
-I := "sc017"
-O := "sc018"
+I := "sc017" ; zoom in
+O := "sc018" ; zoom out
 E := "sc012" 
 R := "sc013"
 L := "sc026"
+RotUp:="sc149" ; PgUp
+RotDown:="sc151" ; PgDn
 Escape := "sc001"
-Enter := "`n"
-Space := "/"
+Enter := "sc01c"
+Space := "sc039"
 Slash := "sc035"
 LShift := "sc02a"
 RShift := "sc036"
@@ -155,11 +160,6 @@ Six := "sc007"
 Seven := "sc008"
 Eight := "sc009"
 Nine := "sc00A"
-LMB := "LButton"
-RMB := "RButton"
-ScrollUp := "WheelUp"
-ScrollDown := "WheelDown"
-F11 := "F11"
 
 
 
@@ -174,9 +174,11 @@ if !(pToken := Gdip_Startup()) {
 
 ; bitmaps
 #Include "%A_ScriptDir%\..\img_assets\"
+#Include "bitmaps.ahk"
 #Include "GUI\bitmaps.ahk"
 #Include "Reconnect\bitmaps.ahk"
 #Include "offset\bitmaps.ahk"
+#Include "Daily\bitmaps.ahk"
 CheckDisplaySpecs()
 
 #Include "%A_ScriptDir%\..\lib\"
@@ -208,6 +210,24 @@ if FirstTime = 1 {
 	MainGUI.Minimize()
 	sd_Quickstart()
 }
+f7:: {
+	ActivateRoblox(), hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
+	pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
+	Gdip_ImageSearch(pBMScreen, bitmaps["MoreCurrencies"], &output)
+	X := SubStr(output, 1, (comma := InStr(output, ",")) - 1), X += 25
+	Y := SubStr(output, comma + 1), Y += 47
+	MouseMove(X, Y + 1), Send("{Click}"), MouseMove(X, Y)
+	Loop {
+		ActivateRoblox()
+		MsgBox(Gdip_ImageSearch(pBMScreen, bitmaps["MoreCurrenciesOptions"], &output2, , , , , 100) " | " output2)
+		if Gdip_ImageSearch(pBMScreen, bitmaps["MoreCurrenciesOptions"], &output3, , , , , 100) = 1 {
+			break
+		}
+		Send "{Click}"
+		Sleep 5000
+	}
+	sd_SetStatus("Success", "Opened more currencies menu!")
+}
 
 
 
@@ -224,7 +244,7 @@ Sleep 1000
 sd_SetStatus("GitHub", "Checking for Updates")
 ; check for updates
 try {
-	AsyncHTTPRequest("GET", "https://api.github.com/repos/NegativeZero01/skibi-defense-macro/releases/latest", sd_AutoUpdateHandler, Map("accept", "application/vnd.github+json"))
+	AsyncHTTPRequest("GET", "https://api.github.com/repos/NZMacros/SkibiDefenseMacro/releases/latest", sd_AutoUpdateHandler, Map("accept", "application/vnd.github+json"))
 }
 sd_SetStatus("GUI", "Startup")
 ; activate hotkeys
@@ -232,14 +252,13 @@ try {
 	Hotkey(StartHotkey, sd_Start, "On")
 	Hotkey(PauseHotkey, sd_Pause, "On")
 	Hotkey(AutoClickerHotkey, sd_AutoClicker, "On T2")
-	Hotkey(CloseHotkey, sd_Close, "On")
 }
 SetTimer(Background, 2000)
 /*if (A_Args.Has(1) && (A_Args[1] = 1))
 	SetTimer(sd_Start, -1000)
 
 return*/
-SetLoadProgress(96, MainGUI, MacroName " (" LanguageText[77] " ")
+SetLoadProgress(96, MainGUI, MacroName " (Loading: ")
 
 
 
@@ -259,7 +278,7 @@ sd_Start(*) {
 	try {
 		PostMessage(0x100, 0x7, 0, , "ahk_id " (hRoblox := GetRobloxHWND()))
 	} catch {
-		MsgBox("Your Roblox window is run as administrator, but the macro is not!`nThis means the macro will be unable to send any inputs to Roblox.`nYou must either reinstall Roblox without administrative rights, or run " MacroName " as admin!`n`nNOTE: It is recommended to stop the macro now, as this issue also causes hotkeys to not work while Roblox is active.", LanguageText[13], 0x1030 " T60")
+		MsgBox("Your Roblox window is run as administrator, but the macro is not!`nThis means the macro will be unable to send any inputs to Roblox.`nYou must either reinstall Roblox without administrative rights, or run " MacroName " as admin!`n`nNOTE: It is recommended to stop the macro now, as this issue also causes hotkeys to not work while Roblox is active.", "Warning", 0x1030 " T60")
 	}
 	try {
 		PostMessage(0x101, 0x7, 0xC0000000, , "ahk_id " hRoblox)
@@ -294,33 +313,67 @@ sd_Start(*) {
 		Run('"' exe_path64 '" /script "' A_MacroWorkingDir 'submacros\background.ahk" "' offsetY '" "' windowDimensions '" "' MacroName '"')
 	}
 	;(re)start stat monitor
-	global SessionTotalCredits, CreditsAverage
+	global SessionCredits, HourlyCreditsAverage
 	if ((DiscordCheck) && (((DiscordMode = 1) && RegExMatch(WebhookURL, "i)^https:\/\/(canary\.|ptb\.)?(discord|discordapp)\.com\/api\/webhooks\/([\d]+)\/([a-z0-9_-]+)$"))
 	 || ((DiscordMode = 2) && (ReportChannelCheck = 1) && (ReportChannelID || MainChannelID)))) {
 	 	Run('"' exe_path64 '" /script "' A_MacroWorkingDir 'submacros\StatMonitor.ahk" "' MacroName '" "' VersionID '" "' offsetY '" "' windowDimensions '" "' GrindMode '" "' Month '"')
 	 }
 	; start main loop
 	sd_SetStatus("Begin", "Main Loop")
-	MainLoop()
+	macro()
 }
 
-; start macro
-MainLoop() {
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; main loop
+macro() {
 	ActivateRoblox()
-	global ServerStart := nowUnix()
+	global ServerStart := nowUnix(), InLobby := 1
 	Loop {
 		DisconnectCheck()
+		; collect daily
+		;sd_CollectDaily()
+		; grind
+		sd_GoGrind()
 	}
+}
+
+sd_CollectDaily() {
+	if InLobby != 1 {
+		return -2
+	}
+
+	sd_UpdateAction("Collect")
+	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
+	pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
+	if Gdip_ImageSearch(pBMScreen, bitmaps["DailyReady"], &pos) = 1 {
+		MouseMove((X := SubStr(pos, 1, (comma := InStr(pos, ",")) - 1)), (Y := SubStr(pos, comma + 1)))
+		Send "{Click}"
+		Sleep 1000
+		sd_SetStatus("Collecting", "Daily Rewards")
+		while Gdip_ImageSearch(pBMScreen, bitmaps["ClaimDaily"], &claimPos) = 1 {
+			MouseMove((X := SubStr(claimPos, 1, (comma := InStr(claimPos, ",")) - 1)), (Y := SubStr(claimPos, comma + 1)))
+			Send "{Click}"
+			Sleep 1000
+		}
+		sd_SetStatus("Success", "Claimed Daily Rewards!")
+	} else if (Gdip_ImageSearch(pBMScreen, bitmaps["DailyUnavailable"]) = 1) {
+		return 0
+	} else {
+		sd_SetStatus("Error", "No Daily Found")
+		return -1
+	}
+}
+
+sd_GoGrind() {
+	
 }
 
 
 MainGUI["StartButton"].Enabled := 1
 MainGUI["PauseButton"].Enabled := 1
 MainGUI["StopButton"].Enabled := 1
-MainGUI["AutoClickerButton"].Enabled := 1
-MainGUI["CloseButton"].Enabled := 1
 
 
 percentMax := 100
-SetLoadProgress(percentMax, MainGUI, MacroName " (" LanguageText[77] " ", MacroName " " LanguageText[88])
+SetLoadProgress(percentMax, MainGUI, MacroName " (Loading ", MacroName " [BETA]")
 gofys()

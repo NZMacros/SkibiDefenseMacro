@@ -1,5 +1,7 @@
 # Prerequisites
 *.d
+*.gitignore
+*.gitattributes
 
 # Compiled Object files
 *.slo
@@ -23,7 +25,11 @@
 *.lai
 *.la
 *.a
+*.ipa
 
 # Executables
 *.out
 *.app
+
+# Settings Source Files
+*.ini
