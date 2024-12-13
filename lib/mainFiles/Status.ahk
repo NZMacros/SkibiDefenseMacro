@@ -112,4 +112,4 @@ sd_UpdateAction(action) {
 }
 
 
-SetLoadProgress(91, MainGUI, MacroName " (" LanguageText[77] " ")
+SetLoadProgress(91, MainGUI, MacroName " (Loading: ")

@@ -82,8 +82,8 @@ MainGUI.SetFont("s8 cDefault Norm", "Tahoma")
 (ChapterName2Edit := MainGUI.AddDropDownList("xp yp+25 wp Disabled vChapterName2", ["None"])).Add(ChapterNamesList), ChapterName2Edit.Text := ChapterName2, ChapterName2Edit.OnEvent("Change", sd_ChapterSelect_2)
 (ChapterName3Edit := MainGUI.AddDropDownList("xp yp+25 wp Disabled vChapterName3", ["None"])).Add(ChapterNamesList), ChapterName3Edit.Text := ChapterName3, ChapterName3Edit.OnEvent("Change", sd_ChapterSelect_3)
 MainGUI.AddText("x220 y40 +BackgroundTrans", "Unit Slots:")
-MainGUI.AddText("x280 y40 +Center +BackgroundTrans vUnitSlots", UnitSlots)
-MainGUI.AddUpDown("xp+17 yp-1 h16 -16 Range5-10 vUnitSlotsUpDown Disabled", UnitSlots).OnEvent("Change", sd_UnitSlots)
+MainGUI.AddText("x285 y40 +Center +BackgroundTrans vUnitSlots", UnitSlots)
+MainGUI.AddUpDown("xp+21 yp-1 h16 -16 Range5-10 vUnitSlotsUpDown Disabled", UnitSlots).OnEvent("Change", sd_UnitSlots)
 GrindModesArr := ["Loss Farm", "Games Played", "CC Farm", "XP Farm", "Win Farm"]
 MainGUI.AddText("x15 y155", "Grind Mode:")
 (GrindModeEdit := MainGUI.AddDropDownList("x15 y170 vGrindMode Disabled", GrindModesArr)).Text := GrindMode, GrindModeEdit.OnEvent("Change", sd_GrindMode)
@@ -93,7 +93,7 @@ MainGUI.AddText("x15 y195", "Units Mode:")
 (UnitModeEdit := MainGUI.AddDropDownList("x15 y210 vUnitModeEdit Disabled", UnitModesArr)).Text := UnitMode, UnitModeEdit.OnEvent("Change", sd_UnitMode)
 MainGUI.AddButton("x140 y211 w20 h20 vUnitModesHelp Disabled", "?").OnEvent("Click", sd_UnitModeHelp)
 MainGUI.SetFont("w700")
-MainGUI.AddText("x320 y39", "1:")
+MainGUI.AddText("x332 y39", "1:")
 MainGUI.AddText("x206 y69", "2:")
 MainGUI.AddText("x345 y69", "3:")
 MainGUI.AddText("x206 y99", "4:")
@@ -104,7 +104,7 @@ MainGUI.AddText("x206 y159", "8:")
 MainGUI.AddText("x345 y159", "9:")
 MainGUI.AddText("x206 y189", "10:")
 MainGUI.SetFont("s8 cDefault Norm", "Tahoma")
-(UnitSlot1Edit := MainGUI.AddDropDownList("x335 y36 vUnitSlot1Edit Disabled", UnitNamesList)).Text := UnitSlot1, UnitSlot1Edit.OnEvent("Change", sd_UnitSlotSelect_1)
+(UnitSlot1Edit := MainGUI.AddDropDownList("x347 y36 vUnitSlot1Edit Disabled", UnitNamesList)).Text := UnitSlot1, UnitSlot1Edit.OnEvent("Change", sd_UnitSlotSelect_1)
 (UnitSlot2Edit := MainGUI.AddDropDownList("x221 y66 vUnitSlot2Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot2Edit.Text := UnitSlot2, UnitSlot2Edit.OnEvent("Change", sd_UnitSlotSelect_2)
 (UnitSlot3Edit := MainGUI.AddDropDownList("x360 y66 vUnitSlot3Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot3Edit.Text := UnitSlot3, UnitSlot3Edit.OnEvent("Change", sd_UnitSlotSelect_3)
 (UnitSlot4Edit := MainGUI.AddDropDownList("x221 y96 vUnitSlot4Edit Disabled", ["None"])).Add(UnitNamesList), UnitSlot4Edit.Text := UnitSlot4, UnitSlot4Edit.OnEvent("Change", sd_UnitSlotSelect_4)
@@ -154,19 +154,19 @@ ThemesList := []
 Loop Files A_ThemesWorkingDir "*.msstyles" {
 	ThemesList.Push(StrReplace(A_LoopFileName, ".msstyles"))
 }
-(ThemesEdit := MainGUI.Add("DropDownList", GUIThemeDDLXPos " y76 w72 h100 vGUITheme Disabled", ThemesList)).Text := GUITheme, ThemesEdit.OnEvent("Change", sd_GUITheme)
+(ThemesEdit := MainGUI.AddDropDownList("x75 y76 w72 h100 vGUITheme Disabled", ThemesList)).Text := GUITheme, ThemesEdit.OnEvent("Change", sd_GUITheme)
 MainGUI.AddCheckBox("x15 y40 vAlwaysOnTop Disabled Checked" AlwaysOnTop, "Always On Top").OnEvent("Click", sd_AlwaysOnTop)
-MainGUI.AddText("x15 y57 +BackgroundTrans", "GUI Transparency")
-MainGUI.AddText(GUITransparencyTextXPos " y57 +Center +BackgroundTrans vGUITransparency", GUITransparency)
-MainGUI.AddUpDown("xp+17 yp-1 h16 -16 Range0-14 vGUITransparencyUpDown Disabled", GUITransparency//5).OnEvent("Change", sd_GUITransparency)
+MainGUI.AddText("x15 y57 +BackgroundTrans", "GUI Transparency:")
+MainGUI.AddText("xp+103 y57 +Center +BackgroundTrans vGUITransparency", GUITransparency)
+MainGUI.AddUpDown("xp+21 yp-1 h16 -16 Range0-14 vGUITransparencyUpDown Disabled", GUITransparency//5).OnEvent("Change", sd_GUITransparency)
 MainGUI.AddButton("x14 y100 w150 h20 vAdvancedOptions Disabled", "Advanced Options").OnEvent("Click", sd_AdvancedOptionsGUI)
 MainGUI.AddButton("x15 y155 w150 h20 vHotkeyGUI Disabled", "Change Hotkeys").OnEvent("Click", sd_HotkeyGUI)
 MainGUI.AddButton("x16 yp+24 w150 h20 vAutoClickerGUI Disabled", "AutoClicker Settings").OnEvent("Click", sd_AutoClickerGUI)
 MainGUI.AddButton("x20 yp+24 w140 h20 vHotkeyRestore Disabled", "Restore Defaults").OnEvent("Click", sd_ResetHotkeysButton)
 MainGUI.AddText("x230 y41 +BackgroundTrans", "Input Delay (ms):")
-MainGUI.AddText(KeyDelayTextXPos " y39 w47 h18 0x201")
-MainGUI.AddUpDown("Range0-9999 vKeyDelay Disabled", KeyDelay).OnEvent("Change", sd_SaveKeyDelay)
-MainGUI.AddButton("x227 yp+27 " ResetSettingsButtonWidth " h20 vSettingsRestore Disabled", "Reset Settings").OnEvent("Click", sd_ResetSettingsButton)
+MainGUI.AddText("x317 y39 w47 h18 0x201")
+MainGUI.AddUpDown("xp+10 Range0-9999 vKeyDelay Disabled", KeyDelay).OnEvent("Change", sd_SaveKeyDelay)
+MainGUI.AddButton("x227 yp+27 w120 h20 vSettingsRestore Disabled", "Reset Settings").OnEvent("Click", sd_ResetSettingsButton)
 MainGUI.AddButton("x400 y97 w30 h20 vReconnectTest Disabled", "Test").OnEvent("Click", sd_ReconnectTest)
 MainGUI.AddText("x230 y125 +BackgroundTrans", "Private Server Link:")
 MainGUI.AddEdit("x230 y150 w250 h20 vPrivServer Lowercase Disabled", PrivServer).OnEvent("Change", sd_ServerLink)
@@ -178,7 +178,7 @@ MainGUI.AddButton("xp+25 yp-3 w20 h20 vReconnectMethodHelp Disabled", "?").OnEve
 (FallbackEdit := MainGUI.AddCheckBox("x230 y210 w132 h15 vPublicFallback Disabled Checked" PublicFallback, "Fallback to Public Server")).Section := "Settings", FallbackEdit.OnEvent("Click", sd_UpdateConfigShortcut)
 MainGUI.AddButton("x380 y207 w20 h20 vPublicFallbackHelp Disabled", "?").OnEvent("Click", sd_PublicFallbackHelp)
 LangArr := ["English"]
-MainGUI.AddText(LanguageTextXPos " y42 +BackgroundTrans", "Language")
+MainGUI.AddText("x390 y42 +BackgroundTrans", "Language:")
 (LanguageEdit := MainGUI.AddDropDownList("x360 y65 vLanguageEdit Disabled", LangArr)).Text := Language, LanguageEdit.OnEvent("Change", sd_Language)
 
 
@@ -581,7 +581,7 @@ sd_ResetSettings() {
 	IniWrite((DankMemerFarmBeg := 1), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
 	IniWrite((RandomStringCount := 32), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "DankMemerJobCooldown")
 	IniWrite((RegLogPath := "HKEY_LOCAL_MACHINE"), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegLogPath")
-	IniWrite((RegDumpPath := "C:\Users\"), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegDumpPath")
+	IniWrite((RegDumpPath := ""), A_SettingsWorkingDir "main_config.ini", "Miscellaneous", "RegDumpPath")
 	sd_ResetSessionStats(), sd_ResetTotalStats()
 	sd_ResetHotkeys(), sd_ResetAdvancedOptions(), sd_ResetDiscordIntegration(), sd_ResetGameConfig()
 	DirDelete(A_SettingsWorkingDir "misc", true)
@@ -1524,6 +1524,7 @@ sd_UnitSlotDefaults(*) {
 	} else {
 		UnitSlot0Edit.Text := UnitSlot0
 	}
+	gofys()
 }
 
 gofys(*) {

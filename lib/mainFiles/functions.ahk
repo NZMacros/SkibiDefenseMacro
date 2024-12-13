@@ -513,34 +513,6 @@ sd_LoadLanguages() {
 
 sd_DefaultHandlers() {
 	global
-
-	if Language = "english" {
-		GUIThemeDDLXPos := "x75"
-		GUITransparencyTextXPos := "xp+98"
-		KeyDelayTextXPos := "x313"
-		LanguageTextXPos := "x390"
-		ResetSettingsButtonWidth := "w120"
-	} else if (Language = "turkish") {
-		GUIThemeDDLXPos := "xp+63"
-		GUITransparencyTextXPos := "xp+90"
-		KeyDelayTextXPos := "xp+100"
-		LanguageTextXPos := "x410"
-		ResetSettingsButtonWidth := "w120"
-		ReconnectMethodLeftButtonXPos := ""
-	} else if (Language = "spanish") {
-		GUIThemeDDLXPos := "x100"
-		GUITransparencyTextXPos := "xp+120"
-		KeyDelayTextXPos := "x340"
-		LanguageTextXPos := "x400"
-		ResetSettingsButtonWidth := "w120"
-	} else if (Language = "portuguese") {
-		GUIThemeDDLXPos := "x90"
-		GUITransparencyTextXPos := "xp+123"
-		KeyDelayTextXPos := "x350"
-		LanguageTextXPos := "x410"
-		ResetSettingsButtonWidth := "w126"
-	}
-
 	if (DiscordMode = 1) && (DiscordCheck = 1) {
 		DiscordWebhookCheck := 1, DiscordBotCheck := 0
 		DiscordIntegrationDisabled := ""
@@ -802,7 +774,7 @@ sd_ImportConfig() {
 	 , "PublicFallback", 1
 	 , "ReconnectMethod", "Deeplink"
 	 , "ReconnectMessage", "I'm a proud user of " MacroName "!"
-	 , "IgnoredUpdateVersion", ""
+	 , "IgnoredUpdateVersion", VersionID
 	 , "ShowOnPause", 0
 	 , "ClickCount", 1000
 	 , "ClickDelay", 10

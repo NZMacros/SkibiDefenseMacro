@@ -73,7 +73,7 @@ A_TrayMenu.Default := "Start Macro"
 global CurrentStrategy := {pid: "", name: ""} ; stores "pid" (script process ID) and "name" (in-game pathing name)
 global MacroState := 0 ; 0 = stopped, 1 = paused, 2 = running
 ; set version identifier
-global VersionID := "0.4.3-rc.1"
+global VersionID := "0.4.3"
 global ResetTime := MacroStartTime := MacroReloadTime := nowUnix()
 global PausedStartTime := 0
 global GameStartTime := 0
