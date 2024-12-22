@@ -2,16 +2,16 @@
 ; Window Information for AHKv2
 ;
 
-#Requires AutoHotkey v2.0
-
+#Requires AutoHotkey v2.0.18
 #NoTrayIcon
 #SingleInstance Force
 SetWorkingDir(A_ScriptDir "\..")
 CoordMode("Pixel", "Screen")
 
 global MainGUI
-
 WindowInformationGUI()
+
+
 
 WindowInformationGUI() {
     global MainGUI

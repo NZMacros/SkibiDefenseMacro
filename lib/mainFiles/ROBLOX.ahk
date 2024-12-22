@@ -40,8 +40,7 @@ GetRobloxHWND()
 ; Finds the y-offset of GUI elements in the current Roblox window
 ; Optionally takes a known window handle to skip GetRobloxHWND() call
 ; Returns: offset (integer), defaults to 0 on fail (ByRef param fail is then set to 1, else 0)
-GetYOffset(hwnd?) {
-	global offsetfail := 0
+GetYOffset(hwnd?, &fail?) {
 	static hRoblox := 0, offset := 0
 
     if (!IsSet(hwnd)) {
@@ -49,7 +48,7 @@ GetYOffset(hwnd?) {
 	}
 
 	if hwnd = hRoblox {
-		offsetfail := 0
+		fail := 0
 		return offset
 	} else if WinExist("ahk_id " hwnd) {
 		try {
@@ -59,13 +58,15 @@ GetYOffset(hwnd?) {
 		pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
 
 		Loop 20 { ; for red vignette effect
-			if ((Gdip_ImageSearch(pBMScreen, bitmaps["topbutton"], &pos, , , , , 20) = 1) && (Gdip_ImageSearch(pBMScreen, bitmaps["topbuttonfill"], , x := SubStr(pos, 1, (comma := InStr(pos, ",")) - 1), y := SubStr(pos, comma + 1), x + 41, y + 10, 20) = 0)) {
+			if ((Gdip_ImageSearch(pBMScreen, bitmaps["topbutton"], &pos, , , , , 20) = 1)
+				&& (Gdip_ImageSearch(pBMScreen, bitmaps["topbuttonfill"], , (x := SubStr(pos, 1, (comma := InStr(pos, ",")) - 1)), (y := SubStr(pos, comma + 1)), x + 34, y + 31, 20) = 0))
+			{
 				Gdip_DisposeImage(pBMScreen)
-				hRoblox := hwnd, offsetfail := 0
+				hRoblox := hwnd, fail := 0
 				return offset := y - 14
 			} else {
 				if A_Index = 20 {
-					Gdip_DisposeImage(pBMScreen), offsetfail := 1
+					Gdip_DisposeImage(pBMScreen), fail := 1
 					return 0 ; default offset, change this if needed
 				} else {
 					Sleep 50

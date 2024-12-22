@@ -8,23 +8,23 @@ sd_Pause(*) {
 		sd_LockTabs()
 		ActivateRoblox()
 		DetectHiddenWindows(1)
-		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid) {
+		if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrat.pid)) {
 			Send "{F16}"
 		} else {
-			if (W_State) {
-				Send "{" W " down}"
+			if (FwdKeyState) {
+				SendInput "{" FwdKey " down}"
 			}
-			if (S_State) {
-				Send "{" S " down}"
+			if (BackKeyState) {
+				SendInput "{" BackKey " down}"
 			}
-			if (A_State) {
-				Send "{" A " down}"
+			if (LeftKeyState) {
+				SendInput "{" LeftKey " down}"
 			}
-			if (D_State) {
-				Send "{" D " down}"
+			if (BackKeyState) {
+				SendInput "{" RightKey " down}"
 			}
-			if (Space_State) {
-				Send "{" Space " down}"
+			if (SpaceKeyState) {
+				SendInput "{" SC_Space " down}"
 			}
 		}
 		MacroState := 2
@@ -55,13 +55,13 @@ sd_Pause(*) {
 			WinActivate("ahk_id " MainGUI.Hwnd)
 		}
 		DetectHiddenWindows(1)
-		if WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid) {
+		DetectHiddenWindows 1
+		if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrat.pid)) {
 			Send "{F16}"
-		} else {
-			W_State := GetKeyState(W), S_State := GetKeyState(S), A_State := GetKeyState(A), D_State := GetKeyState(D), Space_State := GetKeyState(Space)
-			Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
-			Click("Up")
 		}
+		FwdKeyState := GetKeyState(FwdKey), BackKeyState := GetKeyState(BackKey), LeftKeyState := GetKeyState(LeftKey), RightKeyState := GetKeyState(RightKey), SpaceKeyState := GetKeyState(SC_Sapce)
+		SendInput "{" FwdKey " up} {" Backkey " up} {" LeftKey " up} {" RightKey " up} {" SC_Space " up}"
+		Click("Up")
 		MacroState := 1
 		if WinExist("Discord.ahk ahk_class AutoHotkey") {
 			try {
@@ -107,9 +107,8 @@ sd_Stop(*) {
 		Hotkey(PauseHotkey, sd_Pause, "Off")
 		Hotkey(StopHotkey, sd_Stop, "Off")
 	}	
-	sd_EndStrategy()
-	Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
-	Click("Up")    
+	SendInput "{" FwdKey " up} {" BackKey " up} {" LeftKey " up} {" RightKey " up} {" SC_Space " up}"
+	Click "Up"    
 	if (MacroState) {
 		SessionRuntime := SessionRuntime + (nowUnix() - MacroStartTime)
 		TotalRuntime := TotalRuntime + (nowUnix() - MacroStartTime)
@@ -151,9 +150,9 @@ sd_AutoClicker(*) {
 	}	
 
 	while (((ClickMode) || (A_Index <= ClickCount)) && (toggle)) {
-		Send "{" ClickButton " down}"
+		SendInput "{" ClickButton " down}"
 		Sleep(ClickDuration)
-		Send "{" ClickButton " up}"
+		SendInput "{" ClickButton " up}"
 		Sleep(ClickDelay)
 	}
 	toggle := 0
@@ -218,12 +217,51 @@ sd_ResetSessionStats(*) {
 	IniWrite((SessionCredits := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionCredits")
 	IniWrite((SessionWins := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionWins")
 	IniWrite((SessionLosses := 0), A_SettingsWorkingDir "main_config.ini", "Status", "SessionLosses")
-	sd_setStats()
+	sd_SetStats()
+}
+
+sd_KeyVars() {
+	return
+	(
+	'
+	SC_Esc := "' SC_Esc '"
+	SC_1 := "' SC_1 '"
+	SC_2 := "' SC_2 '"
+	SC_3 := "' SC_3 '"
+	SC_4 := "' SC_4 '"
+	SC_5 := "' SC_5 '"
+	SC_6 := "' SC_6 '"
+	SC_7 := "' SC_7 '"
+	SC_8 := "' SC_8 '"
+	SC_9 := "' SC_9 '"
+	SC_0 := "' SC_0 '"
+	SC_Q := "' SC_Q '"
+	FwdKey := "' FwdKey '" ; w
+	SC_E := "' SC_E '"
+	SC_R := "' SC_R '"
+	SC_Y := "' SC_Y '"
+	ZoomIn := "' ZoomIn '" ; i
+	ZoomOut := "' ZoomOut '" ; o
+	SC_Enter := "' SC_Enter '"
+	LeftKey := "' LeftKey '" ; a
+	BackKey := "' BackKey '" ; s
+	RightKey := "' RightKey '" ; d
+	SC_L := "' SC_L '"
+	SC_LShift := "' SC_LShift '"
+	SC_Z := "' SC_Z '"
+	SC_X := "' SC_X '"
+	SC_N := "' SC_N '"
+	SC_Space := "' SC_Space '"
+	RotUp := "' RotUp '" ; PgUp
+	RotLeft := "' RotLeft '" ; Left Arrow
+	RotRight := "' RotRight '" ; Right Arrow
+	RotDown := "' RotDown '" ; PgDn
+	'
+	)
 }
 
 PreserveState() {
 	SaveGUIPos()
-	sd_EndStrategy()
 	if WinExist("Discord.ahk ahk_class AutoHotkey") {
 		try {
 			PostMessage(0x5560, , , , "Discord.ahk ahk_class AutoHotkey")
@@ -255,22 +293,51 @@ AHKReloadScript(ahkpath) {
 	Run('"' ahkpath '" /restart ' params)
 }
 
+sd_GrindingInterruptReason(*) {
+	Critical
+	global InterruptReason
+	local reasonreader
+	if (FileExist(A_SettingsWorkingDir "interruptreason.txt")) {
+		reasonreader := FileOpen(A_SettingsWorkingDir "interruptreason.txt", "r"), InterruptReason := reasonreader.Read(), reasonreader.Close()
+		FileDelete(A_SettingsWorkingDir "interruptreason.txt")
+	} else {
+		throw Error("Invalid call!", -1)
+	}
+}
+
 CheckDisplaySpecs() {
 	global offsetY, windowDimensions
 	ActivateRoblox()
-	; DisconnectCheck()
-	hwnd := GetRobloxHWND()
-	GetRobloxClientPos(hwnd)
-	offsetY := GetYOffset(hwnd), offsetfail := 0
-	windowDimensions := (windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight))
-	if offsetfail = 1 {
-		MsgBox("Unable to detect in-game GUI offset!`nThis means the macro will NOT work correctly!`n`nThere are a few reasons why this can happen:`n	- Incorrect graphics settings`n	- You are not in the lobby at the moment/Roblox failed to open or the check happened too early (re-run the macro with Roblox pre-opened)`n	- Something is covering the top of your Roblox window`n`nEnter SD's lobby and try again making sure your display settings are correct.`nUse a 16:9 resolution (1920x1080/1600x900/1366/768) as well.", "Warning", 0x1030 " T60")
-		sd_Close()
-	}
+	DisconnectCheck()
 	if A_ScreenDPI != 96 {
 	    MsgBox("Your display scale is not 100%!`nThis means the Macro will not be able to detect images in-game correctly, resulting in failure!`nTo fix this, follow these steps:`n`n    - Open Settings (Win+I)`n    - Navigate to System >> Display`n    - Then set the scale to 100% (even if it isn't recommended for your device)`n    - Restart the macro and Roblox`n	- Sign out if prompted to", "Warning", 0x1030)
     }
-	(IsSet(MainGUI) ? MainGUI.Restore() : 0)
+	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd), offsetY := GetYOffset(hwnd, &offsetfail)
+	if offsetfail = 1 {
+		MsgBox("Unable to detect in-game GUI offset!`nThis means the macro will NOT work correctly!`n`nThere are a few reasons why this can happen:`n	- Incorrect graphics settings`n	- You are not in the lobby at the moment/Roblox failed to open or the check happened too early (re-run the macro with Roblox pre-opened)`n	- Something is covering the top of your Roblox window`n`nEnter SD's lobby and try again making sure your display settings are correct.`nUse a 16:9 resolution (1920x1080/1600x900/1366/768) as well.", "WARNING!!", 0x1030 " T180")
+		ExitApp()
+	}
+	windowDimensions := (windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight))
+}
+
+; auxiliary map/array functions
+ObjFullyClone(obj) {
+	nobj := obj.Clone()
+	for k, v in nobj {
+		if (IsObject(v)) {
+			nobj[k] := ObjFullyClone(v)
+		}
+	}
+	return nobj
+}
+
+ObjHasValue(obj, value) {
+	for k, v in obj {
+		if v = value {
+			return 1
+		}
+	}
+	return 0
 }
 
 ObjMinIndex(obj) {
@@ -511,6 +578,76 @@ sd_LoadLanguages() {
 	}
 }
 
+sd_AutoSpeedEventHandler(req) {
+	global
+	local hBM
+
+	if req.readyState != 4 || DetectSpeedEvents != 1 {
+		return
+	}
+
+	if req.status = 200 {
+		switch Trim(req.responseText, " `t`r`n") {
+			case 0:
+			return
+
+
+			case 1:
+			MaxSpeed := SpeedEvent := 1
+			MainGUI["ChapterMaxSpeed1Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed2Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed3Edit"].Move("-30")
+			ChapterMaxSpeed1Edit.Move("-30")
+			ChapterMaxSpeed2Edit.Move("-30")
+			ChapterMaxSpeed3Edit.Move("-30")
+
+
+			case 2:
+			MaxSpeed := SpeedEvent := 2
+			MainGUI["ChapterMaxSpeed1Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed2Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed3Edit"].Move("-30")
+			ChapterMaxSpeed1Edit.Move("-30")
+			ChapterMaxSpeed2Edit.Move("-30")
+			ChapterMaxSpeed3Edit.Move("-30")
+
+
+			case 3:
+			MaxSpeed := SpeedEvent := 3
+			MainGUI["ChapterMaxSpeed1Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed2Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed3Edit"].Move("-30")
+			ChapterMaxSpeed1Edit.Move("-30")
+			ChapterMaxSpeed2Edit.Move("-30")
+			ChapterMaxSpeed3Edit.Move("-30")
+
+
+			case 4:
+			MaxSpeed := SpeedEvent := 4
+			MainGUI["ChapterMaxSpeed1Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed2Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed3Edit"].Move("-30")
+			ChapterMaxSpeed1Edit.Move("-30")
+			ChapterMaxSpeed2Edit.Move("-30")
+			ChapterMaxSpeed3Edit.Move("-30")
+
+
+			case 5:
+			MaxSpeed := SpeedEvent := 5
+			MainGUI["ChapterMaxSpeed1Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed2Edit"].Move("-30")
+			MainGUI["ChapterMaxSpeed3Edit"].Move("-30")
+			ChapterMaxSpeed1Edit.Move("-30")
+			ChapterMaxSpeed2Edit.Move("-30")
+			ChapterMaxSpeed3Edit.Move("-30")
+
+
+			default:
+			MsgBox("Failed to fetch speed events data from GitHub! Your speed will not be automatically updated accordingly to any new global speed events.`n`NIf you would like to use a speed event, update your speed manually.", "Speed Events", 0x1010 " T60")
+		}
+	}
+}
+
 sd_DefaultHandlers() {
 	global
 	if (DiscordMode = 1) && (DiscordCheck = 1) {
@@ -555,7 +692,6 @@ sd_DefaultHandlers() {
 sd_ForceReconnect(wParam, *) {
 	Critical
 	global ReconnectDelay := wParam
-	sd_EndStrategy()
 	CloseRoblox()
 	return 0
 }
@@ -674,6 +810,29 @@ sd_Quickstart() {
 	}
 }
 
+/*sd_EndStrategies() {
+	DetectHiddenWindows(1)
+	if WinExist("lossfarm.ahk ahk_class AutoHotkey") {
+		WinKill()
+		return "LossFarm"
+	}
+	if WinExist("gamesplayed.ahk ahk_class AutoHotkey") {
+		WinKill()
+		return "GamesPlayed"
+	}
+	if WinExist("ccfarm.ahk ahk_class AutoHotkey") {
+		WinKill()
+		return "CCFarm"
+	}
+	if WinExist("xpfarm.ahk ahk_class AutoHotkey") {
+		WinKill()
+		return "XPFarm"
+	}
+	if WinExist("winfarm.ahk ahk_class AutoHotkey") {
+		? WinKill() : "" 
+	, DetectHiddenWindows(0)
+}*/
+
 Background() {
 	; stats
 	sd_SetStats()
@@ -702,23 +861,70 @@ sd_ImportConfig() {
 	global
 	local config := Map() ; store default values, these are loaded initially
 
-	config["Game"] := Map("GrindMode", "Loss Farm"
-	 , "ChapterName1", "Chapter 1"
-	 , "ChapterName2", "None"
-	 , "ChapterName3", "None"
-	 , "CurrentChapterNum", 1
-	 , "UnitSlots", 10
-	 , "UnitMode", "Preset"
-	 , "UnitSlot1", "Camera Fighter"
-	 , "UnitSlot2", "Speaker Fighter"
-	 , "UnitSlot3", "TV-Person"
-	 , "UnitSlot4", "None"
-	 , "UnitSlot5", "None"
-	 , "UnitSlot6", "None"
-	 , "UnitSlot7", "None"
-	 , "UnitSlot8", "None"
-	 , "UnitSlot9", "None"
-	 , "UnitSlot0", "None")
+	config["Game"] := Map("CurrentChapterNum", 1
+	 , "DetectSpeedEvents", 1
+	 , "SpeedEvent", 0
+	 , "ChapterName1", "Chapter 3"
+	 , "ChapterName2", "Chapter 4"
+	 , "ChapterName3", "Chapter 5"
+	 , "ChapterStrat1", "Char3"
+	 , "ChapterStrat2", "Char4"
+	 , "ChapterStrat3", "Char5"
+	 , "ChapterGrindMode1", "Loss Farm"
+	 , "ChapterGrindMode2", "Loss Farm"
+	 , "ChapterGrindMode3", "Loss Farm"
+	 , "ChapterStratInvertFB1", 0
+	 , "ChapterStratInvertFB2", 0
+	 , "ChapterStratInvertFB3", 0
+	 , "ChapterStratInvertLR1", 0
+	 , "ChapterStratInvertLR2", 0
+	 , "ChapterStratInvertLR3", 0
+	 , "ChapterMaxSpeed1", 2
+	 , "ChapterMaxSpeed2", 2
+	 , "ChapterMaxSpeed3", 2
+	 , "ChapterReturnType1", "Rejoin"
+	 , "ChapterReturnType2", "Rejoin"
+	 , "ChapterReturnType3", "Rejoin"
+	 , "ChapterMaxTime1", 15
+	 , "ChapterMaxTime2", 15
+	 , "ChapterMaxTime3", 15
+	 , "ChapterUnitSlots1", 5
+	 , "ChapterUnitSlots2", 5
+	 , "ChapterUnitSlots3", 5
+	 , "ChapterUnitMode1", "Input"
+	 , "ChapterUnitMode2", "Input"
+	 , "ChapterUnitMode3", "Input"
+	 , "ChapterUnitSlot11", "Cameraman"
+	 , "ChapterUnitSlot21", "Speakerman"
+	 , "ChapterUnitSlot31", "TV Man"
+	 , "ChapterUnitSlot41", "None"
+	 , "ChapterUnitSlot51", "None"
+	 , "ChapterUnitSlot61", "None"
+	 , "ChapterUnitSlot71", "None"
+	 , "ChapterUnitSlot81", "None"
+	 , "ChapterUnitSlot91", "None"
+	 , "ChapterUnitSlot01", "None"
+	 , "ChapterUnitSlot12", "Cameraman"
+	 , "ChapterUnitSlot22", "Speakerman"
+	 , "ChapterUnitSlot32", "TV Man"
+	 , "ChapterUnitSlot42", "None"
+	 , "ChapterUnitSlot52", "None"
+	 , "ChapterUnitSlot62", "None"
+	 , "ChapterUnitSlot72", "None"
+	 , "ChapterUnitSlot82", "None"
+	 , "ChapterUnitSlot92", "None"
+	 , "ChapterUnitSlot02", "None"
+	 , "ChapterUnitSlot13", "Cameraman"
+	 , "ChapterUnitSlot23", "Speakerman"
+	 , "ChapterUnitSlot33", "TV Man"
+	 , "ChapterUnitSlot43", "None"
+	 , "ChapterUnitSlot53", "None"
+	 , "ChapterUnitSlot63", "None"
+	 , "ChapterUnitSlot73", "None"
+	 , "ChapterUnitSlot83", "None"
+	 , "ChapterUnitSlot93", "None"
+	 , "ChapterUnitSlot03", "None"
+	 )
 
 	config["Status"] := Map("ReversedStatusLog", 0
 	 , "TotalRuntime", 0
@@ -828,9 +1034,12 @@ sd_ReadIni(path) {
 			case "[", ";":
 			continue
 
+
 			default:
 			if (p := InStr(A_LoopField, "=")) {
-				try k := SubStr(A_LoopField, 1, p-1), %k% := IsInteger(v := SubStr(A_LoopField, p+1)) ? Integer(v) : v
+				try {
+					k := SubStr(A_LoopField, 1, p - 1), %k% := IsInteger(v := SubStr(A_LoopField, p + 1)) ? Integer(v) : v
+				}
 			}
 		}
 	}
@@ -842,6 +1051,8 @@ sd_UpdateConfigShortcut(GUICtrl, *) {
 	switch GUICtrl.Type, 0 {
 		case "DDL":
 		%GUICtrl.Name% := GUICtrl.Text
+
+
 		default: ; "CheckBox", "Edit", "UpDown", "Slider"
 		%GUICtrl.Name% := GUICtrl.Value
 	}
@@ -852,29 +1063,24 @@ sd_UpdateConfigShortcut(GUICtrl, *) {
 
 sd_ImgSearch(imageName, v, aim := "full", trans := "none") {
 	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
-	; xi := 0
-	; yi := 0
-	; ww := windowWidth
-	; wh := windowHeight
-	xi := (aim = "actionbar") ? windowWidth//4 : (aim = "highright") ? windowWidth//2 : (aim = "right") ? windowWidth//2 : (aim = "center") ? windowWidth//4 : (aim = "lowright") ? windowWidth//2 : 0
-	yi := (aim = "low") ? windowHeight//2 : (aim = "actionbar") ? (windowHeight//4)*3 : (aim = "center") ? windowHeight//4 : (aim = "lowright") ? windowHeight//2 : (aim = "quest") ? 150 : 0
-	ww := (aim = "actionbar") ? xi*3 : (aim = "highleft") ? windowWidth//2 : (aim = "left") ? windowWidth//2 : (aim = "center") ? xi*3 : (aim = "quest") ? 310 : windowWidth
-	wh := (aim = "high") ? windowHeight//2 : (aim = "highright") ? windowHeight//2 : (aim = "highleft") ? windowHeight//2 : (aim = "buff") ? 150 : (aim = "abovebuff") ? 30 : (aim = "center") ? yi*3 : (aim = "quest") ? Max(560, windowHeight-100) : windowHeight
-	if DirExist(A_WorkingDir "\img_assets") {
+	xi := (aim = "highright") ? windowWidth//2 : (aim = "right") ? windowWidth//2 : (aim = "center") ? windowWidth//4 : (aim = "lowright") ? windowWidth//2 : 0
+	yi := (aim = "low") ? windowHeight//2 : (aim = "center") ? windowHeight//4 : (aim = "lowright") ? windowHeight//2 : 0
+	ww := (aim = "highleft") ? windowWidth//2 : (aim = "left") ? windowWidth//2 : (aim = "center") ? xi * 3 : windowWidth
+	wh := (aim = "high") ? windowHeight//2 : (aim = "highright") ? windowHeight//2 : (aim = "highleft") ? windowHeight//2 : (aim = "center") ? yi * 3 : windowHeight
+	if DirExist(A_MacroWorkingDir "sd_img_assets") {
 		try {
-			result := ImageSearch(&FoundX, &FoundY, windowX + xi, windowY + yi, windowX + ww, windowY + wh, "*" v ((trans != "none") ? (" *Trans" trans) : "") " " A_WorkingDir "\img\" imageName)
+			result := ImageSearch(&FoundX, &FoundY, windowX + xi, windowY + yi, windowX + ww, windowY + wh, "*" v ((trans != "none") ? (" *Trans" trans) : "") " " A_MacroWorkingDir "sd_img_assets\" imageName)
 		} catch {
-			sd_SetStatus("Error", "Image file " imageName " was not found in:`n" A_WorkingDir "\img_assets\" imageName)
 			Sleep 5000
 			ProcessClose(DllCall("GetCurrentProcessId"))
 		}
-		if (result = 1) {
+		if result = 1 {
 			return [0, FoundX - windowX, FoundY - windowY]
 		} else {
 			return [1, 0, 0]
 		}
 	} else {
-		MsgBox("Folder location cannot be found:`n" A_WorkingDir "\img_assets\")
+		MsgBox("Folder location cannot be found:`n" A_MacroWorkingDir "sd_img_assets\")
 		return [3, 0, 0]
 	}
 }
@@ -894,7 +1100,7 @@ CloseRoblox() {
 			ActivateRoblox()
 			PrevKeyDelay := A_KeyDelay
 			SetKeyDelay(250 + KeyDelay)
-			Send "{" Escape "} {" L "} {" Enter "}"
+			Send "{" SC_Esc "} {" SC_L "} {" SC_Enter "}"
 			SetKeyDelay PrevKeyDelay
 		}
 		try {
@@ -922,20 +1128,22 @@ DisconnectCheck(testCheck := 0) {
 	; Return if not disconnected or crashed
 	ActivateRoblox()
 	hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
-	if ((windowWidth > 0) && (!WinExist("Roblox Crash"))) {
-		pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
-		if Gdip_ImageSearch(pBMScreen, bitmaps["Disconnected"], , , , , , 2) != 1 {
-			Gdip_DisposeImage(pBMScreen)
-			return 0
+	if (!testCheck) {
+		if ((windowWidth > 0) && (!WinExist("Roblox Crash"))) {
+			pBMScreen := Gdip_BitmapFromScreen((IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)))
+			if Gdip_ImageSearch(pBMScreen, bitmaps["Disconnected"], , , , , , 2) != 1 {
+				Gdip_DisposeImage(pBMScreen)
+				return 0
+			}
+		Gdip_DisposeImage(pBMScreen)
 		}
-	Gdip_DisposeImage(pBMScreen)
 	}
 
 	; End any residual strategies and set reconnect start time
-	Click("Up")
-	sd_EndStrategy()
+	Click "Up"
 	ReconnectStart := nowUnix()
 	sd_UpdateAction("Reconnect")
+	sd_EndStrategies()
 	
 	; Wait for any requested delay time from remote control
 	if (ReconnectDelay) {
@@ -976,7 +1184,6 @@ DisconnectCheck(testCheck := 0) {
 			switch ((ReconnectMethod = "Browser") ? 0 : Mod(i, 5)) {
 				case 1, 2:
 				; Close Roblox
-				Send "{F11}"
 				CloseRoblox()
 				; Run Server Deeplink
 				sd_SetStatus("Attempting", ServerLabels[server])
@@ -994,7 +1201,6 @@ DisconnectCheck(testCheck := 0) {
 				default:
 				if (server) {
 					; Close Roblox
-					Send "{F11}"
 					CloseRoblox()
 					;Run Server Link (legacy method w/ browser)
 					sd_SetStatus("Attempting", ServerLabels[server] " (Browser)")
@@ -1116,7 +1322,6 @@ DisconnectCheck(testCheck := 0) {
 				Sleep 250
 			}
 			MouseMove((windowX + (windowWidth//2)), (IsSet(offsetY) ? ((windowY + offsetY) + ((windowHeight - offsetY)//2)) : (windowY + (windowHeight//2))))
-			Send "{F11}"
 
 			if (!testCheck) {
 				return 1
@@ -1125,6 +1330,179 @@ DisconnectCheck(testCheck := 0) {
 			}
 		}
 	}
+}
+
+; CREDITS TAB
+; ------------------------
+sd_ContributorsHandler(req) {
+	if req.readyState != 4 {
+		return
+	}
+
+	sd_ContributorsImage(1, (req.status = 200) ? StrSplit(req.responseText, "`n", " `t")
+	 : ["Error while loading,red", "contributors!,red", "", "Make sure you have,red", "a working internet,red", "connection and then,red", "reload the macro.,red"])
+}
+
+sd_ContributorsImage(page := 1, contributors := "") {
+	static hBM1, hBM2, hBM3, hBM4, hBM5, hBM6, hBM7, hBM8, hBM9, hBM10
+	 , hBM11, hBM12, hBM13, hBM14, hBM15, hBM16, hBM17, hBM18, hBM19, hBM20 ; 20 pages max
+	 , colourArr := Map("blue", [0xff83c6e2, 0xff2779d8, 0xff83c6e2]
+		 , "gold", [0xfff0ca8f, 0xffd48d22, 0xfff0ca8f]
+		 , "red", [0xffA82428, 0xffA82428, 0xffA82428])
+	local pBM1, pBM2, pBM3, pBM4, pBM5, pBM6, pBM7, pBM8, pBM9, pBM10
+	 , pBM11, pBM12, pBM13, pBM14, pBM15, pBM16, pBM17, pBM18, pBM19, pBM20 ; 20 pages max
+
+	if (!IsSet(hBM1)) {
+		devs := [["NegativeZero ❤", 0xff7df9ff, "1198320993958117458"]]
+
+		testers := [["kapcho", 0xffff00ff, "1146158446522138714"]
+		 , ["kapcho", 0xffa45ee9, "1146158446522138714"]
+		 , ["kapcho", 0xffdfdfdf, "1146158446522138714"]
+		 , ["kapcho", 0xff3f8d4d, "1146158446522138714"]
+		 , ["kapcho", 0xff7aa22c, "1146158446522138714"]
+		 , ["kapcho", 0xff2bc016, "1146158446522138714"]
+		 , ["kapcho", 0xffffdc64, "1146158446522138714"]
+		 , ["ulacon", 0xff794044, "822378669091061760"]
+		 , ["ulacon", 0xffffde48, "822378669091061760"]
+		 , ["ulacon", 0xff0096ff, "822378669091061760"]
+		 , ["ulacon", 0xfff47fff, "822378669091061760"]
+		 , ["ulacon", 0xffa3bded, "822378669091061760"]
+		 , ["ulacon", 0xfff49fbc, "822378669091061760"]]
+
+		pBM := Gdip_CreateBitmap(244, 212)
+		G := Gdip_GraphicsFromImage(pBM)
+		Gdip_SetSmoothingMode(G, 2)
+		Gdip_SetInterpolationMode(G, 7)
+
+		pBrush := Gdip_BrushCreateSolid(0xff202020)
+		Gdip_FillRoundedRectangle(G, pBrush, 0, 0, 242, 210, 5)
+		Gdip_DeleteBrush(pBrush)
+
+		x := 5, y := 50
+		pos := Gdip_TextToGraphics(G, "Developers", "s12 x" x + 1 " y" y " Bold cff000000", "Tahoma", , , 1)
+		pBrush := Gdip_CreateLinearGrBrushFromRect(x + 1, y, SubStr(pos, InStr(pos, "|", , , 2)+1, InStr(pos, "|", , , 3)-InStr(pos, "|", , , 2)-1)+2, 14, 0x00000000, 0x00000000, 2)
+		Gdip_SetLinearGrBrushPresetBlend(pBrush, [0.0, 0.5, 1], [0xfff0ca8f, 0xffd48d22, 0xfff0ca8f])
+		Gdip_FillRoundedRectangle(G, pBrush, x + 1, y, SubStr(pos, InStr(pos, "|", , , 2)+1, InStr(pos, "|", , , 3)-InStr(pos, "|", , , 2)-1), 14, 4)
+		Gdip_DeleteBrush(pBrush)
+		Gdip_TextToGraphics(G, "Developers", "s12 x" x + 2 " y" y " r4 Bold cff000000", "Tahoma")
+
+		y += 16
+		for v in devs {
+			pos := Gdip_TextToGraphics(G, v[1], "s11", "Tahoma", , , 1)
+			if (x + (w := Number(SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3)-InStr(pos, "|", , , 2)-1))) > 239) {
+				x := 5, y += 13
+			}
+			pBrush := Gdip_CreateLinearGrBrushFromRect(0, y + 1, 242, 12, 0xff000000 + (Min(Round(Gdip_RFromARGB(v[2]) * 1.2), 255) << 16) + (Min(Round(Gdip_GFromARGB(v[2]) * 1.2), 255) << 8) + Min(Round(Gdip_BFromARGB(v[2]) * 1,2), 255)
+			 , 0xff000000 + (Min(Round(Gdip_RFromARGB(v[2]) * 0.9), 255) << 16) + (Min(Round(Gdip_GFromARGB(v[2]) * 0.9), 255) << 8) + Min(Round(Gdip_BFromARGB(v[2]) * 0.9), 255)), pPen := Gdip_CreatePenFromBrush(pBrush, 1)
+			Gdip_DrawOrientedString(G, v[1], "Tahoma", 11, 0, x, y, 130, 10, 0, pBrush, pPen)
+			Gdip_DeletePen(pPen), Gdip_DeleteBrush(pBrush)
+			v.Push([x, y, x + w, y + 12])
+			x += w + 4
+		}
+
+		x := 5, y += 19
+		pos := Gdip_TextToGraphics(G, "Testers", "s12 x" x + 1 " y" y " Bold cff000000", "Tahoma", , , 1)
+		pBrush := Gdip_CreateLinearGrBrushFromRect(x + 1, y, SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3)-InStr(pos, "|", , , 2) - 1), 14, 0x00000000, 0x00000000, 2)
+		Gdip_SetLinearGrBrushPresetBlend(pBrush, [0.0, 0.5, 1], [0xfff0ca8f, 0xffd48d22, 0xfff0ca8f])
+		Gdip_FillRoundedRectangle(G, pBrush, x + 1, y, SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3)-InStr(pos, "|", , , 2)-1) + 1, 14, 4)
+		Gdip_DeleteBrush(pBrush)
+		Gdip_TextToGraphics(G, "Testers", "s12 x" x + 2 " y" y " r4 Bold cff000000", "Tahoma")
+
+		y += 16
+		for v in testers {
+			pos := Gdip_TextToGraphics(G, v[1], "s11", "Tahoma", , , 1)
+			if (x + (w := Number(SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2)-1))) > 239) {
+				x := 5, y += 13
+			}
+			pBrush := Gdip_CreateLinearGrBrushFromRect(0, y + 1, 242, 12, 0xff000000 + (Min(Round(Gdip_RFromARGB(v[2]) * 1.2), 255) << 16) + (Min(Round(Gdip_GFromARGB(v[2]) * 1.2), 255) << 8) + Min(Round(Gdip_BFromARGB(v[2]) * 1.2), 255)
+			 , 0xff000000 + (Min(Round(Gdip_RFromARGB(v[2]) * 0.9), 255) << 16) + (Min(Round(Gdip_GFromARGB(v[2]) * 0.9), 255) << 8) + Min(Round(Gdip_BFromARGB(v[2]) * 0.9), 255)), pPen := Gdip_CreatePenFromBrush(pBrush,1)
+			Gdip_DrawOrientedString(G, v[1], "Tahoma", 11, 0, x, y, 130, 10, 0, pBrush, pPen)
+			Gdip_DeletePen(pPen), Gdip_DeleteBrush(pBrush)
+			v.Push([x, y, x + w, y + 12])
+			x += w + 4
+		}
+
+		Gdip_DeleteGraphics(G)
+
+		hBM := Gdip_CreateHBITMAPFromBitmap(pBM)
+		Gdip_DisposeImage(pBM)
+		MainGUI["ContributorsDevImage"].Value := "HBITMAP:*" hBM
+		MainGUI["ContributorsDevImage"].OnEvent("Click", sd_ContributorsDiscordLink)
+		sd_ContributorsDiscordLink(GUICtrl, *) {
+			static users := (users := devs.Clone(), users.Push(testers*), users)
+			MouseGetPos(&mouse_x, &mouse_y)
+			try {
+				WinGetClientPos(&ctrl_x, &ctrl_y, , , "ahk_id " GUICtrl.Hwnd)
+			}
+			x := mouse_x - ctrl_x, y := mouse_y - ctrl_y
+			for v in users {
+				if ((x >= v[4][1]) && (x <= v[4][3]) && (y >= v[4][2]) && (y <= v[4][4])) {
+					sd_RunDiscord("users/" v[3])
+					break
+				}
+			}
+		}
+		DllCall("DeleteObject", "ptr", hBM)
+
+		i := 0
+		for k, v in contributors {
+			if Mod(k, 24) = 1 {
+				if k > 1 {
+					Gdip_DeleteGraphics(G)
+					hBM%i% := Gdip_CreateHBITMAPFromBitmap(pBM%i%)
+					Gdip_DisposeImage(pBM%i%)
+				}
+
+				i++
+				pBM%i% := Gdip_CreateBitmap(244,212)
+				G := Gdip_GraphicsFromImage(pBM%i%)
+				Gdip_SetSmoothingMode(G, 2)
+				Gdip_SetInterpolationMode(G, 7)
+
+				pBrush := Gdip_BrushCreateSolid(0xff202020)
+				Gdip_FillRoundedRectangle(G, pBrush, 0, 0, 242, 210, 5)
+				Gdip_DeleteBrush(pBrush)
+			}
+
+			name := Trim(SubStr(v, 1, (pos := InStr(v, ",", , -1))-1)), colour := Trim(SubStr(v, pos + 1))
+			x := (Mod(k - 1, 24) > 11) ? 124 : 4, y := 48 + Mod(k - 1, 12) * 13
+			pos := Gdip_TextToGraphics(G, name, "s11 x" x " y0 cff000000", "Tahoma", , , 1)
+			pBrush := Gdip_CreateLinearGrBrushFromRect(x, y + 1, SubStr(pos, InStr(pos, "|", , , 2) + 1, InStr(pos, "|", , , 3) - InStr(pos, "|", , , 2) - 1), 12, 0x00000000, 0x00000000, 2)
+			Gdip_SetLinearGrBrushPresetBlend(pBrush, [0.0, 0.5, 1], colourArr[colourArr.Has(colour) ? colour : "gold"].Clone())
+			pPen := Gdip_CreatePenFromBrush(pBrush, 1)
+			Gdip_DrawOrientedString(G, name, "Tahoma", 11, 0, x, y, 130, 10, 0, pBrush, pPen)
+			Gdip_DeletePen(pPen), Gdip_DeleteBrush(pBrush)
+		}
+		Gdip_DeleteGraphics(G)
+		hBM%i% := Gdip_CreateHBITMAPFromBitmap(pBM%i%)
+		Gdip_DisposeImage(pBM%i%)
+
+		MainGUI["ContributorsImage"].Value := "HBITMAP:*" hBM1
+	} else {
+		; GDI_SetImageX() by SKAN
+		hdcSrc  := DllCall("CreateCompatibleDC", "UInt", 0)
+		hdcDst  := DllCall("GetDC", "UInt", MainGUI["ContributorsImage"].Hwnd)
+		bm := Buffer(24, 0) ; BITMAP Structure
+		DllCall("GetObject", "UInt", hBM%page%, "UInt", 24, "UPtr", bm.Ptr)
+		w := NumGet(bm, 4, "Int"), h := NumGet(bm, 8, "Int")
+		hbmOld  := DllCall("SelectObject", "UInt", hdcSrc, "UInt", hBM%page%)
+		hbmNew  := DllCall("CreateBitmap", "Int",w - 6, "Int",h - 50, "UInt",NumGet(bm, 16, "UShort")
+		 , "UInt", NumGet(bm, 18,"UShort"), "Int", 0)
+		hbmOld2 := DllCall("SelectObject", "UInt", hdcDst, "UInt", hbmNew)
+		DllCall("BitBlt", "UInt", hdcDst, "Int", 3, "Int", 48, "Int", w - 6, "Int",h - 50
+		 , "UInt", hdcSrc, "Int", 3, "Int", 48, "UInt", 0x00CC0020)
+		DllCall("SelectObject", "UInt", hdcSrc, "UInt", hbmOld)
+		DllCall("DeleteDC", "UInt", hdcSrc), DllCall("ReleaseDC", "UInt", MainGUI["ContributorsImage"].Hwnd, "UInt", hdcDst)
+		DllCall("SendMessage", "UInt", MainGUI["ContributorsImage"].Hwnd, "UInt", 0x0B, "UInt", 0, "UInt", 0)        ; WM_SETREDRAW OFF
+		oBM := DllCall("SendMessage", "UInt", MainGUI["ContributorsImage"].Hwnd, "UInt", 0x172, "UInt", 0, "UInt", hBM%page%) ; STM_SETIMAGE
+		DllCall("SendMessage", "UInt", MainGUI["ContributorsImage"].Hwnd, "UInt", 0x0B, "UInt", 1, "UInt", 0)        ; WM_SETREDRAW ON
+		DllCall("DeleteObject", "UInt", oBM)
+	}
+
+	i := page + 1
+
+	MainGUI["ContributorsLeft"].Enabled := (page != 1)
+	MainGUI["ContributorsRight"].Enabled := (IsSet(hBM%i%))
 }
 
 BrowserReconnect(linkCode, i) {
@@ -1478,6 +1856,306 @@ sd_UpdateGUIVar(var) {
 	}*/
 }
 
+; import patterns and syntax check
+sd_ImportStrategies() {
+	global strats := Map()
+	strats.CaseSense := 0
+	global stratslist := []
+
+	if (FileExist(A_SettingsWorkingDir "imported\strats.ahk")) {
+		file := FileOpen(A_SettingsWorkingDir "imported\strats.ahk", "r"), imported := file.Read(), file.Close()
+	} else {
+		imported := ""
+	}
+
+	import := ""
+	Loop Files A_MacroWorkingDir "strats\*.ahk" {
+		file := FileOpen(A_LoopFilePath, "r"), strat := file.Read(), file.Close()
+		if (RegexMatch(strat, "im)strategies\[")) {
+    		MsgBox
+			(
+			"Strategy '" A_LoopFileName "' seems to be deprecated!
+			This means the strat will NOT work!
+			Check for an updated version of the pattern
+			or ask the creator to update it"
+			), "Error", 0x40010 " T60"
+		}
+		if (!InStr(imported, imported_strat := '("' (strat_name := StrReplace(A_LoopFileName, "." A_LoopFileExt)) '")`r`n' strat '`r`n`r`n')) {
+			script :=
+			(
+			'
+			#NoTrayIcon
+			#SingleInstance Off
+			#Warn All, StdOut
+
+			' sd_KeyVars() '
+
+			ChapterName := ChapterStrat := ChapterGrindMode := ChapterReturnType := ChapterUnitMode := ChapterUnitSlot1 := ChapterUnitSlot2 := ChapterUnitSlot3 := ChapterUnitSlot4 := ChapterUnitSlot5 := ChapterUnitSlot6 := ChapterUnitSlot7 := ChapterUnitSlot8 := ChapterUnitSlot9 := ChapterUnitSlot0 := ""
+			ChapterStratInvertFB := ChapterStratInvertLR := ChapterMaxTime := ChapterMaxSpeed := ChapterUnitSlots := 0
+
+			Walk(param1, param2?) => ""
+			PreciseSleep(param1) => ""
+			sd_Walk(param1, param2, param3?) => ""
+			Gdip_ImageSearch(*) => ""
+			Gdip_BitmapFromBase64(*) => ""
+
+			' strat '
+
+			'
+			)
+
+			exec := ComObject("WScript.Shell").Exec('"' exe_path64 '" /script /Validate /ErrorStdOut *'), exec.StdIn.Write(script), exec.StdIn.Close()
+			if (stdout := exec.StdOut.ReadAll()) {
+				MsgBox
+				(
+				'Unable to import "' strat_name '" strategy!
+				Click "OK" to continue loading the macro without this strategy installed, otherwise fix the error and reload the macro.
+
+				The error found on loading is stated below:
+				' stdout
+				), "Unable to Import Strat!", 0x40010 " T60"
+				continue
+			}
+		}
+
+		import .= imported_strat
+		stratslist.Push(strat_name)
+		strats[strat_name] := strat
+	}
+
+	if import != imported {
+		file := FileOpen(A_SettingsWorkingDir "imported\strats.ahk", "w-d"), file.Write(import), file.Close()
+	}
+}
+
+sd_ImportPaths() {
+	static path_names := Map("jc", ["Char1", "Char2", "Char3", "Char4", "Char5", "Char6"
+	 , "NM3", "NM4", "NM1", "NM2", "NM6", "NM5"
+	 , "Endless", "EndShield"],  ; join chapter
+	"rtf", ["Char1", "Char2", "Char3", "Char4", "Char5", "Char6"
+	 , "NM3", "NM4", "NM1", "NM2", "NM6", "NM5"
+	 , "Endless", "EndShield"] ; return from (chapter)
+	)
+
+	global paths := Map()
+	paths.CaseSense := 0
+
+	for k, list in path_names {
+		(paths[k] := Map()).CaseSense := 0
+		for v in list {
+			try {
+				file := FileOpen(A_MacroWorkingDir "paths\" k "-" v ".ahk", "r"), paths[k][v] := file.Read(), file.Close()
+				if regexMatch(paths[k][v], "im)paths\[")
+    				MsgBox('Path "' k '-' v '" appears to be deprecated!`nThis means the macro will NOT work correctly!`nCheck for an updated version of the path or`nrestore the default path', "Error", 0x40010 " T60")
+			} catch {
+				MsgBox('Could not find the "' k '-' v '" path!`nThis means the macro will NOT work correctly!`nMake sure the path exists in the "paths" folder and redownload if it does nott!', "Error", 0x40010 " T60")
+			}
+		}
+	}
+}
+
+; this function generates the "walk" code and runs it for a given "movement" (AHK code string)
+sd_CreateWalk(movement, name := "", vars := "") {
+	; F13 is used by 'skibi_defense_macro.ahk' to tell "walk" to complete a cycle
+	; F14 is held down by "walk" to indicate that the cycle is in progress, then released when the cycle is finished
+	; F16 can be used by any script to pause / unpause the walk script, when unpaused it will resume from where it left off
+
+	DetectHiddenWindows(1) ; allow communication with walk script
+
+	if WinExist("ahk_pid " CurrentStrat.pid " ahk_class AutoHotkey") {
+		sd_EndStrategies()
+	}
+
+	script :=
+	(
+	'
+	#SingleInstance Off
+	#NoTrayIcon
+	ProcessSetPriority("AboveNormal")
+	KeyHistory(0)
+	ListLines(0)
+	OnExit(ExitFunc)
+
+	#Include "%A_ScriptDir%\lib\"
+	#Include "Gdip_All.ahk"
+	#Include "Gdip_ImageSearch.ahk"
+	#Include "externalFuncs\PreciseSleep.ahk"
+	#Include "mainFiles\Roblox.ahk"
+
+	(bitmaps := Map()).CaseSense := 0
+	pToken := Gdip_Startup()
+	Walk(time, *) => PreciseSleep(time * 1000)
+
+	A_MacroWorkingDir := "' A_MacroWorkingDir '"
+	A_SettingsWorkingDIr := "' A_SettingsWorkingDir '"
+	offsetY := ' offsetY '
+
+	' sd_KeyVars() '
+	' vars '
+
+	class debugLog {
+		static addLog(type, message, log) {
+			FileAppend("[" StrUpper(type) "]: " message " @ " A_Hour ":" A_Min ":" A_Sec " on " A_DD "/" A_MM "/" A_YYYY, A_SettingsWorkingDir "logs\" log "logs.txt")
+		}
+
+		static carriageReturn(enter, log) {
+			FileAppend(enter, A_SettingsWorkingDir "logs\" log "logs.txt")
+		}
+	}
+
+	Start()
+	return
+
+	sd_Walk(time, MoveKey1, MoveKey2 := 0) {
+		Send "{" MoveKey1 " down}" (MoveKey2 ? "{" MoveKey2 " down}" : "")
+		PreciseSleep(time * 1000)
+		Send "{" MoveKey1 " up}" (MoveKey2 ? "{" MoveKey2 " up}" : "")
+	}
+
+	sd_ImgSearch(imageName, v, aim := "full", trans := "none") {
+		hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
+		xi := (aim = "highright") ? windowWidth//2 : (aim = "right") ? windowWidth//2 : (aim = "center") ? windowWidth//4 : (aim = "lowright") ? windowWidth//2 : 0
+		yi := (aim = "low") ? windowHeight//2 : (aim = "center") ? windowHeight//4 : (aim = "lowright") ? windowHeight//2 : 0
+		ww := (aim = "highleft") ? windowWidth//2 : (aim = "left") ? windowWidth//2 : (aim = "center") ? xi * 3 : windowWidth
+		wh := (aim = "high") ? windowHeight//2 : (aim = "highright") ? windowHeight//2 : (aim = "highleft") ? windowHeight//2 : (aim = "center") ? yi * 3 : windowHeight
+		if DirExist(A_MacroWorkingDir "sd_img_assets") {
+			try {
+				result := ImageSearch(&FoundX, &FoundY, windowX + xi, windowY + yi, windowX + ww, windowY + wh, "*" v ((trans != "none") ? (" *Trans" trans) : "") " " A_MacroWorkingDir "sd_img_assets\" imageName)
+			} catch {
+				Sleep 5000
+				ProcessClose(DllCall("GetCurrentProcessId"))
+			}
+			if result = 1 {
+				return [0, FoundX - windowX, FoundY - windowY]
+			} else {
+				return [1, 0, 0]
+			}
+		} else {
+			MsgBox("Folder location cannot be found: " A_MacroWorkingDir "sd_img_assets\")
+			return [3, 0, 0]
+		}
+	}
+
+	CloseRoblox() {
+		global
+		; if roblox exists, activate it and send Esc + L + Enter
+		if (hwnd := GetRobloxHWND()) {
+			GetRobloxClientPos(hwnd)
+			if (windowHeight >= 500) { ; requirement for L to activate "Leave"
+				ActivateRoblox()
+				PrevKeyDelay := ' A_KeyDelay '
+				SetKeyDelay(250 + ' KeyDelay ')
+				Send "{" SC_Esc "} {" SC_L "} {" SC_Enter "}"
+				SetKeyDelay PrevKeyDelay
+		}
+		try {
+			WinClose("Roblox")
+		}
+		Sleep 500
+			try {
+				WinClose("Roblox")
+			}
+			Sleep 4500 ; Delay to prevent Roblox Error Code 264
+		}
+		; kill any remnant processes
+		for p in ComObjGet("winmgmts:").ExecQuery("' statement '") {
+			ProcessClose(p.ProcessID)
+		}
+	}
+
+	F13::
+		Start(hk?) {
+			Send "{F14 down}"
+			' movement '
+			Send "{F14 up}"
+		}
+
+	F16:: {
+		static key_states := Map(LeftKey, 0, RightKey, 0, FwdKey, 0, BackKey, 0, "LButton", 0, "RButton", 0, SC_E, 0)
+		if (A_IsPaused) {
+			for k, v in key_states {
+				if v = 1 {
+					Send "{" k " down}"
+				}
+			}
+		} else {
+			for k, v in key_states {
+				key_states[k] := GetKeyState(k)
+				Send "{" k " up}"
+			}
+		}
+		Pause(-1)
+	}
+
+	ExitFunc(*) {
+		Send "{' LeftKey ' up} {' RightKey ' up} {' FwdKey ' up} {' BackKey ' up} {' SC_Space ' up} {F14 up} {' SC_E ' up}"
+		try {
+			Gdip_Shutdown(pToken)
+		}
+	}
+	'
+	) ; this is just ahk code, it will be executed as a new script
+
+	shell := ComObject("WScript.Shell")
+	exec := shell.Exec('"' exe_path64 '" /script /force *')
+	exec.StdIn.Write(script), exec.StdIn.Close()
+
+	if WinWait("ahk_class AutoHotkey ahk_pid " exec.ProcessID, , 2) {
+		DetectHiddenWindows(0)
+		CurrentStrat.pid := exec.ProcessID, CurrentStrat.name := name
+		return 1
+	} else {
+		DetectHiddenWindows(0)
+		return 0
+	}
+}
+
+; this function ends the strat scripts
+sd_EndStrategies() {
+	global CurrentStrat
+	DetectHiddenWindows(1)
+	try {
+		WinClose("ahk_class AutoHotkey ahk_pid " CurrentStrat.pid)
+	}
+	DetectHiddenWindows(0)
+	CurrentStrat.pid := CurrentStrat.name := ""
+	; if issues, check if closed, else kill and force keys up
+}
+
+; string form of the function which holds MoveKey1 (and optionally MoveKey2) down for "time" seconds, not to be confused with the pure form in sd_CreateWalk above
+sd_Walk(time, MoveKey1, MoveKey2 := 0) {
+	return
+	(
+	'Send "{' MoveKey1 ' down}' (MoveKey2 ? '{' MoveKey2 ' down}"' : '"') '
+	PreciseSleep(1000 * ' time ')
+	Send "{' MoveKey1 ' up}' (MoveKey2 ? '{' MoveKey2 ' up}"' : '"')
+	)
+}
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PATH FUNCTIONS
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+sd_CreatePath(path) => sd_CreateWalk(path, , sd_PathVars())
+
+sd_PathVars(){
+	return
+	(
+	'
+	ChapterMaxSpeed1 := ' ChapterMaxSpeed1 '
+	ChapterMaxSpeed2 := ' ChapterMaxSpeed2 '
+	ChapterMaxSpeed3 := ' ChapterMaxSpeed3 '
+	ChapterReturnType1 := "' ChapterReturnType1 '"
+	ChapterReturnType2 := "' ChapterReturnType2 '"
+	ChapterReturnType3 := "' ChapterReturnType3 '"
+	KeyDelay := ' KeyDelay '
+	ChapterConfirmed := 0
+
+	CoordMode("Mouse", "Screen")
+	CoordMode("Pixel", "Screen")
+	'
+	)
+}
+
 ; text control positioning functions
 CenterText(Text1, Text2, Font, w := 260) {
 	w1 := TextExtent(Text1.Text, Font), w2 := TextExtent(Text2.Text, Font)
@@ -1526,65 +2204,52 @@ sd_BackgroundEvent(wParam, lParam, *) {
 
 sd_WM_COPYDATA(wParam, lParam, *) {
 	Critical
-	global CurrentStrategy, W, S, A, D, Space
+	global CurrentStrat, FwdKey, LeftKey, BackKey, RightKey, SC_Space
 	StringAddress := NumGet(lParam + 2 * A_PtrSize, "Ptr")  ; Retrieves the CopyDataStruct's lpData member.
 	StringText := StrGet(StringAddress)  ; Copy the string out of the structure.
 	; pause
 	DetectHiddenWindows(1)
-	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)) {
+	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrat.pid)) {
 		Send "{F16}"
-	} else {
-		W_State := GetKeyState(W)
-		S_State := GetKeyState(S)
-		A_State := GetKeyState(A)
-		D_State := GetKeyState(D)
-		Space_State := GetKeyState(Space)
-		PauseState := state
-		PauseObjective := objective
-		Send "{" W " up} {" S " up} {" A " up} {" D " up} {" Space " up}"
-		Click("Up")
 	}
-	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)) {
+	FwdKeyState := GetKeyState(FwdKey)
+	BackKeyState := GetKeyState(BackKey)
+	LeftKeyState := GetKeyState(LeftKey)
+	RightKeyState := GetKeyState(RightKey)
+	SpaceKeyState := GetKeyState(SC_Space)
+	PauseState := state
+	PauseObjective := objective
+	Send "{" FwdKey " up} {" BackKey " up} {" RightKey " up} {" LeftKey " up} {" SC_Space " up}"
+	Click("Up")
+	if (WinExist("ahk_class AutoHotkey ahk_pid " CurrentStrat.pid)) {
 		Send "{F16}"
 	} else {
-			if (W_State) {
-				Send "{" W " down}"
-			}
-			if (S_State) {
-				Send "{" S " down}"
-			}
-			if (A_State) {
-				Send "{" A " down}"
-			}
-			if (D_State) {
-				Send "{" D " down}"
-			}
-			if (Space_State) {
-				Send "{" Space " down}"
-			}
+		if (FwdKeyState) {
+			SendInput "{" FwdKey " down}"
+		}
+		if (BackKeyState) {
+			SendInput "{" BackKey " down}"
+		}
+		if (LeftKeyState) {
+			SendInput "{" LeftKey " down}"
+		}
+		if (RightKeyState) {
+			SendInput "{" RightKey " down}"
+		}
+		if (SpaceKeyState) {
+			SendInput "{" SC_Space " down}"
+		}
 	}
 	DetectHiddenWindows(0)
-	InStr(StringText, ": ") ? sd_SetStatus(SubStr(StringText, 1, InStr(StringText, ": ")-1), SubStr(StringText, InStr(StringText, ": ") + 2)) : sd_SetStatus(StringText)
+	InStr(StringText, ": ") ? sd_SetStatus(SubStr(StringText, 1, InStr(StringText, ": ") - 1), SubStr(StringText, InStr(StringText, ": ") + 2)) : sd_SetStatus(StringText)
 	return 0
-}
-
-; this function ends the strategy script(s)
-sd_EndStrategy() {
-	global CurrentStrategy
-	DetectHiddenWindows(1)
-	try {
-		WinClose("ahk_class AutoHotkey ahk_pid " CurrentStrategy.pid)
-	}
-	DetectHiddenWindows(0)
-	CurrentStrategy.pid := CurrentStrategy.name := ""
-	; if issues, we can check if closed, else kill and force keys up
 }
 
 sd_ColourfulEmbedsEasterEgg() {
 	global ColourFulEmbeds
-	ChapterName1 := MainGUI["ChapterName1"].Text
-	ChapterName2 := MainGUI["ChapterName2"].Text
-	ChapterName3 := MainGUI["ChapterName3"].Text
+	ChapterName1 := MainGUI["ChapterName1Edit"].Text
+	ChapterName2 := MainGUI["ChapterName2Edit"].Text
+	ChapterName3 := MainGUI["ChapterName3Edit"].Text
 	if (ChapterName1 = ChapterName2) && (ChapterName2 = ChapterName3) {
 		if (MsgBox("You found an easter egg!`nEnable Rainbow Embeds?", , 0x1024 " Owner" MainGUI.Hwnd) = "Yes") {
 			ColourfulEmbeds := 1
@@ -1596,5 +2261,349 @@ sd_ColourfulEmbedsEasterEgg() {
 	}
 }
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; CHAPTER DEFAULT OVERRIDES
+sd_ImportChapterDefaults() {
+	global ChapterDefault := Map()
+	ChapterDefault.CaseSense := 0
 
-SetLoadProgress(87, MainGUI, MacroName " (Loading: ")
+	ChapterDefault["Chapter 1"] := Map("Strat", "Char1"
+	 , "GrindMode", "CC Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 5
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "Speakerman"
+	 , "UnitSlot2", "TV Man"
+	 , "UnitSlot4", ""
+	 , "UnitSlot5", ""
+	 , "UnitSlot6", ""
+	 , "UnitSlot7", ""
+	 , "UnitSlot8", ""
+	 , "UnitSlot9", ""
+	 , "UnitSlot0", "")
+
+	ChapterDefault["Chapter 2"] := Map("Strat", "Char2"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 5
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Chapter 3"] := Map("Strat", "Char3"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 6
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Chapter 4"] := Map("Strat", "Char4"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 7
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Chapter 5"] := Map("Strat", "Char5"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 7
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Chapter 6"] := Map("Strat", "Char6"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 8
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 3"] := Map("Strat", "NM3"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 8
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 4"] := Map("Strat", "NM4"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 8
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 1"] := Map("Strat", "NM1"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 9
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 2"] := Map("Strat", "NM2"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 9
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 6"] := Map("Strat", "NM6"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 10
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Nightmare 5"] := Map("Strat", "NM5"
+	 , "GrindMode", "Loss Farm"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 10
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Endless"] := Map("Strat", "Endless"
+	 , "GrindMode", "Games Played"
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 10
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	ChapterDefault["Endless Shield"] := Map("Strat", "EndShield"
+	 , "GrindMode", "Games Played" ; assumed
+	 , "InvertFB", 0
+	 , "InvertLR", 0
+	 , "MaxSpeed", 2
+	 , "MaxTime", 10
+	 , "ReturnType", "Rejoin"
+	 , "UnitSlots", 10
+	 , "UnitMode", "Input"
+	 , "UnitSlot1", "Cameraman"
+	 , "UnitSlot3", "None"
+	 , "UnitSlot2", "None"
+	 , "UnitSlot4", "None"
+	 , "UnitSlot5", "None"
+	 , "UnitSlot6", "None"
+	 , "UnitSlot7", "None"
+	 , "UnitSlot8", "None"
+	 , "UnitSlot9", "None"
+	 , "UnitSlot0", "None")
+
+	global StandardChapterDefault := ObjFullyClone(ChapterDefault)
+
+	inipath := A_SettingsWorkingDir "game_config.ini"
+
+	if (FileExist(inipath)) { ; update default values with new ones read from any existing .ini
+		sd_LoadChapterDefaults()
+	}
+
+	; reset chapter strat to default if not exist
+	global ChapterStrat1, ChapterStrat2, ChapterStrat3
+	loop 3 {
+		i := A_Index
+		if ChapterName%i% != "None" {
+			for strategy in stratslist {
+				if strategy = ChapterStrat%i% {
+					continue 2
+				}
+			}
+			ChapterStrat%i% := ChapterDefault[ChapterName%i%]["Strat"]
+		}
+	}
+
+	ini := ""
+	for k, v in ChapterDefault { ; overwrite any existing .ini with updated one with all new keys and old values
+		ini .= "[" k "]`r`n"
+		for i, j in v {
+			ini .= i "=" j "`r`n"
+		}
+		ini .= "`r`n"
+	}
+	inifile := FileOpen(inipath, "w-d"), inifile.Write(ini), inifile.Close()
+}
+
+sd_LoadChapterDefaults() {
+	global ChapterDefault
+
+	ini := FileOpen(A_SettingsWorkingDir "game_config.ini", "r"), str := ini.Read(), ini.Close()
+	Loop Parse str, "`n", "`r" A_Space A_Tab {
+		switch (c := SubStr(A_LoopField, 1, 1)) {
+			; ignore comments and section names
+			case "[":
+			s := SubStr(A_LoopField, 2, -1)
+
+			case ";":
+			continue
+
+			default:
+			if (p := InStr(A_LoopField, "=")) {
+				k := SubStr(A_LoopField, 1, p - 1), ChapterDefault[s][k] := SubStr(A_LoopField, p + 1)
+			}
+		}
+	}
+}
+
+;miscellaneous functions
+ValidateNumber(&var, default := 0) => IsNumber(var) ? var : (var := default)
+ValidateInt(&var, default := 0) => IsInteger(var) ? var : (var := default)
+
+
+SetLoadProgress(87, MacroName " (Loading: ")

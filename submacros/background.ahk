@@ -1,3 +1,4 @@
+#Requires AutoHotkey v2.0.18
 #SingleInstance Force
 #NoTrayIcon
 #MaxThreads 255
@@ -30,7 +31,7 @@ windowDimensions := A_Args[2]
 
 pToken := Gdip_Startup()
 bitmaps := Map(), bitmaps.CaseSense := 0
-#Include "%A_ScriptDir%\..\img_assets\offset\bitmaps.ahk"
+#Include "%A_ScriptDir%\..\sd_img_assets\offset\bitmaps.ahk"
 
 CoordMode("Pixel", "Screen")
 DetectHiddenWindows(1)
@@ -41,11 +42,12 @@ OnMessage(0x5552, sd_SetGlobalInt, 255)
 OnMessage(0x5553, sd_SetGlobalStr, 255)
 OnMessage(0x5555, sd_SetState, 255)
 OnMessage(0x5556, sd_SendHeartbeat)
+OnMessage(0x5557, sd_SetLobbyState)
 
 
 Loop {
     hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd)
-    ; sd_DeathCheck()
+	; sd_DeathCheck()
 	Sleep 1000
 }
 
@@ -62,7 +64,7 @@ sd_SetState(wParam, lParam, *){
 	static LastDeathDetected := 0
 	if (((nowUnix() - ResetTime) > 20) && ((nowUnix() - LastDeathDetected) > 10)) {
 		try {
-			result := ImageSearch(&FoundX, &FoundY, windowX + windowWidth//2, windowY + windowHeight//2, windowX + windowWidth, windowY + windowHeight, A_WorkingDir "\img_assets\empty_healthbar.png")
+			result := ImageSearch(&FoundX, &FoundY, windowX + windowWidth//2, windowY + windowHeight//2, windowX + windowWidth, windowY + windowHeight, A_WorkingDir "\sd_img_assets\empty_healthbar.png")
         } catch {
 			return
         }
@@ -102,11 +104,11 @@ sd_SetGlobalStr(wParam, lParam, *) {
 	Critical
 	; enumeration
 	EnumStr()
-	static sections := ["Discord", "Game", "Settings", "Status"]
+	static sections := ["Discord", "Game", "Miscellaneous", "Settings", "Status"]
 
 	local var := arr[wParam], section := sections[lParam]
 	try {
-        %var% := IniRead("settings\main_config.ini", section, var)
+        %var% := IniRead("\settings\main_config.ini", section, var)
     }
 	return 0
 }
@@ -125,4 +127,10 @@ Send_WM_COPYDATA(StringToSend, TargetScriptTitle, wParam := 0) {
 	} else {
 		return s
     }
+}
+
+sd_SetLobbyState(wParam, *) {
+	Critical
+	global InLobby := wParam
+	return 0
 }

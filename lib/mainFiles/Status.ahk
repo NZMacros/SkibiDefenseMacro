@@ -112,4 +112,4 @@ sd_UpdateAction(action) {
 }
 
 
-SetLoadProgress(91, MainGUI, MacroName " (Loading: ")
+SetLoadProgress(91, MacroName " (Loading: ")

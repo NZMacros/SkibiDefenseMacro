@@ -28,7 +28,7 @@ powershell -Command ""(New-Object Net.WebClient).DownloadFile('%1', '%temp%\%~nx
 echo %cyan%Download complete^^!%reset%
 echo:
 
-:: extract from %temp%/zip to Skibi Defense Macro directory
+:: extract from %temp%/zip to Natro Macro directory
 for %%a in ("%~2") do set "a2=%%~dpa"
 echo %purple%Extracting %~nx1...%reset%
 for /f delims^=^ EOL^= %%g in ('cscript //nologo "%~f0?.wsf" "%a2%" "%temp%\%~nx1"') do set "f=%%g"
@@ -51,8 +51,22 @@ echo:
         echo %blue%Copy complete^^!%reset%
         echo:
     )
-    :: delete old version
+    :: copy strats
     if %~4 == 1 (
+        echo %blue%Copying strats...%reset%
+        robocopy "%~2\strats" "!folder!\strats" /E > nul
+        echo %blue%Copy complete^^!%reset%
+        echo:
+    )
+    :: copy paths
+    if %~5 == 1 (
+        echo %blue%Copying paths...%reset%
+        robocopy "%~2\paths" "!folder!\paths" /E /XF %~7 > nul
+        echo %blue%Copy complete^^!%reset%
+        echo:
+    )
+    :: delete old version
+    if %~6 == 1 (
         echo %blue%Deleting %~nx2...%reset%
         rd /s /q "%~2" >nul
         echo %blue%Deleted successfully^^!%reset%
@@ -76,7 +90,7 @@ echo:
     )
 ) else (
     echo %red%Error: Previous Skibi Defense Macro folder not found^^!%reset%
-    echo %red%Make sure to manually copy over settings.%reset%
+    echo %red%Make sure to manually copy over settings, patterns, and paths.%reset%
     echo %red%Updated version: !folder!%reset%
     <nul set /p "=%red%Press any key to exit . . . %reset%"
     pause >nul
@@ -88,9 +102,7 @@ echo %green%Update complete^^! Starting Skibi Defense Macro in 10 seconds.%reset
 <nul set /p =%green%Press any key to skip . . . %reset%
 timeout /t 10 >nul
 
-echo !folder!\submacros\AutoHotkey32.exe
-echo !folder!\submacros\skibi_defense_macro.ahk
-start "" "!folder!\AutoHotkey32.exe" "!folder!\skibi_defense_macro.ahk"
+start "" "!folder!\submacros\AutoHotkey32.exe" "!folder!\submacros\skibi_defense_macro.ahk"
 exit)
 
 ----- Begin wsf script --->

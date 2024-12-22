@@ -1,0 +1,36 @@
+Full Path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+Type: REG_EXPAND_SZ
+
+Retrieved Item: TeamsMachineUninstallerProgramData
+
+Value: %ProgramData%\Microsoft\Teams\Update.exe --uninstall --msiUninstall --source=default
+
+Last Modified: 
+
+
+
+Full Path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+Type: REG_EXPAND_SZ
+
+Retrieved Item: TeamsMachineUninstallerLocalAppData
+
+Value: %LOCALAPPDATA%\Microsoft\Teams\Update.exe --uninstall --msiUninstall --source=default
+
+Last Modified: 
+
+
+
+Full Path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+Type: REG_SZ
+
+Retrieved Item: GearUPBooster
+
+Value: "C:\Program Files (x86)\GearUPBooster\launcher.exe" /silent
+
+Last Modified: 
+
+
+

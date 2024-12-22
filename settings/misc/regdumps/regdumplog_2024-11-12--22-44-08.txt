@@ -1,0 +1,12 @@
+Full Path: HKEY_USERS\S-1-5-18\Keyboard Layout\Preload
+
+Type: REG_SZ
+
+Retrieved Item: 1
+
+Value: 00000809
+
+Last Modified: 
+
+
+

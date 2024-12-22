@@ -1,4 +1,4 @@
-#Requires AutoHotkey v2.0
+#Requires AutoHotkey v2.0.18
 #SingleInstance Force
 #Warn VarUnset, Off
 SetWorkingDir(A_ScriptDir "\..")
@@ -11,11 +11,11 @@ SetWorkingDir(A_ScriptDir "\..")
 #Include "externalFuncs\nowUnix.ahk"
 
 ; set version identifier
-VersionID := "0.5.1"
+VersionID := "0.5.2"
 
 MacroName := A_Args[1]
 ; assign variables from A_Args
-if A_Args.Length < 6 || A_Args.Length > 6 {
+if A_Args.Length < 7 || A_Args.Length > 7 {
 	Msgbox("This script needs to be run by " MacroName "! You are not supposed to run it manually.")
 	ExitApp()
 }
@@ -26,7 +26,7 @@ windowDimensions := A_Args[4]
 GrindMode := A_Args[5]
 Month := A_Args[6]
 A_SettingsWorkingDir := A_WorkingDir "\settings\"
-InLobby := 1
+InLobby := A_Args[7]
 
 ; ▰▰▰▰▰▰▰▰
 ; INITIAL SETUP
@@ -47,7 +47,7 @@ Gdip_SetInterpolationMode(G, 7)
 ; store buff icons for drawing
 (bitmaps := Map()).CaseSense := 0
 
-#Include "%A_ScriptDir%\..\img_assets\"
+#Include "%A_ScriptDir%\..\sd_img_assets\"
 #Include "icons\bitmaps.ahk"
 #Include "offset\bitmaps.ahk"
 
@@ -286,7 +286,7 @@ Loop {
 	time_value := (60 * A_Min + A_Sec)//6
 
 	; detect credits every minute if OCR is enabled
-	if (((OCR_enabled = 1) && ((Mod(time_value, 10) = 0) || (last_credits && time > last_credits + 580000000))) && (InLobby = 1)) {
+	if (((OCR_enabled = 1) && ((Mod(time_value, 10) = 0) || (last_credits && time > last_credits + 580000000))) && (InLobby = 2)) {
 		DetectCredits()
 		DllCall("GetSystemTimeAsFileTime", "int64p", &time)
 		last_credits := time

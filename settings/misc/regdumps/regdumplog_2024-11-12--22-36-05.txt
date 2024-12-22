@@ -1,0 +1,24 @@
+Full Path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+Type: REG_SZ
+
+Retrieved Item: iTunesHelper
+
+Value: "C:\Users\NegativeZero\AppData\Local\iTunesHelper.exe"
+
+Last Modified: 
+
+
+
+Full Path: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
+
+Type: REG_EXPAND_SZ
+
+Retrieved Item: SecurityHealth
+
+Value: %windir%\system32\SecurityHealthSystray.exe
+
+Last Modified: 
+
+
+

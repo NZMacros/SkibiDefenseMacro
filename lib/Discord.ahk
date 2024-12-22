@@ -153,7 +153,7 @@ commands["shutdown"] := {section: "Commands"}
 commands["info/i/information/whatis/whis/nameit/nit/cmds/commands/cmd [command]"] := {section: "Commands"}
 
 bitmaps := Map()
-#Include "%A_ScriptDir%\..\img_assets\offset\bitmaps.ahk"
+#Include "%A_ScriptDir%\..\sd_img_assets\offset\bitmaps.ahk"
 
 
 
@@ -186,18 +186,18 @@ sd_Status(status) {
 		if (ColourfulEmbeds = 1) {
 			colour := colours[colourIndex := Mod(colourIndex, 7) + 1]
 		} else {
-			colour := ((state = "Disconnected") || (state = "Failed") || (state = "Error") || (state = "Aborting") || (state = "Missing") || (state = "Canceling")) ? 15085139 ; red - error
-			: ((state = "Interupted") || (state = "Warning")) ? 14408468 ; yellow - alert
-			: ((state = "Completed") || (state = "Success")) ? 48128 ; green - success
-			: ((state = "Starting") || (state = "Joining") || (state = "Grinding") || (state = "Collecting")) ? 16366336 ; orange - game
-			: ((state = "GUI") || (state = "Resetting") || (state = "Testing") || (state = "Attempting") || (state = "Paused") || (state = "GitHub") || (state = "Detected") || (state = "Closing") || (state = "Begin") || (state = "End")) ? 15658739 ; white - GUI / utility
-			: ((state = "Discord") || (state = "Dank Memer")) ? 5066239 ; blue - discord
+			colour := ((state == "Disconnected") || (state == "Failed") || (state == "Error") || (state == "Aborting") || (state == "Missing") || (state == "Canceling")) ? 15085139 ; red - error
+			: ((state == "Interupted") || (state == "Warning")) ? 14408468 ; yellow - alert
+			: ((state == "Completed") || (state == "Success")) ? 48128 ; green - success
+			: ((state == "Starting") || (InStr(state, "Join")) || (state == "Grinding") || (state == "Collecting")) ? 16366336 ; orange - game
+			: ((state == "GUI") || (state == "Resetting") || (state == "Testing") || (state == "Attempting") || (state == "Paused") || (state == "GitHub") || (state == "Detected") || (state == "Closing") || (state == "Begin") || (state == "End")) ? 15658739 ; white - GUI / utility
+			: ((state == "Discord") || (state == "Dank Memer")) ? 5066239 ; blue - discord
 			: 3223350
 		}
 
 		; ping
-		content := ((Criticals = 1) && DiscordUserID
-			&& (((CriticalErrorPings = 1) && (state = "Error"))
+		content := ((Criticals = 1) && (DiscordUserID)
+			&& (((CriticalErrorPings = 1) && (state == "Error"))
 			|| ((DisconnectPings = 1) && InStr(stateString, "Disconnected"))
 			|| ((InStr(stateString, "Resetting: Character") && (Mod(SubStr(objective, InStr(objective, " ") + 1), 10) = 5)))))
 			? (DiscordUserID) : ""
@@ -208,9 +208,9 @@ sd_Status(status) {
 		; screenshot
 		if ((Screenshots = 1) 
 			&& ((((CriticalScreenshots = 1) && (content != ""))
-			|| ((state = "Grinding") && (pBM := CreateGameBitmap()))
-			|| ((state = "Returned") && (objective = "Lobby") && (pBM := CreateGameBitmap()))
-			|| ((DebuggingScreenshots = 1) && ((state = "Collecting") || (state = "Failed"))))))
+			|| ((state == "Grinding") && (pBM := CreateGameBitmap()))
+			|| (((state == "Returned") && (objective == "Lobby")) && (pBM := CreateGameBitmap()))
+			|| ((DebuggingScreenshots = 1) && ((state == "Collecting") || ((InStr(state, "Join")) && (objective == "Game")) || (state == "Failed"))))))
 							  {
 			if (!IsSet(pBM)) {
 				hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd), pBM := Gdip_BitmapFromScreen((windowWidth > 0) ? (IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)) : 0)
@@ -597,7 +597,7 @@ sd_Command(command) {
 
 
 		case "rejoin", "reconnect":
-		if (!params[2] || ((params[2] ~= "i)^[0-9]+$") && (params[2] <= 600))) {
+		if (!params[2] || ((params[2] ~= "i)^[0-9]+$") && (params[2] <= 600))) { ; note: use this regex for guix and y settings changing through bot
 			delay := params[2] ? params[2] : 0    
 			DetectHiddenWindows(1)
 			if WinExist("skibi_defense_macro ahk_class AutoHotkey") {
