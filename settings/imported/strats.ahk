@@ -1,4 +1,17 @@
 ("Char1")
+; Chapter 1 default strategy
+; Skibi Defense Macro
+; Strategy by NegativeZero
+
+; Prerequisites
+; variables are assigned above
+;;@&^NoInterrupt
+; this specifies the strategy cannot be interrupted by the macro
+
+; loss farm strategy:
+if ChapterGrindMode = "Loss Farm" {
+    Send "{Click}" ; this clicks to avoid idle kick
+}
 
 
 ("Char2")

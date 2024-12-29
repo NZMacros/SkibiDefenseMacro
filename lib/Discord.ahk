@@ -63,6 +63,7 @@ windowDimensions := A_Args[19]
 ColourfulEmbeds := A_Args[20]
 
 A_SettingsWorkingDir := A_WorkingDir "\settings\"
+mainSettingsPath := A_SettingsWorkingDir "sd_config.ini"
 
 
 
@@ -156,7 +157,6 @@ bitmaps := Map()
 #Include "%A_ScriptDir%\..\sd_img_assets\offset\bitmaps.ahk"
 
 
-
 Discord.SendEmbed("Connected to Discord!", 5066239)
 Loop {
 	(status_buffer.Length > 0) && sd_Status(status_buffer[1])
@@ -189,7 +189,7 @@ sd_Status(status) {
 			colour := ((state == "Disconnected") || (state == "Failed") || (state == "Error") || (state == "Aborting") || (state == "Missing") || (state == "Canceling")) ? 15085139 ; red - error
 			: ((state == "Interupted") || (state == "Warning")) ? 14408468 ; yellow - alert
 			: ((state == "Completed") || (state == "Success")) ? 48128 ; green - success
-			: ((state == "Starting") || (InStr(state, "Join")) || (state == "Grinding") || (state == "Collecting")) ? 16366336 ; orange - game
+			: ((state == "Starting") || (InStr(state, "Join")) || (InStr(state, "Return")) || (state == "Grinding") || (InStr(state, "Replay")) || (state == "Collecting")) ? 16366336 ; orange - game
 			: ((state == "GUI") || (state == "Resetting") || (state == "Testing") || (state == "Attempting") || (state == "Paused") || (state == "GitHub") || (state == "Detected") || (state == "Closing") || (state == "Begin") || (state == "End")) ? 15658739 ; white - GUI / utility
 			: ((state == "Discord") || (state == "Dank Memer")) ? 5066239 ; blue - discord
 			: 3223350
@@ -210,7 +210,7 @@ sd_Status(status) {
 			&& ((((CriticalScreenshots = 1) && (content != ""))
 			|| ((state == "Grinding") && (pBM := CreateGameBitmap()))
 			|| (((state == "Returned") && (objective == "Lobby")) && (pBM := CreateGameBitmap()))
-			|| ((DebuggingScreenshots = 1) && ((state == "Collecting") || ((InStr(state, "Join")) && (objective == "Game")) || (state == "Failed"))))))
+			|| ((DebuggingScreenshots = 1) && ((state == "Collecting") || (InStr(state, "Join")) || (InStr(state, "Replay")) || (state == "Failed"))))))
 							  {
 			if (!IsSet(pBM)) {
 				hwnd := GetRobloxHWND(), GetRobloxClientPos(hwnd), pBM := Gdip_BitmapFromScreen((windowWidth > 0) ? (IsSet(windowDimensions) ? windowDimensions : windowX "|" (IsSet(offsetY) ? (windowY + offsetY) : windowY) "|" windowWidth "|" (IsSet(offsetY) ? (windowHeight - offsetY) : windowHeight)) : 0)
@@ -618,7 +618,7 @@ sd_Command(command) {
 		case "prefix":
 		if ((newPrefix := SubStr(params[2], 1, 3)) && (StrLen(newPrefix) > 0)) {
 			CommandPrefix := newPrefix
-			IniWrite(CommandPrefix, A_SettingsWorkingDir "main_config.ini", "Discord", "CommandPrefix")
+			IniWrite(CommandPrefix, mainSettingsPath, "Discord", "CommandPrefix")
 			Discord.SendEmbed("Set ``" newPrefix "`` as your command prefix!" ((StrLen(params[2]) > 3) ? "\nThe maximum prefix length is 3." : ""), 5066239, , , , id)
 		} else {
 			Discord.SendEmbed("``" ((StrLen(params[2]) > 0) ? params[2] : "<blank>") "`` is not a valid prefix!" ((StrLen(params[2]) = 0) ? "\nYou cannot have an empty prefix!" : ""), 16711731, , , , id)
@@ -1328,7 +1328,7 @@ UpdateStr(var, value, section) {
 	global
 	static sections := Map("Settings", 1, "Discord", 2, "Status", 3)
 	try %var% := value
-	IniWrite(value, A_SettingsWorkingDir "main_config.ini", section, var)
+	IniWrite(value, mainSettingsPath, section, var)
 	DetectHiddenWindows(1)
 	if WinExist("skibi_defense_macro ahk_class AutoHotkey") {
 		PostMessage(0x5553, settings[var].enum, sections[section])
@@ -1341,7 +1341,7 @@ UpdateStr(var, value, section) {
 UpdateInt(var, value, section) {
 	global
 	try %var% := value
-	IniWrite(value, A_SettingsWorkingDir "main_config.ini", section, var)
+	IniWrite(value, mainSettingsPath, section, var)
 	DetectHiddenWindows(1)
 	if WinExist("skibi_defense_macro ahk_class AutoHotkey") {
 		PostMessage(0x5552, settings[var].enum, value)
@@ -1371,7 +1371,7 @@ sd_SetGlobalStr(wParam, lParam, *) {
 	static sections := ["Discord", "Game", "Settings", "Status"]
 
 	var := arr[wParam], section := sections[lParam]
-	%var% := IniRead(A_SettingsWorkingDir "main_config.ini", section, var)
+	%var% := IniRead(mainSettingsPath, section, var)
 	return 0
 }
 

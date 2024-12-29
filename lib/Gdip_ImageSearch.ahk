@@ -30,7 +30,7 @@
 ;
 ; Variation
 ;   Just like ImageSearch, a value from 0 to 255
-;   Default: 0
+;   Default: 6
 ;
 ; Trans
 ;   Needle RGB transparent color, should be a numerical value from 0 to 0xFFFFFF

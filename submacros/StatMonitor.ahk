@@ -11,7 +11,7 @@ SetWorkingDir(A_ScriptDir "\..")
 #Include "externalFuncs\nowUnix.ahk"
 
 ; set version identifier
-VersionID := "0.5.2"
+VersionID := "0.5.3"
 
 MacroName := A_Args[1]
 ; assign variables from A_Args
@@ -26,6 +26,7 @@ windowDimensions := A_Args[4]
 GrindMode := A_Args[5]
 Month := A_Args[6]
 A_SettingsWorkingDir := A_WorkingDir "\settings\"
+mainSettingsPath := A_SettingsWorkingDir "sd_config.ini"
 InLobby := A_Args[7]
 
 ; ▰▰▰▰▰▰▰▰
@@ -44,7 +45,7 @@ Gdip_SetInterpolationMode(G, 7)
 
 
 ; IMAGE ASSETS
-; store buff icons for drawing
+; store icons for drawing
 (bitmaps := Map()).CaseSense := 0
 
 #Include "%A_ScriptDir%\..\sd_img_assets\"
@@ -102,7 +103,7 @@ credits_12h := Map()
 credits_12h[180] := start_credits
 
 ; INFO FROM MAIN SCRIPT
-; status_changes format: (A_Min * 60 + A_Sec+1):status_number (0 = Other, 1 = Game, 2 = Lobby)
+; status_changes format: (A_Min * 60 + A_Sec + 1) : status_number (0 = Other, 1 = Game, 2 = Lobby)
 status_changes := Map()
 
 ; stats format: number:[string, value]
@@ -129,7 +130,7 @@ for objItem in ComObjGet("winmgmts:").ExecQuery("SELECT * FROM Win32_OperatingSy
 
 ; read information from main_config.ini
 Loop 3 {
-	ChapterName%A_Index% := IniRead(A_SettingsWorkingDir "main_config.ini", "Game", "ChapterName" A_Index, "N/A")
+	ChapterName%A_Index% := IniRead(mainSettingsPath, "Game", "ChapterName" A_Index, "N/A")
 }
 
 ; FORM MESSAGE
@@ -358,15 +359,15 @@ DetectCredits() {
 	index := (A_Min = "00") ? 60 : Integer(A_Min)
 	if (current_credits) {
 		credit_values[index] := current_credits
-		if (FileExist(A_SettingsWorkingDir "main_config.ini") && (IsSet(start_time))) {
+		if (FileExist(mainSettingsPath) && (IsSet(start_time))) {
 			session_time := DateDiff(A_Now, start_time, "S")
 			session_total := current_credits - start_credits
 			try {
-				IniWrite((FormatNumber(session_total)), A_SettingsWorkingDir "main_config.ini", "Status", "SessionCredits")
-				IniWrite((FormatNumber(session_total)), A_SettingsWorkingDir "main_config.ini", "Status", "TotalCredits")
+				IniWrite((FormatNumber(session_total)), mainSettingsPath, "Status", "SessionCredits")
+				IniWrite((FormatNumber(session_total)), mainSettingsPath, "Status", "TotalCredits")
 			}
 			try {
-				IniWrite((FormatNumber(session_total * 3600 / session_time)), A_SettingsWorkingDir "main_config.ini", "Status", "HourlyCreditsAverage")
+				IniWrite((FormatNumber(session_total * 3600 / session_time)), mainSettingsPath, "Status", "HourlyCreditsAverage")
 			}
 		}
 		return current_credits
@@ -751,12 +752,12 @@ SendHourlyReport() {
 
 	Gdip_DeleteGraphics(G)
 
-	WebhookURL := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "WebhookURL")
-	BotToken := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "BotToken")
-	DiscordMode := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "DiscordMode")
-	ReportChannelID := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "ReportChannelID")
+	WebhookURL := IniRead(mainSettingsPath, "Discord", "WebhookURL")
+	BotToken := IniRead(mainSettingsPath, "Discord", "BotToken")
+	DiscordMode := IniRead(mainSettingsPath, "Discord", "DiscordMode")
+	ReportChannelID := IniRead(mainSettingsPath, "Discord", "ReportChannelID")
 	if StrLen(ReportChannelID) < 17 {
-		ReportChannelID := IniRead(A_SettingsWorkingDir "main_config.ini", "Discord", "MainChannelID")
+		ReportChannelID := IniRead(mainSettingsPath, "Discord", "MainChannelID")
 	}
 
 	try {

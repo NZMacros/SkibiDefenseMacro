@@ -5,7 +5,7 @@
 AsyncHTTPRequest(method, url, func?, headers?) {
 	req := ComObject("Msxml2.XMLHTTP")
 	req.open(method, url, true)
-	if IsSet(headers) {
+	if (IsSet(headers)) {
 		for h, v in headers {
 			req.setRequestHeader(h, v)
         }
@@ -24,7 +24,7 @@ sd_AutoUpdateHandler(req) {
 
 	if req.status = 200 {
 		LatestVer := Trim((latest_release := JSON.parse(req.responseText))["tag_name"], "v")
-	    if (VerCompare(VersionID, LatestVer) < 0) {
+	    if VerCompare(VersionID, LatestVer) < 0 {
 			MainGUI["UpdateButton"].Visible := 1
 			if LatestVer != IgnoredUpdateVersion {
 				sd_SetStatus("GitHub", "Update found! v" LatestVer)
@@ -37,7 +37,7 @@ sd_AutoUpdateHandler(req) {
 sd_AutoUpdateGUI(*) {
 	global
 	local size, downloads, posW, hBM, UpdateText, UpdateButton
-	GUIClose(*){
+	GUIClose(*) {
 		if (IsSet(UpdateGUI) && IsObject(UpdateGUI))
 			UpdateGUI.Destroy(), UpdateGUI := ""
 	}
