@@ -1,0 +1,27 @@
+name: SDM Question
+description: Ask a question about the macro.
+labels: ["type:question", "macro:skibi_defense_macro"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+      
+        Thank you for your making a question! Use the sections below to submit it.
+
+        - All questions are welcome!
+        - Remember to include sufficient details about what you want to know.
+
+  - type: textarea
+    id: suggestion
+    attributes:
+      label: What is your question?
+      description: Please provide as much info as possible!
+      placeholder: I inquire...
+    validations:
+      required: true
+
+  - type: input
+    attributes:
+      label: What is your Discord username?
+      description: This is not required, but it would help with contacting you and answering your question through Discord.

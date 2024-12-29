@@ -1,0 +1,14 @@
+on:
+  release:
+    types: [published]
+
+jobs:
+  release-to-discord:
+    runs-on: ubuntu-latest
+    steps:
+      - name: send-discord-webhook
+        id: discord
+        uses: NZMacros/SDM_DiscordReleaseAction@v1.0.0
+        with:
+          token: "${{ secrets.RELEASE_BOT_TOKEN }}"
+          channel: "1322751389600055306"
