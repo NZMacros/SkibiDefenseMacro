@@ -5,7 +5,6 @@
 ; Thanks to guest3456 for helping me ponder some ideas
 ; Requires GDIP, Gdip_SetBitmapTransColor() and Gdip_MultiLockedBitsSearch()
 ; http://www.autohotkey.com/board/topic/71100-gdip-imagesearch/
-; Ported to AHK v2 by SP
 ;
 ; Licensed under CC BY-SA 3.0 -> http://creativecommons.org/licenses/by-sa/3.0/
 ; I waive compliance with the "Share Alike" condition of the license EXCLUSIVELY
