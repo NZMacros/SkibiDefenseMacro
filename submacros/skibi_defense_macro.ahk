@@ -179,6 +179,12 @@ sd_ImportPaths()
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; PREPARE GUI
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ahem.... no you won't
+; I hereby forbid every person using this macro...
+; from using it until I fix it.
+; hehe... get the reference?
+msgbox("Hi user! Unfortunately, the macro currently doesn't work due to constant changes in the game. Thank you for downloading!", "Notice")
+exitapp(404)
 MainGUI := Gui((AlwaysOnTop ? "+AlwaysOnTop " : "") "+Border +OwnDialogs", MacroName " (Loading: 0%)")
 SetLoadProgress(7, MacroName " (Loading: ")
 MainGUI.Show("x" GUI_X " y" GUI_Y " w500 h300")
